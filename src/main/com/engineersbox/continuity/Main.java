@@ -1,7 +1,7 @@
 package com.engineersbox.continuity;
 
 import com.engineersbox.continuity.annotation.Continuable;
-import com.engineersbox.continuity.state.Continuation;
+import com.engineersbox.continuity.api.Continuation;
 
 public class Main {
 
