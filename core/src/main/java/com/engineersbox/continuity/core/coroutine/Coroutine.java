@@ -1,6 +1,6 @@
-package com.engineersbox.continuity.coroutine;
+package com.engineersbox.continuity.core.coroutine;
 
-import com.engineersbox.continuity.continuation.Continuation;
+import com.engineersbox.continuity.core.continuation.Continuation;
 
 import java.io.Serializable;
 

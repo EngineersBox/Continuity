@@ -1,7 +1,7 @@
-package com.engineersbox.continuity.coroutine;
+package com.engineersbox.continuity.core.coroutine;
 
-import com.engineersbox.continuity.continuation.Continuation;
-import com.engineersbox.continuity.coroutine.exception.CoroutineException;
+import com.engineersbox.continuity.core.continuation.Continuation;
+import com.engineersbox.continuity.core.coroutine.exception.CoroutineException;
 
 public class CoroutineExecutor {
 

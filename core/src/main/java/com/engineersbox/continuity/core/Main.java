@@ -1,8 +1,8 @@
-package com.engineersbox.continuity;
+package com.engineersbox.continuity.core;
 
-import com.engineersbox.continuity.continuation.Continuation;
-import com.engineersbox.continuity.coroutine.Coroutine;
-import com.engineersbox.continuity.coroutine.CoroutineExecutor;
+import com.engineersbox.continuity.core.continuation.Continuation;
+import com.engineersbox.continuity.core.coroutine.Coroutine;
+import com.engineersbox.continuity.core.coroutine.CoroutineExecutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
