@@ -8,7 +8,7 @@ continuation.addPending(new MethodState(<number>, stack, locals, lockState);
 continuation.setMode(MODE_SAVING);
 exitLocks(lockState);
 return <dummy>;
-restorePoint_<number>_continue: // at this label: empty exec stack / uninit exec var table
+restorePoint_<number>_continue; // at this label: empty exec stack / uninit exec var table
 ```
 ## Case 2: Continuation point is a NormalInvokePoint
 ```java
@@ -28,10 +28,9 @@ if (continuation.getMode() == MODE_SAVING) {
     continuation.addPending(new MethodState(<number>, stack, locals, lockState);
     return <dummy>;
 }
-restorePoint_<number>_continue:
+restorePoint_<number>_continue;
 ```
 ## Case 3: Continuation point is a TryCatchInvokePoint
-------
 Same as case 2, except re-throwing the exception after the continuation point
 has saved the state
 
