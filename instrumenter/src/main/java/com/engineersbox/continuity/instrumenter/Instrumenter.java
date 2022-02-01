@@ -2,6 +2,7 @@ package com.engineersbox.continuity.instrumenter;
 
 import com.engineersbox.continuity.instrumenter.clazz.CoreClassNode;
 import com.engineersbox.continuity.instrumenter.clazz.CoreClassWriter;
+import com.engineersbox.continuity.instrumenter.stack.StackReconstructor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
@@ -125,13 +126,14 @@ public class Instrumenter {
 
     public byte[] Instrument(final byte[] raw) {
         final ClassReader classReader = new ClassReader(raw);
-        final ClassNode classNode = new CoreClassNode();
+        ClassNode classNode = new CoreClassNode();
         classReader.accept(classNode, 0);
 
+        classNode = StackReconstructor.reconstructStackMapFrames(classNode);
+
         /* TODO:
-         * 1. Reconstruct stack frames
-         * 2. Do instrumentation in stages:
-         * 3. Evaluate instrumentation results
+         * 1. Do instrumentation in stages:
+         * 2. Evaluate instrumentation results
          *
          * Instrumentation stages:
          *  1. Find relevant methods calling Continuation#suspend()
