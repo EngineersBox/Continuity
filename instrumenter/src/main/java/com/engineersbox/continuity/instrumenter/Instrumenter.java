@@ -1,5 +1,11 @@
 package com.engineersbox.continuity.instrumenter;
 
+import com.engineersbox.continuity.instrumenter.clazz.CoreClassNode;
+import com.engineersbox.continuity.instrumenter.clazz.CoreClassWriter;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.tree.ClassNode;
+
 public class Instrumenter {
 
     /* SAVE STATE AT SUSPEND
@@ -115,4 +121,32 @@ public class Instrumenter {
      * goto restorePoint_<number>_continue;
      */
 
+    public Instrumenter() {}
+
+    public byte[] Instrument(final byte[] raw) {
+        final ClassReader classReader = new ClassReader(raw);
+        final ClassNode classNode = new CoreClassNode();
+        classReader.accept(classNode, 0);
+
+        /* TODO:
+         * 1. Reconstruct stack frames
+         * 2. Do instrumentation in stages:
+         * 3. Evaluate instrumentation results
+         *
+         * Instrumentation stages:
+         *  1. Find relevant methods calling Continuation#suspend()
+         *  2. Filter methods by usage and dependent call structure with parent context
+         *  3. Serialize existing coroutine structure and store as a file for restore and persistence
+         *  4. Perform instrumentation:
+         *    a. Create restore marker and early return before Continuation#suspend() call
+         *    b. Create continuation marker and goto call to jump Continuation#suspend() call and continue
+         *    c. Store method state
+         *  5. Add versioning fields and convert class to serializable format
+         */
+
+        final ClassWriter classWriter = new CoreClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+        classNode.accept(classWriter);
+
+        return classWriter.toByteArray();
+    }
 }
