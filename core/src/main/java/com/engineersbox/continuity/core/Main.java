@@ -3,12 +3,13 @@ package com.engineersbox.continuity.core;
 import com.engineersbox.continuity.core.continuation.Continuation;
 import com.engineersbox.continuity.core.coroutine.Coroutine;
 import com.engineersbox.continuity.core.coroutine.CoroutineExecutor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.engineersbox.continuity.logger.LogFormatter;
+
+import java.util.logging.*;
 
 public class Main {
 
-    private static final Logger LOGGER = LogManager.getLogger(Main.class);
+    private static final Logger LOGGER = LogFormatter.getLogger(Main.class, Level.ALL);
 
     public static final class TestCoroutine implements Coroutine {
         @Override
@@ -21,12 +22,13 @@ public class Main {
 
         private void echo(final Continuation c,
                           final int x) {
-            LOGGER.info("Value: {}", x);
+            LOGGER.info(String.format("Value: %d", x));
             c.suspend();
         }
     }
 
     public static void main(final String[] args) {
+        LOGGER.setLevel(Level.FINE);
         final CoroutineExecutor coroutineExecutor = new CoroutineExecutor(new TestCoroutine());
         coroutineExecutor.execute();
         coroutineExecutor.execute();

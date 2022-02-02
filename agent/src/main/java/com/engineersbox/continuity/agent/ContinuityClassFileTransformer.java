@@ -8,6 +8,7 @@ import java.security.ProtectionDomain;
 public class ContinuityClassFileTransformer implements ClassFileTransformer {
 
     private static final String CONTINUITY_CORE_PACKAGE = "com/engineersbox/continuity/core";
+    private static final String TEST_MAIN = CONTINUITY_CORE_PACKAGE + "/Main";
 
     public ContinuityClassFileTransformer() {}
 
@@ -17,7 +18,7 @@ public class ContinuityClassFileTransformer implements ClassFileTransformer {
                             final Class<?> classBeingRedefined,
                             final ProtectionDomain protectionDomain,
                             final byte[] classBytes) {
-        if (className == null || className.startsWith(CONTINUITY_CORE_PACKAGE) || loader == null) {
+        if (className == null || loader == null || (className.startsWith(CONTINUITY_CORE_PACKAGE) && !className.startsWith(TEST_MAIN))) {
             return null;
         }
         try {

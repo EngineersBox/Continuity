@@ -2,13 +2,19 @@ package com.engineersbox.continuity.instrumenter.stack;
 
 import com.engineersbox.continuity.instrumenter.clazz.CoreClassNode;
 import com.engineersbox.continuity.instrumenter.clazz.CoreClassWriter;
+import com.engineersbox.continuity.logger.LogFormatter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class StackReconstructor {
+
+    private static final Logger LOGGER = LogFormatter.getLogger(StackReconstructor.class, Level.ALL);
 
     private StackReconstructor() {}
 
@@ -21,6 +27,7 @@ public class StackReconstructor {
     }
 
     private static void removeStackFrame(final MethodNode methodNode) {
+        LOGGER.fine(methodNode.name);
         AbstractInsnNode insn = methodNode.instructions.getFirst();
         while (insn != null) {
             final AbstractInsnNode nextInsn = insn.getNext();
