@@ -11,6 +11,7 @@
 
     <groupId>com.engineersbox.continuity</groupId>
     <artifactId>maven-plugin</artifactId>
+    <packaging>maven-plugin</packaging>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -34,4 +35,27 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+<!--    <build>-->
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-plugin-plugin</artifactId>-->
+<!--                <version>3.5.2</version>-->
+<!--                <configuration>-->
+<!--                    <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>-->
+<!--                    <goalPrefix>continuity</goalPrefix>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>mojo-descriptor</id>-->
+<!--                        <phase>process-classes</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>descriptor</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
+<!--    </build>-->
 </project>

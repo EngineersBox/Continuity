@@ -11,6 +11,7 @@
         <module>maven-plugin</module>
         <module>core</module>
         <module>instrumenter</module>
+        <module>agent</module>
     </modules>
     <packaging>pom</packaging>
 
