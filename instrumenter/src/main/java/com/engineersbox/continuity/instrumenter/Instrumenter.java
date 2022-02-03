@@ -5,6 +5,7 @@ import com.engineersbox.continuity.instrumenter.clazz.CoreClassWriter;
 import com.engineersbox.continuity.instrumenter.stack.StackReconstructor;
 import com.engineersbox.continuity.instrumenter.stage.InstrumentationContext;
 import com.engineersbox.continuity.instrumenter.stage.InstrumentationStage;
+import com.engineersbox.continuity.instrumenter.stage.MethodIntrospectionStage;
 import com.engineersbox.continuity.instrumenter.stage.MethodLocatorStage;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -17,7 +18,8 @@ public class Instrumenter {
     public Instrumenter() {}
 
     private static final List<InstrumentationStage> STAGES = List.of(
-            new MethodLocatorStage()
+            new MethodLocatorStage(),
+            new MethodIntrospectionStage()
     );
 
     public byte[] instrument(final byte[] raw) {

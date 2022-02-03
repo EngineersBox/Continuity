@@ -17,4 +17,8 @@ public class InstrumentationContext {
                           final String context) {
         this.methods.put(node, context);
     }
+
+    public Map<MethodNode, String> getMethods() {
+        return this.methods;
+    }
 }
