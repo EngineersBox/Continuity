@@ -2,19 +2,17 @@ package com.engineersbox.continuity.instrumenter.stack;
 
 import com.engineersbox.continuity.instrumenter.clazz.CoreClassNode;
 import com.engineersbox.continuity.instrumenter.clazz.CoreClassWriter;
-import com.engineersbox.continuity.logger.LogFormatter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.lang.reflect.Field;
+import java.util.Arrays;
 
 public class StackReconstructor {
-
-    private static final Logger LOGGER = LogFormatter.getLogger(StackReconstructor.class, Level.ALL);
 
     private StackReconstructor() {}
 
@@ -26,8 +24,23 @@ public class StackReconstructor {
         return constructClassWithComputerFrames(classNode);
     }
 
+    private static final Field[] OPCODE_FIELDS = Opcodes.class.getFields();
+
+    private static String converOpcodeToString(final int opcode) {
+        return Arrays.stream(OPCODE_FIELDS).filter((final Field field) -> {
+            try {
+                final Object fieldValue = field.get(null);
+                if (fieldValue instanceof Integer integerValue) {
+                    return integerValue == opcode;
+                }
+                return false;
+            } catch (IllegalAccessException e) {
+                return false;
+            }
+        }).map(Field::getName).findAny().orElse("NONE");
+    }
+
     private static void removeStackFrame(final MethodNode methodNode) {
-        LOGGER.fine(methodNode.name);
         AbstractInsnNode insn = methodNode.instructions.getFirst();
         while (insn != null) {
             final AbstractInsnNode nextInsn = insn.getNext();

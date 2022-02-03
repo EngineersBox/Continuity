@@ -5,7 +5,8 @@ import com.engineersbox.continuity.core.coroutine.Coroutine;
 import com.engineersbox.continuity.core.coroutine.CoroutineExecutor;
 import com.engineersbox.continuity.logger.LogFormatter;
 
-import java.util.logging.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class Main {
 
@@ -28,7 +29,6 @@ public class Main {
     }
 
     public static void main(final String[] args) {
-        LOGGER.setLevel(Level.FINE);
         final CoroutineExecutor coroutineExecutor = new CoroutineExecutor(new TestCoroutine());
         coroutineExecutor.execute();
         coroutineExecutor.execute();
