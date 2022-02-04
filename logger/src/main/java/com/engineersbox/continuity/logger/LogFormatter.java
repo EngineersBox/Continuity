@@ -23,6 +23,7 @@ public class LogFormatter {
         mainLogger.setUseParentHandlers(false);
         final ConsoleHandler handler = new ConsoleHandler();
         handler.setFormatter(LogFormatter.createFormatter());
+        handler.setLevel(level);
         mainLogger.addHandler(handler);
         mainLogger.setLevel(level);
         return Logger.getLogger(clazz.getName());

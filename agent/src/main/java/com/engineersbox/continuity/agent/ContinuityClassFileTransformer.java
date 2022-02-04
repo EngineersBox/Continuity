@@ -5,8 +5,10 @@ import com.engineersbox.continuity.logger.LogFormatter;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class ContinuityClassFileTransformer implements ClassFileTransformer {
 
@@ -32,7 +34,13 @@ public class ContinuityClassFileTransformer implements ClassFileTransformer {
             final Instrumenter instrumenter = new Instrumenter();
             return instrumenter.instrument(classBytes);
         } catch (final Throwable e) {
-            System.err.println("Could not instrument for continuity: " + e.getMessage());
+            LOGGER.severe(String.format(
+                    "%s:\n\t%s",
+                    e.getMessage(),
+                    Arrays.stream(e.getStackTrace())
+                            .map(StackTraceElement::toString)
+                            .collect(Collectors.joining("\n\t"))
+            ));
             return null;
         }
     }
