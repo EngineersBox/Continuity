@@ -17,7 +17,8 @@ public class Main {
         public void run(final Continuation c) {
             LOGGER.info("Started");
             for (int i = 0; i < 10; i++) {
-                echo(c, i);
+                LOGGER.info(String.format("Value: %d", i));
+                c.suspend();
             }
         }
 
