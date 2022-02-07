@@ -1,4 +1,4 @@
-# SUSPEND CALL INSTRUMENTING
+# SAVE STATE INSTRUMENTING
 
 1. Get method state from previous instrumentation stage (MethodIntrospectionStage)
 2. Iterate through the ContinuationPoints
@@ -127,7 +127,7 @@
 
 ## PACK STORAGE ARRAYS
 
-1. Store LVA locals and OS stack vars for later access
+1. Store LVA and OS vars for later access
 2. Create an InsnList and append the following:
      1. `LOAD_CONST 10`
      2. `ANEWARRAY "java/lang/Object"`
