@@ -5,6 +5,7 @@ import com.engineersbox.continuity.core.method.MethodState;
 import com.engineersbox.continuity.instrumenter.stack.ContextHandledTypes;
 import com.engineersbox.continuity.instrumenter.stack.ContinuationPoint;
 import com.engineersbox.continuity.instrumenter.stack.SuppressMethodContinuationPoint;
+import com.engineersbox.continuity.instrumenter.stack.variable.PrimitiveContainers;
 import com.engineersbox.continuity.instrumenter.stack.variable.PrimitiveStack;
 import com.engineersbox.continuity.instrumenter.stack.variable.StackVarLUT;
 import com.engineersbox.continuity.instrumenter.stack.variable.StackVariable;
@@ -35,8 +36,8 @@ public class MethodInstrospector {
 
     public MethodInstrospector() {}
 
-    public MethodContext introspect(final ClassNode classNode,
-                                    final MethodNode methodNode) {
+    public MethodContext<SuppressMethodContinuationPoint> introspect(final ClassNode classNode,
+                                                                     final MethodNode methodNode) {
         if (methodNode.name.equals(CONSTRUCTOR_METHOD_NAME)) {
             throw new IllegalStateException("Cannot instrument constructor");
         }
@@ -48,6 +49,12 @@ public class MethodInstrospector {
         final List<AbstractInsnNode> continuationCallInsnNodes = findInvocationsWithParameter(
                 methodNode.instructions,
                 Type.getType(CONTINUATION_CLASS_TYPE)
+        );
+
+        final MethodSignature signature = new MethodSignature(
+                classNode.name,
+                methodNode.name,
+                Type.getMethodType(methodNode.desc)
         );
 
         Frame<BasicValue>[] frames;
@@ -103,13 +110,16 @@ public class MethodInstrospector {
 
         final PrimitiveStack LVA = PrimitiveStack.allocateSlots(stackVarLUT, handledTypesLVA);
         final PrimitiveStack OS = PrimitiveStack.allocateSlots(stackVarLUT, handledTypesOS);
+        final PrimitiveContainers containers = PrimitiveContainers.allocateContainerSlots(stackVarLUT);
 
         return new MethodContext<>(
+                signature,
                 continuationPoints,
                 continuationVar,
                 methodStateVariable,
                 LVA,
-                OS
+                OS,
+                containers
         );
     }
 

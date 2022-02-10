@@ -1,5 +1,6 @@
 package com.engineersbox.continuity.instrumenter.stage;
 
+import com.engineersbox.continuity.instrumenter.method.MethodContext;
 import com.engineersbox.continuity.instrumenter.method.MethodInstrospector;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -15,7 +16,8 @@ public class MethodIntrospectionStage implements InstrumentationStage {
         final MethodInstrospector introspector = new MethodInstrospector();
         Set<MethodNode> methodNodes = new HashSet<>(context.getMethods().keySet());
         for (final MethodNode methodNode : methodNodes) {
-            introspector.introspect(node, methodNode);
+            final MethodContext<?> methodContext = introspector.introspect(node, methodNode);
+            context.putMethod(methodNode, methodContext);
         }
     }
 
