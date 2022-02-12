@@ -1,38 +1,177 @@
 package com.engineersbox.continuity.instrumenter.bytecode;
 
+import com.engineersbox.continuity.core.continuation.Continuation;
+import com.engineersbox.continuity.core.method.MethodState;
 import com.engineersbox.continuity.instrumenter.method.MethodContext;
 import com.engineersbox.continuity.instrumenter.stack.ContinuationPoint;
 import com.engineersbox.continuity.instrumenter.stack.variable.PrimitiveStack;
 import com.engineersbox.continuity.instrumenter.stack.variable.PrimitiveStackElementType;
 import com.engineersbox.continuity.instrumenter.stack.variable.StackVariable;
 import com.engineersbox.continuity.instrumenter.stack.variable.StackVarsSizes;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.Random;
+
 public class SaveStateGenerator {
+
+    private static final Method CONTINUATION_PUSHNEWMETHODSTATE_METHOD = MethodUtils.getAccessibleMethod(
+            Continuation.class,
+            "pushNewMethodState",
+            MethodState.class
+    );
+    private static final Method CONTINUATION_SETMODE_METHOD = MethodUtils.getAccessibleMethod(
+            Continuation.class,
+            "setMode",
+            int.class
+    );
+    private static final Constructor<MethodState> METHODSTATE_CONSTRUCTOR  = ConstructorUtils.getAccessibleConstructor(
+            MethodState.class,
+            String.class,
+            Integer.TYPE,
+            Integer.TYPE,
+            Object[].class
+    );
+    private static final String JAVA_OBJECT_DESCRIPTOR = "java/lang/Object";
 
     public static InsnList createSaveStateInsns(final MethodContext<?> context,
                                                 final int index) {
         final ContinuationPoint continuationPoint = context.continuationPoints().get(index);
         final PrimitiveStack osVars = context.OS();
         final PrimitiveStack lvaVars = context.LVA();
+        final StackVariable containerVar = context.containers().containerVariable();
+        final StackVariable continuationVar = context.continuationVar();
         final Frame<BasicValue> frame = continuationPoint.getFrame();
+
         return InsnFormatter.combine(
                 saveOS(osVars, frame),
-                saveLVA(lvaVars, frame)
+                saveLVA(lvaVars, frame),
+                packLVAOSArrays(osVars, lvaVars, containerVar, frame),
+                InsnFormatter.call(
+                        CONTINUATION_PUSHNEWMETHODSTATE_METHOD,
+                        InsnFormatter.loadVar(continuationVar),
+                        InsnFormatter.invokeConstructor(
+                                METHODSTATE_CONSTRUCTOR,
+                                InsnFormatter.loadStringConst(context.signature().className().replace('/', '.')),
+                                InsnFormatter.loadIntConst(new Random().nextInt()), // <- Hash method properly and store here
+                                InsnFormatter.loadIntConst(index),
+                                InsnFormatter.loadVar(containerVar)
+                        )
+                ),
+                InsnFormatter.call(
+                        CONTINUATION_SETMODE_METHOD,
+                        InsnFormatter.loadVar(continuationVar),
+                        InsnFormatter.loadIntConst(1) // Save mode
+                ),
+                InsnFormatter.mockValue(context.signature().methodDescriptor().getReturnType()),
+                InsnFormatter.addLabel(continuationPoint.getContinueExecutionLabel())
+        );
+    }
+
+    public static InsnList packLVAOSArrays(final PrimitiveStack osVars,
+                                           final PrimitiveStack lvaVars,
+                                           final StackVariable containerVar,
+                                           final Frame<BasicValue> frame) {
+        final StackVariable localsIntsVar = lvaVars.getStackVar(PrimitiveStackElementType.INTEGER);
+        final StackVariable localsFloatsVar = lvaVars.getStackVar(PrimitiveStackElementType.FLOAT);
+        final StackVariable localsLongsVar = lvaVars.getStackVar(PrimitiveStackElementType.LONG);
+        final StackVariable localsDoublesVar = lvaVars.getStackVar(PrimitiveStackElementType.DOUBLE);
+        final StackVariable localsObjectsVar = lvaVars.getStackVar(PrimitiveStackElementType.OBJECT);
+
+        final StackVariable stackIntsVar = osVars.getStackVar(PrimitiveStackElementType.INTEGER);
+        final StackVariable stackFloatsVar = osVars.getStackVar(PrimitiveStackElementType.FLOAT);
+        final StackVariable stackLongsVar = osVars.getStackVar(PrimitiveStackElementType.LONG);
+        final StackVariable stackDoublesVar = osVars.getStackVar(PrimitiveStackElementType.DOUBLE);
+        final StackVariable stackObjectsVar = osVars.getStackVar(PrimitiveStackElementType.OBJECT);
+
+        final StackVarsSizes osSizes = calculateOSStackVarsSizes(
+                frame,
+                0,
+                frame.getStackSize()
+        );
+        final StackVarsSizes lvaSizes = calculateLVAStackVarsSizes(frame);
+
+        return InsnFormatter.combine(
+                new LdcInsnNode(10),
+                new TypeInsnNode(Opcodes.NEWARRAY, JAVA_OBJECT_DESCRIPTOR),
+                new VarInsnNode(Opcodes.ASTORE, containerVar.getIndex()),
+                InsnFormatter.combineIf(lvaSizes.intsSize() > 0, () -> new Object[]{
+                        new VarInsnNode(Opcodes.ALOAD, containerVar.getIndex()),
+                        new LdcInsnNode(0),
+                        new VarInsnNode(Opcodes.ALOAD, localsIntsVar.getIndex()),
+                        new InsnNode(Opcodes.AASTORE)
+                }),
+                InsnFormatter.combineIf(lvaSizes.floatsSize() > 0, () -> new Object[]{
+                        new VarInsnNode(Opcodes.ALOAD, containerVar.getIndex()),
+                        new LdcInsnNode(1),
+                        new VarInsnNode(Opcodes.ALOAD, localsFloatsVar.getIndex()),
+                        new InsnNode(Opcodes.AASTORE)
+                }),
+                InsnFormatter.combineIf(lvaSizes.longsSize() > 0, () -> new Object[]{
+                        new VarInsnNode(Opcodes.ALOAD, containerVar.getIndex()),
+                        new LdcInsnNode(2),
+                        new VarInsnNode(Opcodes.ALOAD, localsLongsVar.getIndex()),
+                        new InsnNode(Opcodes.AASTORE)
+                }),
+                InsnFormatter.combineIf(lvaSizes.doublesSize() > 0, () -> new Object[]{
+                        new VarInsnNode(Opcodes.ALOAD, containerVar.getIndex()),
+                        new LdcInsnNode(3),
+                        new VarInsnNode(Opcodes.ALOAD, localsDoublesVar.getIndex()),
+                        new InsnNode(Opcodes.AASTORE)
+                }),
+                InsnFormatter.combineIf(lvaSizes.objectsSize() > 0, () -> new Object[]{
+                        new VarInsnNode(Opcodes.ALOAD, containerVar.getIndex()),
+                        new LdcInsnNode(4),
+                        new VarInsnNode(Opcodes.ALOAD, localsObjectsVar.getIndex()),
+                        new InsnNode(Opcodes.AASTORE)
+                }),
+                InsnFormatter.combineIf(osSizes.intsSize() > 0, () -> new Object[]{
+                        new VarInsnNode(Opcodes.ALOAD, containerVar.getIndex()),
+                        new LdcInsnNode(5),
+                        new VarInsnNode(Opcodes.ALOAD, stackIntsVar.getIndex()),
+                        new InsnNode(Opcodes.AASTORE)
+                }),
+                InsnFormatter.combineIf(osSizes.floatsSize() > 0, () -> new Object[]{
+                        new VarInsnNode(Opcodes.ALOAD, containerVar.getIndex()),
+                        new LdcInsnNode(6),
+                        new VarInsnNode(Opcodes.ALOAD, stackFloatsVar.getIndex()),
+                        new InsnNode(Opcodes.AASTORE)
+                }),
+                InsnFormatter.combineIf(osSizes.longsSize() > 0, () -> new Object[]{
+                        new VarInsnNode(Opcodes.ALOAD, containerVar.getIndex()),
+                        new LdcInsnNode(7),
+                        new VarInsnNode(Opcodes.ALOAD, stackLongsVar.getIndex()),
+                        new InsnNode(Opcodes.AASTORE)
+                }),
+                InsnFormatter.combineIf(osSizes.doublesSize() > 0, () -> new Object[]{
+                        new VarInsnNode(Opcodes.ALOAD, containerVar.getIndex()),
+                        new LdcInsnNode(8),
+                        new VarInsnNode(Opcodes.ALOAD, stackDoublesVar.getIndex()),
+                        new InsnNode(Opcodes.AASTORE)
+                }),
+                InsnFormatter.combineIf(osSizes.objectsSize() > 0, () -> new Object[]{
+                        new VarInsnNode(Opcodes.ALOAD, containerVar.getIndex()),
+                        new LdcInsnNode(9),
+                        new VarInsnNode(Opcodes.ALOAD, stackObjectsVar.getIndex()),
+                        new InsnNode(Opcodes.AASTORE)
+                })
         );
     }
 
     public static InsnList saveLVA(final PrimitiveStack lvaVars,
                                    final Frame<BasicValue> frame) {
-        StackVariable intsVar = lvaVars.getStackVar(PrimitiveStackElementType.INTEGER);
-        StackVariable floatsVar = lvaVars.getStackVar(PrimitiveStackElementType.FLOAT);
-        StackVariable longsVar = lvaVars.getStackVar(PrimitiveStackElementType.LONG);
-        StackVariable doublesVar = lvaVars.getStackVar(PrimitiveStackElementType.DOUBLE);
-        StackVariable objectsVar = lvaVars.getStackVar(PrimitiveStackElementType.OBJECT);
+        final StackVariable intsVar = lvaVars.getStackVar(PrimitiveStackElementType.INTEGER);
+        final StackVariable floatsVar = lvaVars.getStackVar(PrimitiveStackElementType.FLOAT);
+        final StackVariable longsVar = lvaVars.getStackVar(PrimitiveStackElementType.LONG);
+        final StackVariable doublesVar = lvaVars.getStackVar(PrimitiveStackElementType.DOUBLE);
+        final StackVariable objectsVar = lvaVars.getStackVar(PrimitiveStackElementType.OBJECT);
 
         int intsCounter = 0;
         int floatsCounter = 0;
@@ -66,7 +205,7 @@ public class SaveStateGenerator {
                 }),
                 InsnFormatter.combineIf(objectsVar != null, () -> new Object[] {
                         new LdcInsnNode(sizes.longsSize()),
-                        new TypeInsnNode(Opcodes.NEWARRAY, "java/lang/Object"),
+                        new TypeInsnNode(Opcodes.NEWARRAY, JAVA_OBJECT_DESCRIPTOR),
                         new VarInsnNode(Opcodes.ASTORE, objectsVar.getIndex())
                 })
         ));
@@ -164,7 +303,7 @@ public class SaveStateGenerator {
                 }),
                 InsnFormatter.combineIf(sizes.objectsSize() > 0, () -> new Object[] {
                         new LdcInsnNode(sizes.objectsSize()),
-                        new TypeInsnNode(Opcodes.NEWARRAY, "java/lang/Object"),
+                        new TypeInsnNode(Opcodes.NEWARRAY, JAVA_OBJECT_DESCRIPTOR),
                         new VarInsnNode(Opcodes.ASTORE, objectsVar.getIndex())
                 })
         ));

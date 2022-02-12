@@ -10,10 +10,6 @@ public record PrimitiveContainers(StackVariable containerVariable) {
         }
     }
 
-    public StackVariable getContainerVariable() {
-        return this.containerVariable;
-    }
-
     public static PrimitiveContainers allocateContainerSlots(final StackVarLUT stackVarLUT) {
         return new PrimitiveContainers(stackVarLUT.obtainExtraArg(Type.getType(Object[].class)));
     }
