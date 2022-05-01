@@ -24,22 +24,6 @@ public class StackReconstructor {
         return constructClassWithComputerFrames(classNode);
     }
 
-    private static final Field[] OPCODE_FIELDS = Opcodes.class.getFields();
-
-    private static String converOpcodeToString(final int opcode) {
-        return Arrays.stream(OPCODE_FIELDS).filter((final Field field) -> {
-            try {
-                final Object fieldValue = field.get(null);
-                if (fieldValue instanceof Integer integerValue) {
-                    return integerValue == opcode;
-                }
-                return false;
-            } catch (IllegalAccessException e) {
-                return false;
-            }
-        }).map(Field::getName).findAny().orElse("NONE");
-    }
-
     private static void removeStackFrame(final MethodNode methodNode) {
         AbstractInsnNode insn = methodNode.instructions.getFirst();
         while (insn != null) {
