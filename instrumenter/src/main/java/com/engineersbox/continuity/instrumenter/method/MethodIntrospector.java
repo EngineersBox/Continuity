@@ -1,125 +1,140 @@
 package com.engineersbox.continuity.instrumenter.method;
 
 import com.engineersbox.continuity.core.continuation.Continuation;
-import com.engineersbox.continuity.core.method.MethodState;
-import com.engineersbox.continuity.instrumenter.stack.ContextHandledTypes;
-import com.engineersbox.continuity.instrumenter.stack.SuppressMethodContinuationPoint;
-import com.engineersbox.continuity.instrumenter.stack.variable.PrimitiveContainers;
-import com.engineersbox.continuity.instrumenter.stack.variable.PrimitiveStack;
-import com.engineersbox.continuity.instrumenter.stack.variable.StackVarLUT;
-import com.engineersbox.continuity.instrumenter.stack.variable.StackVariable;
-import com.engineersbox.continuity.logger.LogFormatter;
-import org.apache.commons.collections4.CollectionUtils;
+import com.engineersbox.continuity.instrumenter.stack.point.ContinuationPoint;
+import com.engineersbox.continuity.instrumenter.stack.point.InvokeContinuationPoint;
+import com.engineersbox.continuity.instrumenter.stack.point.SuspendMethodContinuationPoint;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.*;
 import java.util.stream.StreamSupport;
 
 public class MethodIntrospector {
 
-    private static final Logger LOGGER = LogFormatter.getLogger(MethodIntrospector.class, Level.ALL);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodIntrospector.class);
 
     private static final String CONSTRUCTOR_METHOD_NAME = "<init>";
-    private static final Method CONTINUATION_CLASS_TYPE = MethodUtils.getAccessibleMethod(Continuation.class, "suspend");
+    private static final Type CONTINUATION_CLASS_TYPE = Type.getType(Continuation.class);
+    private static final Method CONTINUATION_SUSPEND_METHOD = MethodUtils.getAccessibleMethod(Continuation.class, "suspend");
 
-    public MethodIntrospector() {}
-
-    public MethodContext<SuppressMethodContinuationPoint> introspect(final ClassNode classNode,
-                                                                     final MethodNode methodNode) {
+    public MethodContext introspect(final ClassNode classNode,
+                                    final MethodNode methodNode) {
         if (methodNode.name.equals(CONSTRUCTOR_METHOD_NAME)) {
-            throw new IllegalStateException("Cannot instrument constructor");
+            throw new IllegalStateException(String.format(
+                    "Cannot instrument constructor: %s",
+                    methodNode.signature
+            ));
         }
-
         final List<AbstractInsnNode> suspendCallInsnNodes = findInvocationsOf(
+                methodNode.instructions,
+                CONTINUATION_SUSPEND_METHOD
+        );
+        final List<AbstractInsnNode> continueInvocationInsnNodes = findInvocationsWithParameter(
                 methodNode.instructions,
                 CONTINUATION_CLASS_TYPE
         );
-        final List<AbstractInsnNode> continuationCallInsnNodes = findInvocationsWithParameter(
-                methodNode.instructions,
-                Type.getType(CONTINUATION_CLASS_TYPE)
-        );
+        LOGGER.info("Suspend call count: {}", suspendCallInsnNodes.size());
+        LOGGER.info("Continue call count: {}", continueInvocationInsnNodes.size());
 
-        final MethodSignature signature = new MethodSignature(
-                classNode.name,
-                methodNode.name,
-                Type.getMethodType(methodNode.desc)
-        );
-
-        Frame<BasicValue>[] frames;
+        final Frame<BasicValue>[] frames;
         try {
             frames = new Analyzer<>(new SimpleVerifier()).analyze(classNode.name, methodNode);
         } catch (final AnalyzerException e) {
             throw new IllegalArgumentException("Could not analyze method", e);
         }
+        final List<ContinuationPoint> continuationPoints = new ArrayList<>();
+        continuationPoints.addAll(createSuspendContinuationPoints(
+                suspendCallInsnNodes,
+                frames,
+                methodNode
+        ));
+        continuationPoints.addAll(createInvokeContinuationPoints(
+                continueInvocationInsnNodes,
+                frames,
+                methodNode
+        ));
 
-        final List<SuppressMethodContinuationPoint> continuationPoints = suspendCallInsnNodes.stream().map((final AbstractInsnNode insnNode) -> {
-            final MethodInsnNode node = (MethodInsnNode) insnNode;
+        /* TODO:
+         *  1. Get invocation return types from continueInvocationInsnNodes
+         *  2. Get types on LVA at suspend/continue points from union(continueInvocationInsnNodes, suspendInvocationInsnNodes)
+         *  3. Get types on OS at suspend/continue points from union(continueInvocationInsnNodes, suspendInvocationInsnNodes)
+         *  4. Find index of continuation object in LVA table
+         *  5. Create variables for continuation argument and method state
+         *  6. Create PrimitiveStack for LVA variables
+         *  7. Create PrimitiveStack for OS variables
+         *  8. Create PrimitiveContainerStack for container variables
+         *  9. Create CacheStack for cache vars such as return values
+         *  10. Construct MethodContext and return
+         */
+
+        return new MethodContext(
+                new MethodSignature(
+                    classNode.name,
+                    methodNode.name,
+                    Type.getMethodType(methodNode.desc)
+                ),
+                continuationPoints
+        );
+    }
+
+    private List<? extends ContinuationPoint> createSuspendContinuationPoints(List<AbstractInsnNode> suspendCallInsnNodes,
+                                                                              final Frame<BasicValue>[] frames,
+                                                                              final MethodNode methodNode) {
+        return suspendCallInsnNodes.stream().map((final AbstractInsnNode insnNode) -> {
             final LineNumberNode lineNumberNode = getLineNumberForInsn(methodNode.instructions, insnNode);
-            return new SuppressMethodContinuationPoint(
+            return new SuspendMethodContinuationPoint(
                     lineNumberNode != null ? lineNumberNode.line : null,
-                    node,
+                    (MethodInsnNode) insnNode,
                     frames[methodNode.instructions.indexOf(insnNode)]
             );
         }).toList();
+    }
 
-        final ContextHandledTypes handledTypesLVA = new ContextHandledTypes();
-        for (final AbstractInsnNode invokeInsnNode : CollectionUtils.union(continuationCallInsnNodes, suspendCallInsnNodes)) {
-            final Frame<BasicValue> frame = frames[methodNode.instructions.indexOf(invokeInsnNode)];
-            LOGGER.fine(String.format("FRAME: %s", frame.toString()));
-            for (int i = 0; i < frame.getLocals(); i++) {
-                Type type = frame.getLocal(i).getType();
-                if (type == null || type.getDescriptor().equals("Lnull;")) {
-                    continue;
-                }
-                LOGGER.fine(String.format("  TYPE: %s", type.getDescriptor()));
-                handledTypesLVA.trackType(type);
+    private List<? extends ContinuationPoint> createInvokeContinuationPoints(final List<AbstractInsnNode> continueInvocationInsnNodes,
+                                                                             final Frame<BasicValue>[] frames,
+                                                                             final MethodNode methodNode) {
+        return continueInvocationInsnNodes.stream().map((final AbstractInsnNode insnNode) -> {
+            LineNumberNode lineNumberNode = getLineNumberForInsn(methodNode.instructions, insnNode);
+            return new InvokeContinuationPoint(
+                    lineNumberNode != null ? lineNumberNode.line : null,
+                    (MethodInsnNode) insnNode,
+                    frames[methodNode.instructions.indexOf(insnNode)]
+            );
+        }).toList();
+    }
+
+    public static List<AbstractInsnNode> findInvocationsWithParameter(InsnList insnList,
+                                                                      Type expectedParamType) {
+        if (insnList == null) {
+            throw new IllegalArgumentException("Instruction list cannot be null");
+        } else if (expectedParamType == null) {
+            throw new IllegalArgumentException("Parameter type cannot be null");
+        } else if (expectedParamType.getSort() == Type.METHOD || expectedParamType.getSort() == Type.VOID) {
+            throw new IllegalArgumentException("Parameter type cannot be METHOD or VOID");
+        }
+        List<AbstractInsnNode> ret = new ArrayList<>();
+        for (final AbstractInsnNode instructionNode : insnList) {
+            Type[] methodParamTypes;
+            if (instructionNode instanceof MethodInsnNode methodInsnNode) {
+                final Type methodType = Type.getType(methodInsnNode.desc);
+                methodParamTypes = methodType.getArgumentTypes();
+            } else if (instructionNode instanceof InvokeDynamicInsnNode invokeDynamicInsnNode) {
+                final Type methodType = Type.getType(invokeDynamicInsnNode.desc);
+                methodParamTypes = methodType.getArgumentTypes();
+            } else {
+                continue;
+            }
+            if (Arrays.asList(methodParamTypes).contains(expectedParamType)) {
+                ret.add(instructionNode);
             }
         }
-
-        final ContextHandledTypes handledTypesOS = new ContextHandledTypes();
-        for (final AbstractInsnNode invokeInsnNode : CollectionUtils.union(continuationCallInsnNodes, suspendCallInsnNodes)) {
-            final Frame<BasicValue> frame = frames[methodNode.instructions.indexOf(invokeInsnNode)];
-            LOGGER.fine(String.format("FRAME: %s", frame.toString()));
-            for (int i = 0; i < frame.getStackSize(); i++) {
-                final Type type = frame.getStack(i).getType();
-                if (type.getDescriptor().equals("Lnull;")) {
-                    continue;
-                }
-                LOGGER.fine(String.format("  TYPE: %s", type.getDescriptor()));
-                handledTypesOS.trackType(type);
-            }
-        }
-
-        final int continuationArgIndex = 0;
-
-        final StackVarLUT stackVarLUT = new StackVarLUT(classNode, methodNode);
-        final StackVariable continuationVar = stackVarLUT.getArg(continuationArgIndex);
-        final StackVariable methodStateVariable = stackVarLUT.obtainExtraArg(Type.getType(MethodState.class));
-
-        final PrimitiveStack LVA = PrimitiveStack.allocateSlots(stackVarLUT, handledTypesLVA);
-        final PrimitiveStack OS = PrimitiveStack.allocateSlots(stackVarLUT, handledTypesOS);
-        final PrimitiveContainers containers = PrimitiveContainers.allocateContainerSlots(stackVarLUT);
-
-        return new MethodContext<>(
-                signature,
-                continuationPoints,
-                continuationVar,
-                methodStateVariable,
-                LVA,
-                OS,
-                containers
-        );
+        return ret;
     }
 
     private List<AbstractInsnNode> findInvocationsOf(final InsnList insnList,
@@ -135,41 +150,15 @@ public class MethodIntrospector {
                 }).toList();
     }
 
-    public static List<AbstractInsnNode> findInvocationsWithParameter(final InsnList insnList,
-                                                                      final Type expectedParamType) {
-        if (expectedParamType.getSort() == Type.METHOD) {
-            throw new IllegalArgumentException("Cannot find invocations for sort METHOD");
-        } else if (expectedParamType.getSort() == Type.VOID) {
-            throw new IllegalArgumentException("Cannot find invocations for sort VOID");
-        }
-
-        return StreamSupport.stream(insnList.spliterator(), false)
-                .map((final AbstractInsnNode instructionNode) -> {
-                    if (instructionNode instanceof MethodInsnNode methodInsnNode) {
-                        Type methodType = Type.getType(methodInsnNode.desc);
-                        return Pair.of(methodType.getArgumentTypes(), instructionNode);
-                    } else if (instructionNode instanceof InvokeDynamicInsnNode invokeDynamicInsnNode) {
-                        Type methodType = Type.getType(invokeDynamicInsnNode.desc);
-                        return ImmutablePair.of(methodType.getArgumentTypes(), instructionNode);
-                    }
-                    return null;
-                }).filter(Objects::nonNull)
-                .filter((final Pair<Type[], AbstractInsnNode> pair) -> Arrays.asList(pair.getLeft()).contains(expectedParamType))
-                .map(Pair::getRight)
-                .toList();
-    }
-
     private LineNumberNode getLineNumberForInsn(final InsnList insnList,
                                                 final AbstractInsnNode insnNode) {
-        int idx = insnList.indexOf(insnNode);
-        ListIterator<AbstractInsnNode> insnIt = insnList.iterator(idx);
-        while (insnIt.hasPrevious()) {
-            AbstractInsnNode node = insnIt.previous();
+        final ListIterator<AbstractInsnNode> insnIterator = insnList.iterator(insnList.indexOf(insnNode));
+        while (insnIterator.hasPrevious()) {
+            AbstractInsnNode node = insnIterator.previous();
             if (node instanceof LineNumberNode lineNumberNode) {
                 return lineNumberNode;
             }
         }
-
         return null;
     }
 }
