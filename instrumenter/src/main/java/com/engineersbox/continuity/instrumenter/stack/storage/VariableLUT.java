@@ -1,19 +1,130 @@
 package com.engineersbox.continuity.instrumenter.stack.storage;
 
+import org.apache.commons.lang3.Validate;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodNode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class VariableLUT {
 
-    private List<Variable> argVars;
-    private int otherOffset;
-    private List<Variable> otherVars;
+    private final List<Variable> argVars;
+    private final int extraOffset;
+    private final List<Variable> extraVars;
+
+    public VariableLUT(final ClassNode classNode,
+                       final MethodNode methodNode) {
+        this(
+                (methodNode.access & Opcodes.ACC_STATIC) != 0,
+                Type.getObjectType(classNode.name),
+                Type.getType(methodNode.desc),
+                methodNode.maxLocals
+        );
+        if (!classNode.methods.contains(methodNode)) {
+            throw new IllegalArgumentException(String.format(
+                    "Method node %s is not part of class node %s",
+                    methodNode.signature,
+                    classNode.signature
+            ));
+        }
+    }
+
+    private VariableLUT(final boolean isStatic,
+                        final Type objectType,
+                        final Type methodType,
+                        final int maxLocals) {
+        if (objectType == null) {
+            throw new IllegalArgumentException("Object type cannot be null");
+        } else if (methodType == null) {
+            throw new IllegalArgumentException("method type cannot be null");
+        } else if (maxLocals < 0) {
+            throw new IllegalArgumentException("Max for LVAs must be at least 1");
+        } else if (objectType.getSort() != Type.OBJECT) {
+            throw new IllegalArgumentException("Object type was not of sort object");
+        } else if (methodType.getSort() != Type.METHOD) {
+            throw new IllegalArgumentException("method type was not of sort method");
+        }
+        this.extraOffset = maxLocals;
+        this.argVars = new ArrayList<>();
+        this.extraVars = new ArrayList<>();
+        if (!isStatic) {
+            this.argVars.add(0, new Variable(objectType, 0, true));
+        }
+        final Type[] argTypes = methodType.getArgumentTypes();
+        for (int i = 0; i < argTypes.length; i++) {
+            this.argVars.add(new Variable(
+                    argTypes[i],
+                    isStatic ? i : i + 1,
+                    true
+            ));
+        }
+    }
+
+    public Variable getArgument(final int index) {
+        if (index < 0 || index >= this.argVars.size()) {
+            throw new IndexOutOfBoundsException(index);
+        }
+        return this.argVars.get(index);
+    }
+
+    public Variable allocExtra(final Class<?> type) {
+        if (type == null) {
+            throw new IllegalArgumentException("Class type cannot be null");
+        }
+        return allocExtra(Type.getType(type));
+    }
+
+    public Variable allocExtra(final Type type) {
+        if (type == null) {
+            throw new IllegalArgumentException("Type cannot be null");
+        }
+        final int sort = type.getSort();
+        if (sort == Type.VOID || sort == Type.METHOD) {
+            throw new IllegalArgumentException("Type cannot be VOID or METHOD");
+        }
+
+        for (Variable variable : this.extraVars) {
+            if (variable.used || !variable.type.equals(type)) {
+                continue;
+            }
+            this.extraVars.remove(variable);
+            variable = new Variable(type, variable.index, true);
+            this.extraVars.add(variable);
+            return variable;
+        }
+
+        final int extraSlotLen = this.extraVars.stream()
+                .mapToInt(x -> x.type.equals(Type.LONG_TYPE) || x.type.equals(Type.DOUBLE_TYPE) ? 2 : 1)
+                .sum();
+        final Variable variable = new Variable(type, extraOffset + extraSlotLen, true);
+        this.extraVars.add(variable);
+        return variable;
+    }
+
+    public void freeExtra(final Variable variable) {
+        if (variable == null) {
+            throw new IllegalArgumentException("Variable cannot be null");
+        } else if (variable.getParent() != this) {
+            throw new IllegalArgumentException("Parent instance was not of the current VariableLUT instance");
+        } else if (variable.index < this.argVars.size()) {
+            throw new IllegalArgumentException("Index should be in extras not within arguments");
+        } else if (!variable.used) {
+            throw new IllegalArgumentException("Variable is not marked as used");
+        }
+        variable.used = false;
+    }
+
+    public int getArgCount() {
+        return this.argVars.size();
+    }
 
     public final class Variable {
         private final Type type;
         private final int index;
-        private final boolean used;
+        private boolean used;
 
         private Variable(final Type type,
                          final int index,

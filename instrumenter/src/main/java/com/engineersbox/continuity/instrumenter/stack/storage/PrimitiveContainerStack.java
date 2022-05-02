@@ -9,7 +9,7 @@ public class PrimitiveContainerStack {
     public PrimitiveContainerStack(final Variable containerVariable) {
         if (containerVariable == null) {
             throw new IllegalArgumentException("Container variable must not be null");
-        } else if (containerVariable.getType().equals(Type.getType(Object[].class))) {
+        } else if (!containerVariable.getType().equals(Type.getType(Object[].class))) {
             throw new IllegalArgumentException("Container variable must be an Object[]");
         }
         this.containerVariable = containerVariable;

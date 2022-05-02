@@ -24,29 +24,23 @@ public class MethodLocatorStage implements InstrumentationStage {
         }
         final List<MethodNode> instrumentableMethods = findInstrumentableMethods(
                 classNode.methods,
-                Type.getType(Continuation.class),
-                classNode
+                Type.getType(Continuation.class)
         );
         instrumentableMethods.forEach((final MethodNode methodNode) -> context.putMethod(methodNode, null));
     }
 
     private List<MethodNode> findInstrumentableMethods(final List<MethodNode> methodNodes,
-                                                       final Type classType,
-                                                       final ClassNode classNode) {
+                                                       final Type classType) {
         if (classType.getSort() == Type.METHOD) {
             throw new IllegalArgumentException("Unsupported method argument type METHOD");
         } else if (classType.getSort() == Type.VOID) {
             throw new IllegalArgumentException("Unsupported method argument type VOID");
         }
         return methodNodes.stream()
-                .map((final MethodNode methodNode) -> {
+                .filter((final MethodNode methodNode) -> {
                     final Type methodDescription = Type.getType(methodNode.desc);
-                    final Type[] methodArguments = methodDescription.getArgumentTypes();
-                    if (Arrays.asList(methodArguments).contains(classType)) {
-                        return methodNode;
-                    }
-                    return null;
-                }).filter(Objects::nonNull)
-                .toList();
+                    final List<Type> methodArguments = Arrays.asList(methodDescription.getArgumentTypes());
+                    return methodArguments.contains(classType);
+                }).toList();
     }
 }

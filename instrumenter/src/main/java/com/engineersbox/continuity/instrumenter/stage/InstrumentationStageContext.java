@@ -3,9 +3,7 @@ package com.engineersbox.continuity.instrumenter.stage;
 import com.engineersbox.continuity.instrumenter.method.MethodContext;
 import org.objectweb.asm.tree.MethodNode;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class InstrumentationStageContext {

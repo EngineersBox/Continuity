@@ -1,10 +1,20 @@
 package com.engineersbox.continuity.instrumenter.method;
 
 import com.engineersbox.continuity.core.continuation.Continuation;
+import com.engineersbox.continuity.core.method.MethodState;
+import com.engineersbox.continuity.instrumenter.stack.ContinuityVariables;
 import com.engineersbox.continuity.instrumenter.stack.point.ContinuationPoint;
 import com.engineersbox.continuity.instrumenter.stack.point.InvokeContinuationPoint;
 import com.engineersbox.continuity.instrumenter.stack.point.SuspendMethodContinuationPoint;
+import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveContainerStack;
+import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveStack;
+import com.engineersbox.continuity.instrumenter.stack.storage.VariableCache;
+import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
+import com.engineersbox.continuity.instrumenter.util.MethodInsnUtils;
+import com.engineersbox.continuity.instrumenter.util.TypeTranslationUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.*;
@@ -60,18 +70,28 @@ public class MethodIntrospector {
                 methodNode
         ));
 
-        /* TODO:
-         *  1. Get invocation return types from continueInvocationInsnNodes
-         *  2. Get types on LVA at suspend/continue points from union(continueInvocationInsnNodes, suspendInvocationInsnNodes)
-         *  3. Get types on OS at suspend/continue points from union(continueInvocationInsnNodes, suspendInvocationInsnNodes)
-         *  4. Find index of continuation object in LVA table
-         *  5. Create variables for continuation argument and method state
-         *  6. Create PrimitiveStack for LVA variables
-         *  7. Create PrimitiveStack for OS variables
-         *  8. Create PrimitiveContainerStack for container variables
-         *  9. Create CacheStack for cache vars such as return values
-         *  10. Construct MethodContext and return
-         */
+        final VariableLUT varLUT = new VariableLUT(classNode, methodNode);
+        final VariableCache cache = allocateCacheSlots(varLUT, continueInvocationInsnNodes);
+        final PrimitiveStack LVA = allocateLVASlots(
+                varLUT,
+                continueInvocationInsnNodes,
+                suspendCallInsnNodes,
+                frames,
+                methodNode
+        );
+        final PrimitiveStack OS = allocateOSSlots(
+                varLUT,
+                continueInvocationInsnNodes,
+                suspendCallInsnNodes,
+                frames,
+                methodNode
+        );
+        final PrimitiveContainerStack containerStack = new PrimitiveContainerStack(varLUT.allocExtra(Object[].class));
+
+        final ContinuityVariables continuationVariables = new ContinuityVariables(
+                varLUT.getArgument(getContinuationLVAIndex(methodNode)),
+                varLUT.allocExtra(MethodState.class)
+        );
 
         return new MethodContext(
                 new MethodSignature(
@@ -79,8 +99,92 @@ public class MethodIntrospector {
                     methodNode.name,
                     Type.getMethodType(methodNode.desc)
                 ),
-                continuationPoints
+                continuationPoints,
+                cache,
+                LVA,
+                OS,
+                containerStack,
+                continuationVariables
         );
+    }
+
+    private int getContinuationLVAIndex(final MethodNode methodNode) {
+        final boolean isStatic = (methodNode.access & Opcodes.ACC_STATIC) == Opcodes.ACC_STATIC;
+        final Type[] argumentTypes = Type.getMethodType(methodNode.desc).getArgumentTypes();
+        int idx = -1;
+        for (int i = 0; i < argumentTypes.length; i++) {
+            if (!argumentTypes[i].equals(CONTINUATION_CLASS_TYPE)) {
+                continue;
+            }
+            if (idx != -1) {
+                throw new IllegalArgumentException("Multiple Continuation arguments found in method " + methodNode.name);
+            }
+            idx = i;
+        }
+        return isStatic ? idx : idx + 1;
+    }
+
+    private VariableCache allocateCacheSlots(final VariableLUT varLUT,
+                                             final List<AbstractInsnNode> continueInvocationInsnNodes) {
+        final VariableCache cache = new VariableCache();
+        for (final AbstractInsnNode insnNode : continueInvocationInsnNodes) {
+            final Type returnType = MethodInsnUtils.getReturnTypeOfInvocation(insnNode);
+            if (returnType.getSort() == Type.VOID) {
+                continue;
+            }
+            final Class<?> matchType = TypeTranslationUtils.sortToClass(returnType);
+            if (matchType == null) {
+                throw new IllegalArgumentException("Unsupported type");
+            }
+            cache.put(returnType, varLUT.allocExtra(matchType));
+        }
+        return cache;
+    }
+
+    private PrimitiveStack allocateLVASlots(final VariableLUT varLUT,
+                                            final List<AbstractInsnNode> continueInvocationInsnNodes,
+                                            final List<AbstractInsnNode> suspendCallInsnNodes,
+                                            final Frame<BasicValue>[] frames,
+                                            final MethodNode methodNode) {
+        final PrimitiveStack LVA = new PrimitiveStack();
+        for (final AbstractInsnNode insnNode : CollectionUtils.union(continueInvocationInsnNodes, suspendCallInsnNodes)) {
+            final Frame<BasicValue> frame = frames[methodNode.instructions.indexOf(insnNode)];
+            for (int i = 0; i < frame.getLocals(); i++) {
+                final Type type = frame.getLocal(i).getType();
+                if (type == null || "Lnull;".equals(type.getDescriptor())) {
+                    continue;
+                }
+                final Class<?> matchType = TypeTranslationUtils.sortToArrayClass(type);
+                if (matchType == null) {
+                    throw new IllegalArgumentException("Unsupported type");
+                }
+                LVA.put(type, varLUT.allocExtra(matchType));
+            }
+        }
+        return LVA;
+    }
+
+    private PrimitiveStack allocateOSSlots(final VariableLUT varLUT,
+                                           final List<AbstractInsnNode> continueInvocationInsnNodes,
+                                           final List<AbstractInsnNode> suspendCallInsnNodes,
+                                           final Frame<BasicValue>[] frames,
+                                           final MethodNode methodNode) {
+        final PrimitiveStack LVA = new PrimitiveStack();
+        for (final AbstractInsnNode insnNode : CollectionUtils.union(continueInvocationInsnNodes, suspendCallInsnNodes)) {
+            final Frame<BasicValue> frame = frames[methodNode.instructions.indexOf(insnNode)];
+            for (int i = 0; i < frame.getStackSize(); i++) {
+                final Type type = frame.getStack(i).getType();
+                if ("Lnull;".equals(type.getDescriptor())) {
+                    continue;
+                }
+                final Class<?> matchType = TypeTranslationUtils.sortToClass(type);
+                if (matchType == null) {
+                    throw new IllegalArgumentException("Unsupported type");
+                }
+                LVA.put(type, varLUT.allocExtra(matchType));
+            }
+        }
+        return LVA;
     }
 
     private List<? extends ContinuationPoint> createSuspendContinuationPoints(List<AbstractInsnNode> suspendCallInsnNodes,
