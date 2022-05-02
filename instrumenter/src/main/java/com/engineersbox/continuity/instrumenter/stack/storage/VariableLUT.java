@@ -1,6 +1,5 @@
 package com.engineersbox.continuity.instrumenter.stack.storage;
 
-import org.apache.commons.lang3.Validate;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
@@ -12,8 +11,8 @@ import java.util.List;
 public class VariableLUT {
 
     private final List<Variable> argVars;
-    private final int extraOffset;
-    private final List<Variable> extraVars;
+    private final int stackVarsOffset;
+    private final List<Variable> stackVars;
 
     public VariableLUT(final ClassNode classNode,
                        final MethodNode methodNode) {
@@ -47,9 +46,9 @@ public class VariableLUT {
         } else if (methodType.getSort() != Type.METHOD) {
             throw new IllegalArgumentException("method type was not of sort method");
         }
-        this.extraOffset = maxLocals;
+        this.stackVarsOffset = maxLocals;
         this.argVars = new ArrayList<>();
-        this.extraVars = new ArrayList<>();
+        this.stackVars = new ArrayList<>();
         if (!isStatic) {
             this.argVars.add(0, new Variable(objectType, 0, true));
         }
@@ -85,22 +84,21 @@ public class VariableLUT {
         if (sort == Type.VOID || sort == Type.METHOD) {
             throw new IllegalArgumentException("Type cannot be VOID or METHOD");
         }
-
-        for (Variable variable : this.extraVars) {
+        for (Variable variable : this.stackVars) {
             if (variable.used || !variable.type.equals(type)) {
                 continue;
             }
-            this.extraVars.remove(variable);
+            this.stackVars.remove(variable);
             variable = new Variable(type, variable.index, true);
-            this.extraVars.add(variable);
+            this.stackVars.add(variable);
             return variable;
         }
 
-        final int extraSlotLen = this.extraVars.stream()
+        final int stackVarSlotLen = this.stackVars.stream()
                 .mapToInt(x -> x.type.equals(Type.LONG_TYPE) || x.type.equals(Type.DOUBLE_TYPE) ? 2 : 1)
                 .sum();
-        final Variable variable = new Variable(type, extraOffset + extraSlotLen, true);
-        this.extraVars.add(variable);
+        final Variable variable = new Variable(type, this.stackVarsOffset + stackVarSlotLen, true);
+        this.stackVars.add(variable);
         return variable;
     }
 
@@ -108,9 +106,9 @@ public class VariableLUT {
         if (variable == null) {
             throw new IllegalArgumentException("Variable cannot be null");
         } else if (variable.getParent() != this) {
-            throw new IllegalArgumentException("Parent instance was not of the current VariableLUT instance");
+            throw new IllegalArgumentException("Parent instance was not the current VariableLUT instance");
         } else if (variable.index < this.argVars.size()) {
-            throw new IllegalArgumentException("Index should be in extras not within arguments");
+            throw new IllegalArgumentException("Cannot free an argument variable");
         } else if (!variable.used) {
             throw new IllegalArgumentException("Variable is not marked as used");
         }

@@ -16,8 +16,7 @@ public class MethodState {
                        final Object[] data) {
         if (continuationPoint < 0) {
             throw new IllegalArgumentException();
-        }
-        if (data == null) {
+        } else if (data == null) {
             throw new NullPointerException();
         }
         this.className = className;
