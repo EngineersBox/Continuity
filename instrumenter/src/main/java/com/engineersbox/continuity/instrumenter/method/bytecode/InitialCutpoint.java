@@ -25,8 +25,8 @@ public class InitialCutpoint {
             Continuation.class,
             "loadNextMethodState"
     );
-    private static final Method CONTINUATION_GETDATA_METHOD = MethodUtils.getAccessibleMethod(
-            Continuation.class,
+    private static final Method METHODSTATE_GETDATA_METHOD = MethodUtils.getAccessibleMethod(
+            MethodState.class,
             "getData"
     );
     private static final Method METHODSTATE_GETCONTINUATIONPOINT_METHOD = MethodUtils.getAccessibleMethod(
@@ -92,7 +92,7 @@ public class InitialCutpoint {
                                                 .args(InsnBuilder.loadVar(continuationArgVar).build()),
                                         InsnBuilder.saveVar(methodState).build(),
                                         InsnBuilder.call()
-                                                .method(CONTINUATION_GETDATA_METHOD)
+                                                .method(METHODSTATE_GETDATA_METHOD)
                                                 .args(InsnBuilder.loadVar(methodState).build()),
                                         InsnBuilder.saveVar(containerVar).build(),
                                         InsnBuilder.switchTable()

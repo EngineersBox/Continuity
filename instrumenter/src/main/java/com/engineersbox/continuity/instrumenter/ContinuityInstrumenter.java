@@ -3,10 +3,7 @@ package com.engineersbox.continuity.instrumenter;
 import com.engineersbox.continuity.instrumenter.clazz.CoreClassNode;
 import com.engineersbox.continuity.instrumenter.method.MethodContext;
 import com.engineersbox.continuity.instrumenter.stack.StackReconstructor;
-import com.engineersbox.continuity.instrumenter.stage.InstrumentationStage;
-import com.engineersbox.continuity.instrumenter.stage.InstrumentationStageContext;
-import com.engineersbox.continuity.instrumenter.stage.MethodIntrospectionStage;
-import com.engineersbox.continuity.instrumenter.stage.MethodLocatorStage;
+import com.engineersbox.continuity.instrumenter.stage.*;
 import com.engineersbox.continuity.instrumenter.util.InsnUtils;
 import org.apache.commons.collections4.set.ListOrderedSet;
 import org.objectweb.asm.ClassReader;
@@ -25,7 +22,8 @@ public class ContinuityInstrumenter implements Instrumenter {
 
     private final ListOrderedSet<InstrumentationStage> stages = ListOrderedSet.listOrderedSet(List.of(
             new MethodLocatorStage(),
-            new MethodIntrospectionStage()
+            new MethodIntrospectionStage(),
+            new BytecodeInjectionStage()
     ));
 
     @Override
