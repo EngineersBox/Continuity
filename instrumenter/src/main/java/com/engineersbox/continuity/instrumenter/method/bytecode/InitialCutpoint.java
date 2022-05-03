@@ -116,8 +116,9 @@ public class InitialCutpoint {
                                                 ).build())
                                                 .caseStartIndex(0)
                                                 .cases(IntStream.range(0, methodContext.continuationPoints().size())
-                                                                .mapToObj((final int index) -> RestoreOperations.constructRestoreBytecode(methodContext, index))
-                                                                .toArray(InsnList[]::new))
+                                                        .mapToObj((final int index) -> RestoreOperations.constructRestoreBytecode(methodContext, index))
+                                                        .toArray(InsnList[]::new))
+                                                .build()
                                 ).build()
                         ).build(),
                 InsnBuilder.label(startOfMethodLabelNode).build(),
