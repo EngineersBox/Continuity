@@ -28,11 +28,11 @@ public class MethodInstrumenter {
         }
         methodNode.instructions.insert(InitialCutpoint.constructInitialInlineCutpoint(methodContext));
         LOGGER.trace("Method Bytecode: {}\n{}", methodNode.name, InsnUtils.insnsToString(methodNode.instructions));
-//        List<? extends ContinuationPoint> continuationPoints = methodContext.continuationPoints();
-//        for (int i = 0; i < continuationPoints.size(); i++) {
-//            final AbstractInsnNode nodeToReplace = continuationPoints.get(i).getInvokeInstruction();
-//            methodNode.instructions.insertBefore(nodeToReplace, SaveOperations.constructSaveBytecode(methodContext, i));
-//            methodNode.instructions.remove(nodeToReplace);
-//        }
+        List<? extends ContinuationPoint> continuationPoints = methodContext.continuationPoints();
+        for (int i = 0; i < continuationPoints.size(); i++) {
+            final AbstractInsnNode nodeToReplace = continuationPoints.get(i).getInvokeInstruction();
+            methodNode.instructions.insertBefore(nodeToReplace, SaveOperations.constructSaveBytecode(methodContext, i));
+            methodNode.instructions.remove(nodeToReplace);
+        }
     }
 }
