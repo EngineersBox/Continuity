@@ -21,7 +21,7 @@ public class VariableCache {
     }
 
     public void put(final Type type, final Variable variable) {
-        validateVariable(variable, type);
+        validateVariable(type, variable);
         switch (type.getSort()) {
             case Type.BOOLEAN, Type.BYTE, Type.CHAR, Type.SHORT, Type.INT -> putIfNotExists(Type.INT_TYPE, variable);
             case Type.LONG -> putIfNotExists(Type.LONG_TYPE, variable);
@@ -32,8 +32,8 @@ public class VariableCache {
         }
     }
 
-    private void validateVariable(final Variable variable,
-                                  final Type type) {
+    private void validateVariable(final Type type,
+                                  final Variable variable) {
         if (variable != null && variable.getType().equals(type)) {
             throw new IllegalArgumentException(String.format(
                     "Variable type did not match expected type: %s != %s",

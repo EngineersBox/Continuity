@@ -155,14 +155,7 @@ public class MethodIntrospector {
                 if (type == null || "Lnull;".equals(type.getDescriptor())) {
                     continue;
                 }
-                final Class<?> matchType = TypeTranslationUtils.sortToClass(type);
-                if (matchType == null) {
-                    throw new IllegalArgumentException(String.format(
-                            "Unsupported type: %s",
-                            type
-                    ));
-                }
-                LVA.put(type, varLUT.allocExtra(matchType));
+                LVA.put(type, varLUT.allocExtra(type));
             }
         }
         return LVA;
@@ -181,14 +174,7 @@ public class MethodIntrospector {
                 if ("Lnull;".equals(type.getDescriptor())) {
                     continue;
                 }
-                final Class<?> matchType = TypeTranslationUtils.sortToClass(type);
-                if (matchType == null) {
-                    throw new IllegalArgumentException(String.format(
-                            "Unsupported type: %s",
-                            type
-                    ));
-                }
-                LVA.put(type, varLUT.allocExtra(matchType));
+                LVA.put(type, varLUT.allocExtra(type));
             }
         }
         return LVA;

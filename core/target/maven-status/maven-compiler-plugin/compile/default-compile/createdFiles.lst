@@ -1,7 +1,7 @@
-com/engineersbox/continuity/core/Main$TestCoroutine.class
-com/engineersbox/continuity/core/continuation/Continuation.class
-com/engineersbox/continuity/core/method/MethodState.class
-com/engineersbox/continuity/core/Main.class
-com/engineersbox/continuity/core/coroutine/Coroutine.class
-com/engineersbox/continuity/core/coroutine/CoroutineExecutor.class
-com/engineersbox/continuity/core/state/ContinuationState.class
+com\engineersbox\continuity\core\Main.class
+com\engineersbox\continuity\core\method\MethodState.class
+com\engineersbox\continuity\core\Main$TestCoroutine.class
+com\engineersbox\continuity\core\coroutine\CoroutineExecutor.class
+com\engineersbox\continuity\core\state\ContinuationState.class
+com\engineersbox\continuity\core\coroutine\Coroutine.class
+com\engineersbox\continuity\core\continuation\Continuation.class

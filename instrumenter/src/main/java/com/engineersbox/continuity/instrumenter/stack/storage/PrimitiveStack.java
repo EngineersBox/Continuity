@@ -21,7 +21,7 @@ public class PrimitiveStack {
     }
 
     public void put(final Type type, final VariableLUT.Variable variable) {
-        validateVariable(variable, TypeTranslationUtils.sortToClass(type));
+        validateVariable(type, variable);
         switch (type.getSort()) {
             case Type.BOOLEAN, Type.BYTE, Type.CHAR, Type.SHORT, Type.INT -> putIfNotExists(Type.INT_TYPE, variable);
             case Type.LONG -> putIfNotExists(Type.LONG_TYPE, variable);
@@ -32,9 +32,9 @@ public class PrimitiveStack {
         }
     }
 
-    private void validateVariable(final VariableLUT.Variable variable,
-                                  final Class<?> type) {
-        if (variable != null && !variable.getType().equals(Type.getType(type))) {
+    private void validateVariable(final Type type,
+                                  final VariableLUT.Variable variable) {
+        if (variable != null && !variable.getType().equals(type)) {
             throw new IllegalArgumentException(String.format(
                     "Variable type did not match expected type: %s != %s",
                     variable.getType(),
