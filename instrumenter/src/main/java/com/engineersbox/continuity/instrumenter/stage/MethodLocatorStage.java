@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class MethodLocatorStage implements InstrumentationStage {
 
@@ -47,7 +48,29 @@ public class MethodLocatorStage implements InstrumentationStage {
     }
 
     private boolean isClassAlreadyInstrumented(final ClassNode classNode) {
-        final ContinuityField continuityField = new ContinuityField();
-        return classNode.fields.stream().anyMatch(continuityField::equals);
+        final Optional<FieldNode> optionalFieldNode = classNode.fields.stream()
+                .filter((final FieldNode node) -> node.name.equals(ContinuityField.FIELD_NAME))
+                .findAny();
+        if (optionalFieldNode.isEmpty()) {
+            return false;
+        }
+        final FieldNode fieldNode = optionalFieldNode.get();
+        if (!fieldNode.desc.equals(ContinuityField.FIELD_TYPE_DESCRIPTOR)) {
+            throw new IllegalStateException(String.format(
+                    "Found field with invalid descriptor: %s",
+                    fieldNode.desc
+            ));
+        } else if (fieldNode.access != ContinuityField.FIELD_ACCESS_MODIFIERS) {
+            throw new IllegalStateException(String.format(
+                    "Found field with invalid access modifiers: %d",
+                    fieldNode.access
+            ));
+        } else if (!fieldNode.value.equals(ContinuityField.FIELD_VALUE)) {
+            throw new IllegalStateException(String.format(
+                    "Found field with invalid value: %d",
+                    (int) fieldNode.value
+            ));
+        }
+        return true;
     }
 }
