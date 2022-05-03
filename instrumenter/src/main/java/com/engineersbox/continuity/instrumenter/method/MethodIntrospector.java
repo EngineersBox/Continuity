@@ -10,6 +10,7 @@ import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveContainer
 import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveStack;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableCache;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
+import com.engineersbox.continuity.instrumenter.util.InsnUtils;
 import com.engineersbox.continuity.instrumenter.util.MethodInsnUtils;
 import com.engineersbox.continuity.instrumenter.util.TypeTranslationUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -41,16 +42,16 @@ public class MethodIntrospector {
                     methodNode.signature
             ));
         }
-        final List<AbstractInsnNode> suspendCallInsnNodes = findInvocationsOf(
+        final List<AbstractInsnNode> suspendCallInsnNodes = MethodInsnUtils.getInvocation(
                 methodNode.instructions,
                 CONTINUATION_SUSPEND_METHOD
         );
-        final List<AbstractInsnNode> continueInvocationInsnNodes = findInvocationsWithParameter(
+        final List<AbstractInsnNode> continueInvocationInsnNodes = MethodInsnUtils.getInvocationWithParameterType(
                 methodNode.instructions,
                 CONTINUATION_CLASS_TYPE
         );
-        LOGGER.info("Suspend call count: {}", suspendCallInsnNodes.size());
-        LOGGER.info("Continue call count: {}", continueInvocationInsnNodes.size());
+        LOGGER.trace("Suspend call count: {}", suspendCallInsnNodes.size());
+        LOGGER.trace("Continuation parameterised call count: {}", continueInvocationInsnNodes.size());
 
         final Frame<BasicValue>[] frames;
         try {
@@ -88,7 +89,7 @@ public class MethodIntrospector {
         );
         final PrimitiveContainerStack containerStack = new PrimitiveContainerStack(varLUT.allocExtra(Object[].class));
 
-        final ContinuityVariables continuationVariables = new ContinuityVariables(
+        final ContinuityVariables continuityVariables = new ContinuityVariables(
                 varLUT.getArgument(getContinuationLVAIndex(methodNode)),
                 varLUT.allocExtra(MethodState.class)
         );
@@ -104,7 +105,7 @@ public class MethodIntrospector {
                 LVA,
                 OS,
                 containerStack,
-                continuationVariables
+                continuityVariables
         );
     }
 
@@ -154,9 +155,12 @@ public class MethodIntrospector {
                 if (type == null || "Lnull;".equals(type.getDescriptor())) {
                     continue;
                 }
-                final Class<?> matchType = TypeTranslationUtils.sortToArrayClass(type);
+                final Class<?> matchType = TypeTranslationUtils.sortToClass(type);
                 if (matchType == null) {
-                    throw new IllegalArgumentException("Unsupported type");
+                    throw new IllegalArgumentException(String.format(
+                            "Unsupported type: %s",
+                            type
+                    ));
                 }
                 LVA.put(type, varLUT.allocExtra(matchType));
             }
@@ -179,7 +183,10 @@ public class MethodIntrospector {
                 }
                 final Class<?> matchType = TypeTranslationUtils.sortToClass(type);
                 if (matchType == null) {
-                    throw new IllegalArgumentException("Unsupported type");
+                    throw new IllegalArgumentException(String.format(
+                            "Unsupported type: %s",
+                            type
+                    ));
                 }
                 LVA.put(type, varLUT.allocExtra(matchType));
             }
@@ -191,7 +198,7 @@ public class MethodIntrospector {
                                                                               final Frame<BasicValue>[] frames,
                                                                               final MethodNode methodNode) {
         return suspendCallInsnNodes.stream().map((final AbstractInsnNode insnNode) -> {
-            final LineNumberNode lineNumberNode = getLineNumberForInsn(methodNode.instructions, insnNode);
+            final LineNumberNode lineNumberNode = InsnUtils.getLineNumberForInsn(methodNode.instructions, insnNode);
             return new SuspendMethodContinuationPoint(
                     lineNumberNode != null ? lineNumberNode.line : null,
                     (MethodInsnNode) insnNode,
@@ -204,65 +211,12 @@ public class MethodIntrospector {
                                                                              final Frame<BasicValue>[] frames,
                                                                              final MethodNode methodNode) {
         return continueInvocationInsnNodes.stream().map((final AbstractInsnNode insnNode) -> {
-            LineNumberNode lineNumberNode = getLineNumberForInsn(methodNode.instructions, insnNode);
+            LineNumberNode lineNumberNode = InsnUtils.getLineNumberForInsn(methodNode.instructions, insnNode);
             return new InvokeContinuationPoint(
                     lineNumberNode != null ? lineNumberNode.line : null,
                     (MethodInsnNode) insnNode,
                     frames[methodNode.instructions.indexOf(insnNode)]
             );
         }).toList();
-    }
-
-    public static List<AbstractInsnNode> findInvocationsWithParameter(InsnList insnList,
-                                                                      Type expectedParamType) {
-        if (insnList == null) {
-            throw new IllegalArgumentException("Instruction list cannot be null");
-        } else if (expectedParamType == null) {
-            throw new IllegalArgumentException("Parameter type cannot be null");
-        } else if (expectedParamType.getSort() == Type.METHOD || expectedParamType.getSort() == Type.VOID) {
-            throw new IllegalArgumentException("Parameter type cannot be METHOD or VOID");
-        }
-        List<AbstractInsnNode> ret = new ArrayList<>();
-        for (final AbstractInsnNode instructionNode : insnList) {
-            Type[] methodParamTypes;
-            if (instructionNode instanceof MethodInsnNode methodInsnNode) {
-                final Type methodType = Type.getType(methodInsnNode.desc);
-                methodParamTypes = methodType.getArgumentTypes();
-            } else if (instructionNode instanceof InvokeDynamicInsnNode invokeDynamicInsnNode) {
-                final Type methodType = Type.getType(invokeDynamicInsnNode.desc);
-                methodParamTypes = methodType.getArgumentTypes();
-            } else {
-                continue;
-            }
-            if (Arrays.asList(methodParamTypes).contains(expectedParamType)) {
-                ret.add(instructionNode);
-            }
-        }
-        return ret;
-    }
-
-    private List<AbstractInsnNode> findInvocationsOf(final InsnList insnList,
-                                                     final Method method) {
-        return StreamSupport.stream(insnList.spliterator(), false)
-                .filter(MethodInsnNode.class::isInstance)
-                .filter((final AbstractInsnNode insnNode) -> {
-                    final MethodInsnNode methodInsnNode = (MethodInsnNode) insnNode;
-                    final Type methodDesc = Type.getType(methodInsnNode.desc);
-                    final Type methodOwner = Type.getObjectType(methodInsnNode.owner);
-                    return methodDesc.equals(Type.getType(method))
-                            && methodOwner.equals(Type.getType(method.getDeclaringClass()));
-                }).toList();
-    }
-
-    private LineNumberNode getLineNumberForInsn(final InsnList insnList,
-                                                final AbstractInsnNode insnNode) {
-        final ListIterator<AbstractInsnNode> insnIterator = insnList.iterator(insnList.indexOf(insnNode));
-        while (insnIterator.hasPrevious()) {
-            AbstractInsnNode node = insnIterator.previous();
-            if (node instanceof LineNumberNode lineNumberNode) {
-                return lineNumberNode;
-            }
-        }
-        return null;
     }
 }

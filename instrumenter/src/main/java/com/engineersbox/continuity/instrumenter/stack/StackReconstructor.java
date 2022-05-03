@@ -13,7 +13,7 @@ public class StackReconstructor {
         classNode.methods.stream()
                 .filter((final MethodNode methodNode) -> methodNode.instructions != null)
                 .forEach(StackReconstructor::removeStackFrame);
-        return constructClassWithComputeFrames(classNode);
+        return writeMaxsAndFrames(classNode);
     }
 
     private static void removeStackFrame(final MethodNode methodNode) {
@@ -27,14 +27,12 @@ public class StackReconstructor {
         }
     }
 
-    private static ClassNode constructClassWithComputeFrames(final ClassNode classNode) {
+    private static ClassNode writeMaxsAndFrames(final ClassNode classNode) {
         final ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
         classNode.accept(classWriter);
-
         final ClassReader classReader = new ClassReader(classWriter.toByteArray());
         final ClassNode newClassNode = new CoreClassNode();
         classReader.accept(newClassNode, 0);
-
         return newClassNode;
     }
 

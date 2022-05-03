@@ -21,7 +21,7 @@ public class PrimitiveStack {
     }
 
     public void put(final Type type, final VariableLUT.Variable variable) {
-        validateVariable(variable, TypeTranslationUtils.sortToArrayClass(type));
+        validateVariable(variable, TypeTranslationUtils.sortToClass(type));
         switch (type.getSort()) {
             case Type.BOOLEAN, Type.BYTE, Type.CHAR, Type.SHORT, Type.INT -> putIfNotExists(Type.INT_TYPE, variable);
             case Type.LONG -> putIfNotExists(Type.LONG_TYPE, variable);
