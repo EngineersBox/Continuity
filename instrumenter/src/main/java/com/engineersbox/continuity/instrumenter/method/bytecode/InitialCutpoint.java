@@ -63,64 +63,14 @@ public class InitialCutpoint {
                                         .message("Unknown state").build()
                         ).build())
                         .caseStartIndex(0)
-                        .cases(
-                                InsnBuilder.combine(
-                                        InsnBuilder.debugMarker()
-                                                .marker(markerType)
-                                                .message("[Case 0]: Initial invocation, jumping to start of method")
-                                                .build(),
-                                        InsnBuilder.jumpTo()
-                                                .label(startOfMethodLabelNode)
-                                                .build()
-                                ).build(),
-                                InsnBuilder.combine(
-                                        InsnBuilder.debugMarker()
-                                                .marker(markerType)
-                                                .message("[Case 1]: Attempt to save at an invalid time")
-                                                .build(),
-                                        InsnBuilder.exception()
-                                                .exceptionClass(RuntimeException.class)
-                                                .message("Saving is not allowed at this stage").build()
-                                ).build(),
-                                InsnBuilder.combine(
-                                        InsnBuilder.debugMarker()
-                                                .marker(markerType)
-                                                .message("[Case 2]: Loading continuation state")
-                                                .build(),
-                                        InsnBuilder.call()
-                                                .method(CONTINUATION_LOADNEXTMETHODSTATE_METHOD)
-                                                .args(InsnBuilder.loadVar(continuationArgVar).build()),
-                                        InsnBuilder.saveVar(methodState).build(),
-                                        InsnBuilder.call()
-                                                .method(METHODSTATE_GETDATA_METHOD)
-                                                .args(InsnBuilder.loadVar(methodState).build()),
-                                        InsnBuilder.saveVar(containerVar).build(),
-                                        InsnBuilder.switchTable()
-                                                .index(InsnBuilder.combine(
-                                                        InsnBuilder.debugMarker()
-                                                                .marker(markerType)
-                                                                .message("Retrieving continuation point")
-                                                                .build(),
-                                                        InsnBuilder.call()
-                                                                .method(METHODSTATE_GETCONTINUATIONPOINT_METHOD)
-                                                                .args(InsnBuilder.loadVar(methodState).build()).build()
-                                                ).build())
-                                                .defaultBranch(InsnBuilder.combine(
-                                                        InsnBuilder.debugMarker()
-                                                                .marker(markerType)
-                                                                .message("Invalid continuation id")
-                                                                .build(),
-                                                        InsnBuilder.exception()
-                                                                .exceptionClass(RuntimeException.class)
-                                                                .message("Invalid continuation id").build()
-                                                ).build())
-                                                .caseStartIndex(0)
-                                                .cases(IntStream.range(0, methodContext.continuationPoints().size())
-                                                        .mapToObj((final int index) -> RestoreOperations.constructRestoreBytecode(methodContext, index))
-                                                        .toArray(InsnList[]::new))
-                                                .build()
-                                ).build()
-                        ).build(),
+                        .cases(createStateCases(
+                                markerType,
+                                startOfMethodLabelNode,
+                                continuationArgVar,
+                                containerVar,
+                                methodState,
+                                methodContext
+                        )).build(),
                 InsnBuilder.label(startOfMethodLabelNode).build(),
                 InsnBuilder.debugMarker()
                         .marker(markerType)
@@ -129,4 +79,87 @@ public class InitialCutpoint {
         ).build();
     }
 
+    private static InsnList[] createStateCases(final DebugMarker markerType,
+                                               final LabelNode startOfMethodLabelNode,
+                                               final VariableLUT.Variable continuationArgVar,
+                                               final VariableLUT.Variable containerVar,
+                                               final VariableLUT.Variable methodState,
+                                               final MethodContext methodContext) {
+        return new InsnList[]{
+                InsnBuilder.combine(
+                        InsnBuilder.debugMarker()
+                                .marker(markerType)
+                                .message("[Case 0]: Initial invocation, jumping to start of method")
+                                .build(),
+                        InsnBuilder.jumpTo()
+                                .label(startOfMethodLabelNode)
+                                .build()
+                ).build(),
+                InsnBuilder.combine(
+                        InsnBuilder.debugMarker()
+                                .marker(markerType)
+                                .message("[Case 1]: Attempt to save at an invalid time")
+                                .build(),
+                        InsnBuilder.exception()
+                                .exceptionClass(RuntimeException.class)
+                                .message("Saving is not allowed at this stage").build()
+                ).build(),
+                loadContinuationState(
+                        markerType,
+                        continuationArgVar,
+                        containerVar,
+                        methodState,
+                        methodContext
+                )
+        };
+    }
+
+    private static InsnList loadContinuationState(final DebugMarker markerType,
+                                                    final VariableLUT.Variable continuationArgVar,
+                                                    final VariableLUT.Variable containerVar,
+                                                    final VariableLUT.Variable methodState,
+                                                    final MethodContext methodContext) {
+        return InsnBuilder.combine(
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("[Case 2]: Loading continuation state")
+                        .build(),
+                InsnBuilder.call()
+                        .method(CONTINUATION_LOADNEXTMETHODSTATE_METHOD)
+                        .args(InsnBuilder.loadVar(continuationArgVar).build())
+                        .build(),
+                InsnBuilder.saveVar(methodState).build(),
+                InsnBuilder.call()
+                        .method(METHODSTATE_GETDATA_METHOD)
+                        .args(InsnBuilder.loadVar(methodState).build())
+                        .build(),
+                InsnBuilder.saveVar(containerVar).build(),
+                InsnBuilder.switchTable()
+                        .index(InsnBuilder.combine(
+                                InsnBuilder.debugMarker()
+                                        .marker(markerType)
+                                        .message("Retrieving continuation point")
+                                        .build(),
+                                InsnBuilder.call()
+                                        .method(METHODSTATE_GETCONTINUATIONPOINT_METHOD)
+                                        .args(InsnBuilder.loadVar(methodState).build())
+                                        .build()
+                        ).build())
+                        .defaultBranch(InsnBuilder.combine(
+                                InsnBuilder.debugMarker()
+                                        .marker(markerType)
+                                        .message("Invalid continuation id")
+                                        .build(),
+                                InsnBuilder.exception()
+                                        .exceptionClass(RuntimeException.class)
+                                        .message("Invalid continuation id")
+                                        .build()
+                        ).build())
+                        .caseStartIndex(0)
+                        .cases(IntStream.range(0, methodContext.continuationPoints().size())
+                                .mapToObj((final int index) -> RestoreOperations.constructRestoreBytecode(methodContext, index))
+                                .toArray(InsnList[]::new))
+                        .build()
+        ).build();
+    }
 }
