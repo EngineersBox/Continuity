@@ -32,4 +32,12 @@ public class MethodState {
     public MethodState previous() { return this.previous; }
 
     public void setPrevious(final MethodState state) { this.previous = state; }
+
+    public Object[] getData() {
+        return this.data;
+    }
+
+    public int getContinuationPoint() {
+        return this.continuationPoint;
+    }
 }

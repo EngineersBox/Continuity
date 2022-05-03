@@ -1,9 +1,10 @@
 package com.engineersbox.continuity.instrumenter.method;
 
+import com.engineersbox.continuity.instrumenter.method.bytecode.InitialCutpoint;
+import com.engineersbox.continuity.instrumenter.method.bytecode.SaveOperations;
 import com.engineersbox.continuity.instrumenter.stack.point.ContinuationPoint;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.util.List;
@@ -20,23 +21,12 @@ public class MethodInstrumenter {
         } else if (methodContext == null) {
             throw new IllegalArgumentException("MethodContext cannot be null");
         }
-        methodNode.instructions.insert(constructRestoreBytecode(methodContext));
+        methodNode.instructions.insert(InitialCutpoint.constructInitialInlineCutpoint(methodContext));
         List<? extends ContinuationPoint> continuationPoints = methodContext.continuationPoints();
         for (int i = 0; i < continuationPoints.size(); i++) {
-            ContinuationPoint cp = continuationPoints.get(i);
-            AbstractInsnNode nodeToReplace = cp.getInvokeInstruction();
-            InsnList insnsToReplaceWith = constructSaveBytecode(methodContext, i);
-            methodNode.instructions.insertBefore(nodeToReplace, insnsToReplaceWith);
+            final AbstractInsnNode nodeToReplace = continuationPoints.get(i).getInvokeInstruction();
+            methodNode.instructions.insertBefore(nodeToReplace, SaveOperations.constructSaveBytecode(methodContext, i));
             methodNode.instructions.remove(nodeToReplace);
         }
-    }
-
-    private InsnList constructRestoreBytecode(final MethodContext methodContext) {
-        return null;
-    }
-
-    private InsnList constructSaveBytecode(final MethodContext methodContext,
-                                           final int index) {
-        return null;
     }
 }
