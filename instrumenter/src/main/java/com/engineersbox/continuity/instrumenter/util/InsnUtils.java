@@ -12,10 +12,10 @@ import org.slf4j.LoggerFactory;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ListIterator;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class InsnUtils {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(InsnUtils.class);
 
     private static final Printer PRINTER = new Textifier();
     private static final TraceMethodVisitor METHOD_VISITOR = new TraceMethodVisitor(PRINTER);
@@ -25,11 +25,13 @@ public class InsnUtils {
         final StringWriter sw = new StringWriter();
         PRINTER.print(new PrintWriter(sw));
         PRINTER.getText().clear();
-        return sw.toString().trim();
+        return sw.toString().stripTrailing();
     }
 
-    public static void printInsns(final InsnList insnList) {
-        insnList.forEach((final AbstractInsnNode insnNode) -> LOGGER.debug(insnToString(insnNode)));
+    public static String insnsToString(final InsnList insnList) {
+        return StreamSupport.stream(insnList.spliterator(), false)
+                .map(InsnUtils::insnToString)
+                .collect(Collectors.joining("\n"));
     }
 
     public static LineNumberNode getLineNumberForInsn(final InsnList insnList,

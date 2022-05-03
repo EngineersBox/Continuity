@@ -9,7 +9,7 @@ public class SaveOperations {
 
     public static InsnList constructSaveBytecode(final MethodContext methodContext,
                                                  final int index) {
-        return null;
+        return new InsnList();
     }
 
 }

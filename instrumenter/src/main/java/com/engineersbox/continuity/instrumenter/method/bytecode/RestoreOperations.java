@@ -9,7 +9,7 @@ public class RestoreOperations {
 
     public static InsnList constructRestoreBytecode(final MethodContext methodContext,
                                                     final int index) {
-        return null;
+        return new InsnList();
     }
 
 }
