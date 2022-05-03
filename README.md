@@ -13,7 +13,7 @@ A Java state persistence/continuation/checkpointing library with runtime JVM sta
 ## Stage 1: Method Location
 
 Find methods to instrument in each ClassNode. Ignore classes that are interfaces since they possess no body or direct callsite.
-Check if the class has already been instrumented, if it has, then ensure the marker is formatted correctly and then skip class
+Check if the class has already been instrumented, if it has, then ensure the marker is formatted correctly and then skip class 
 if marker valid.
 
 Find methods that have a Continuation instance passed as a parameter. Store these in the stage context and return;

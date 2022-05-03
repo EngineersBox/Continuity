@@ -9,30 +9,20 @@ import java.io.Serializable;
 public final class Continuation implements Serializable {
 
     @Serial
-    private static final long serialVersionUID = -8747747298133665674L;
-
+    private static final long serialVersionUID = 4510386612784934318L;
+    private int state = ContinuationState.IDLE.ordinal();
     private MethodState firstPointer;
     private MethodState nextLoadPointer;
     private MethodState nextUnloadPointer;
     private MethodState firstCutpointPointer;
 
-    private int mode = ContinuationState.IDLE.ordinal();
-    private Object context;
-
     public Continuation() {}
 
     public void suspend() {
-        /* TODO:
-         *  1. Store the current thread context/stack
-         *  2. Unload/pause thread
-         */
+        // TODO
     }
 
-    public int getMode() { return this.mode; }
-
-    public void setMode(final int mode) { this.mode = mode; }
-
-    public MethodState popToNextMethodState() {
+    public MethodState loadNextMethodState() {
         final MethodState ret = this.nextLoadPointer;
         this.nextLoadPointer = this.nextLoadPointer.next();
         if (this.nextLoadPointer == null) {
@@ -41,28 +31,15 @@ public final class Continuation implements Serializable {
         return ret;
     }
 
-    public void popMethodState() {
-        this.nextUnloadPointer = this.nextUnloadPointer.previous();
+    public int getState() {
+        return this.state;
     }
 
-    public void popToPreviousMethodState(final MethodState state) {
-        this.nextUnloadPointer = state.previous();
+    public void setState(final ContinuationState state) {
+        this.state = state.ordinal();
     }
 
-    public void pushMethodState(final MethodState state) {
-        state.setNext(this.firstCutpointPointer);
-        this.firstCutpointPointer = state;
+    public void setState(final int state) {
+        this.state = ContinuationState.fromOrdinal(state).ordinal();
     }
-
-    public void reset() {
-        this.firstPointer = null;
-        this.nextLoadPointer = null;
-        this.nextUnloadPointer = null;
-        this.firstCutpointPointer = null;
-        this.mode = ContinuationState.IDLE.ordinal();
-    }
-
-    public Object getContext() { return this.context; }
-
-    public void setContext(final Object context) { this.context = context; }
 }

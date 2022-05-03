@@ -1,60 +1,76 @@
 package com.engineersbox.continuity.instrumenter.stage;
 
 import com.engineersbox.continuity.core.continuation.Continuation;
-import com.engineersbox.continuity.logger.LogFormatter;
+import com.engineersbox.continuity.instrumenter.clazz.bytecode.ContinuityField;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Optional;
 
 public class MethodLocatorStage implements InstrumentationStage {
 
-    private static final Logger LOGGER = LogFormatter.getLogger(InstrumentationStage.class, Level.ALL);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodLocatorStage.class);
 
     @Override
     public void invoke(final ClassNode classNode,
-                       final InstrumentationContext context) {
-        if ((classNode.access & Opcodes.ACC_INTERFACE) == Opcodes.ACC_INTERFACE) {
+                       final InstrumentationStageContext context) {
+        if ((classNode.access & Opcodes.ACC_INTERFACE) == Opcodes.ACC_INTERFACE || isClassAlreadyInstrumented(classNode)) {
             return;
         }
         final List<MethodNode> instrumentableMethods = findInstrumentableMethods(
                 classNode.methods,
-                Type.getType(Continuation.class),
-                classNode
+                Type.getType(Continuation.class)
         );
         instrumentableMethods.forEach((final MethodNode methodNode) -> context.putMethod(methodNode, null));
     }
 
     private List<MethodNode> findInstrumentableMethods(final List<MethodNode> methodNodes,
-                                                       final Type classType,
-                                                       final ClassNode classNode) {
+                                                       final Type classType) {
         if (classType.getSort() == Type.METHOD) {
-            // TODO: Implement exception
-            throw new RuntimeException("Unsupported method argument type METHOD");
-        } else if ( classType.getSort() == Type.VOID) {
-            // TODO: Implement exception
-            throw new RuntimeException("Unsupported method argument type VOID");
+            throw new IllegalArgumentException("Unsupported method argument type METHOD");
+        } else if (classType.getSort() == Type.VOID) {
+            throw new IllegalArgumentException("Unsupported method argument type VOID");
         }
         return methodNodes.stream()
-                .map((final MethodNode methodNode) -> {
+                .filter((final MethodNode methodNode) -> {
                     final Type methodDescription = Type.getType(methodNode.desc);
-                    final Type[] methodArguments = methodDescription.getArgumentTypes();
-                    if (Arrays.asList(methodArguments).contains(classType)) {
-                        LOGGER.info(String.format(
-                                "METHOD NODE: %s$%s%s",
-                                classNode.name,
-                                methodNode.name,
-                                methodNode.desc
-                        ));
-                        return methodNode;
-                    }
-                    return null;
-                }).filter(Objects::nonNull).toList();
+                    final List<Type> methodArguments = Arrays.asList(methodDescription.getArgumentTypes());
+                    return methodArguments.contains(classType);
+                }).toList();
+    }
+
+    private boolean isClassAlreadyInstrumented(final ClassNode classNode) {
+        final Optional<FieldNode> optionalFieldNode = classNode.fields.stream()
+                .filter((final FieldNode node) -> node.name.equals(ContinuityField.FIELD_NAME))
+                .findAny();
+        if (optionalFieldNode.isEmpty()) {
+            return false;
+        }
+        final FieldNode fieldNode = optionalFieldNode.get();
+        if (!fieldNode.desc.equals(ContinuityField.FIELD_TYPE_DESCRIPTOR)) {
+            throw new IllegalStateException(String.format(
+                    "Found field with invalid descriptor: %s",
+                    fieldNode.desc
+            ));
+        } else if (fieldNode.access != ContinuityField.FIELD_ACCESS_MODIFIERS) {
+            throw new IllegalStateException(String.format(
+                    "Found field with invalid access modifiers: %d",
+                    fieldNode.access
+            ));
+        } else if (!fieldNode.value.equals(ContinuityField.FIELD_VALUE)) {
+            throw new IllegalStateException(String.format(
+                    "Found field with invalid value: %d",
+                    (int) fieldNode.value
+            ));
+        }
+        return true;
     }
 }

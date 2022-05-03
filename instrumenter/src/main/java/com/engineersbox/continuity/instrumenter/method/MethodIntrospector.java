@@ -2,174 +2,221 @@ package com.engineersbox.continuity.instrumenter.method;
 
 import com.engineersbox.continuity.core.continuation.Continuation;
 import com.engineersbox.continuity.core.method.MethodState;
-import com.engineersbox.continuity.instrumenter.stack.ContextHandledTypes;
-import com.engineersbox.continuity.instrumenter.stack.SuppressMethodContinuationPoint;
-import com.engineersbox.continuity.instrumenter.stack.variable.PrimitiveContainers;
-import com.engineersbox.continuity.instrumenter.stack.variable.PrimitiveStack;
-import com.engineersbox.continuity.instrumenter.stack.variable.StackVarLUT;
-import com.engineersbox.continuity.instrumenter.stack.variable.StackVariable;
-import com.engineersbox.continuity.logger.LogFormatter;
+import com.engineersbox.continuity.instrumenter.stack.ContinuityVariables;
+import com.engineersbox.continuity.instrumenter.stack.point.ContinuationPoint;
+import com.engineersbox.continuity.instrumenter.stack.point.InvokeContinuationPoint;
+import com.engineersbox.continuity.instrumenter.stack.point.SuspendMethodContinuationPoint;
+import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveContainerStack;
+import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveStack;
+import com.engineersbox.continuity.instrumenter.stack.storage.VariableCache;
+import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
+import com.engineersbox.continuity.instrumenter.util.InsnUtils;
+import com.engineersbox.continuity.instrumenter.util.MethodInsnUtils;
+import com.engineersbox.continuity.instrumenter.util.TypeTranslationUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.*;
 import java.util.stream.StreamSupport;
 
 public class MethodIntrospector {
 
-    private static final Logger LOGGER = LogFormatter.getLogger(MethodIntrospector.class, Level.ALL);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodIntrospector.class);
 
     private static final String CONSTRUCTOR_METHOD_NAME = "<init>";
-    private static final Method CONTINUATION_CLASS_TYPE = MethodUtils.getAccessibleMethod(Continuation.class, "suspend");
+    private static final Type CONTINUATION_CLASS_TYPE = Type.getType(Continuation.class);
+    private static final Method CONTINUATION_SUSPEND_METHOD = MethodUtils.getAccessibleMethod(Continuation.class, "suspend");
 
-    public MethodIntrospector() {}
-
-    public MethodContext<SuppressMethodContinuationPoint> introspect(final ClassNode classNode,
-                                                                     final MethodNode methodNode) {
+    public MethodContext introspect(final ClassNode classNode,
+                                    final MethodNode methodNode) {
         if (methodNode.name.equals(CONSTRUCTOR_METHOD_NAME)) {
-            throw new IllegalStateException("Cannot instrument constructor");
+            throw new IllegalStateException(String.format(
+                    "Cannot instrument constructor: %s",
+                    methodNode.signature
+            ));
         }
-
-        final List<AbstractInsnNode> suspendCallInsnNodes = findInvocationsOf(
+        final List<AbstractInsnNode> suspendCallInsnNodes = MethodInsnUtils.getInvocation(
+                methodNode.instructions,
+                CONTINUATION_SUSPEND_METHOD
+        );
+        final List<AbstractInsnNode> continueInvocationInsnNodes = MethodInsnUtils.getInvocationWithParameterType(
                 methodNode.instructions,
                 CONTINUATION_CLASS_TYPE
         );
-        final List<AbstractInsnNode> continuationCallInsnNodes = findInvocationsWithParameter(
-                methodNode.instructions,
-                Type.getType(CONTINUATION_CLASS_TYPE)
-        );
+        LOGGER.trace("Suspend call count: {}", suspendCallInsnNodes.size());
+        LOGGER.trace("Continuation parameterised call count: {}", continueInvocationInsnNodes.size());
 
-        final MethodSignature signature = new MethodSignature(
-                classNode.name,
-                methodNode.name,
-                Type.getMethodType(methodNode.desc)
-        );
-
-        Frame<BasicValue>[] frames;
+        final Frame<BasicValue>[] frames;
         try {
             frames = new Analyzer<>(new SimpleVerifier()).analyze(classNode.name, methodNode);
         } catch (final AnalyzerException e) {
             throw new IllegalArgumentException("Could not analyze method", e);
         }
+        final List<ContinuationPoint> continuationPoints = new ArrayList<>();
+        continuationPoints.addAll(createSuspendContinuationPoints(
+                suspendCallInsnNodes,
+                frames,
+                methodNode
+        ));
+        continuationPoints.addAll(createInvokeContinuationPoints(
+                continueInvocationInsnNodes,
+                frames,
+                methodNode
+        ));
 
-        final List<SuppressMethodContinuationPoint> continuationPoints = suspendCallInsnNodes.stream().map((final AbstractInsnNode insnNode) -> {
-            final MethodInsnNode node = (MethodInsnNode) insnNode;
-            final LineNumberNode lineNumberNode = getLineNumberForInsn(methodNode.instructions, insnNode);
-            return new SuppressMethodContinuationPoint(
-                    lineNumberNode != null ? lineNumberNode.line : null,
-                    node,
-                    frames[methodNode.instructions.indexOf(insnNode)]
-            );
-        }).toList();
+        final VariableLUT varLUT = new VariableLUT(classNode, methodNode);
+        final VariableCache cache = allocateCacheSlots(varLUT, continueInvocationInsnNodes);
+        final PrimitiveStack LVA = allocateLVASlots(
+                varLUT,
+                continueInvocationInsnNodes,
+                suspendCallInsnNodes,
+                frames,
+                methodNode
+        );
+        final PrimitiveStack OS = allocateOSSlots(
+                varLUT,
+                continueInvocationInsnNodes,
+                suspendCallInsnNodes,
+                frames,
+                methodNode
+        );
+        final PrimitiveContainerStack containerStack = new PrimitiveContainerStack(varLUT.allocExtra(Object[].class));
 
-        final ContextHandledTypes handledTypesLVA = new ContextHandledTypes();
-        for (final AbstractInsnNode invokeInsnNode : CollectionUtils.union(continuationCallInsnNodes, suspendCallInsnNodes)) {
-            final Frame<BasicValue> frame = frames[methodNode.instructions.indexOf(invokeInsnNode)];
-            LOGGER.fine(String.format("FRAME: %s", frame.toString()));
-            for (int i = 0; i < frame.getLocals(); i++) {
-                Type type = frame.getLocal(i).getType();
-                if (type == null || type.getDescriptor().equals("Lnull;")) {
-                    continue;
-                }
-                LOGGER.fine(String.format("  TYPE: %s", type.getDescriptor()));
-                handledTypesLVA.trackType(type);
-            }
-        }
+        final ContinuityVariables continuityVariables = new ContinuityVariables(
+                varLUT.getArgument(getContinuationLVAIndex(methodNode)),
+                varLUT.allocExtra(MethodState.class)
+        );
 
-        final ContextHandledTypes handledTypesOS = new ContextHandledTypes();
-        for (final AbstractInsnNode invokeInsnNode : CollectionUtils.union(continuationCallInsnNodes, suspendCallInsnNodes)) {
-            final Frame<BasicValue> frame = frames[methodNode.instructions.indexOf(invokeInsnNode)];
-            LOGGER.fine(String.format("FRAME: %s", frame.toString()));
-            for (int i = 0; i < frame.getStackSize(); i++) {
-                final Type type = frame.getStack(i).getType();
-                if (type.getDescriptor().equals("Lnull;")) {
-                    continue;
-                }
-                LOGGER.fine(String.format("  TYPE: %s", type.getDescriptor()));
-                handledTypesOS.trackType(type);
-            }
-        }
-
-        final int continuationArgIndex = 0;
-
-        final StackVarLUT stackVarLUT = new StackVarLUT(classNode, methodNode);
-        final StackVariable continuationVar = stackVarLUT.getArg(continuationArgIndex);
-        final StackVariable methodStateVariable = stackVarLUT.obtainExtraArg(Type.getType(MethodState.class));
-
-        final PrimitiveStack LVA = PrimitiveStack.allocateSlots(stackVarLUT, handledTypesLVA);
-        final PrimitiveStack OS = PrimitiveStack.allocateSlots(stackVarLUT, handledTypesOS);
-        final PrimitiveContainers containers = PrimitiveContainers.allocateContainerSlots(stackVarLUT);
-
-        return new MethodContext<>(
-                signature,
+        return new MethodContext(
+                new MethodSignature(
+                    classNode.name,
+                    methodNode.name,
+                    Type.getMethodType(methodNode.desc)
+                ),
                 continuationPoints,
-                continuationVar,
-                methodStateVariable,
+                cache,
                 LVA,
                 OS,
-                containers
+                containerStack,
+                continuityVariables
         );
     }
 
-    private List<AbstractInsnNode> findInvocationsOf(final InsnList insnList,
-                                                     final Method method) {
-        return StreamSupport.stream(insnList.spliterator(), false)
-                .filter(MethodInsnNode.class::isInstance)
-                .filter((final AbstractInsnNode insnNode) -> {
-                    final MethodInsnNode methodInsnNode = (MethodInsnNode) insnNode;
-                    final Type methodDesc = Type.getType(methodInsnNode.desc);
-                    final Type methodOwner = Type.getObjectType(methodInsnNode.owner);
-                    return methodDesc.equals(Type.getType(method))
-                            && methodOwner.equals(Type.getType(method.getDeclaringClass()));
-                }).toList();
-    }
-
-    public static List<AbstractInsnNode> findInvocationsWithParameter(final InsnList insnList,
-                                                                      final Type expectedParamType) {
-        if (expectedParamType.getSort() == Type.METHOD) {
-            throw new IllegalArgumentException("Cannot find invocations for sort METHOD");
-        } else if (expectedParamType.getSort() == Type.VOID) {
-            throw new IllegalArgumentException("Cannot find invocations for sort VOID");
+    private int getContinuationLVAIndex(final MethodNode methodNode) {
+        final boolean isStatic = (methodNode.access & Opcodes.ACC_STATIC) == Opcodes.ACC_STATIC;
+        final Type[] argumentTypes = Type.getMethodType(methodNode.desc).getArgumentTypes();
+        int idx = -1;
+        for (int i = 0; i < argumentTypes.length; i++) {
+            if (!argumentTypes[i].equals(CONTINUATION_CLASS_TYPE)) {
+                continue;
+            }
+            if (idx != -1) {
+                throw new IllegalArgumentException("Multiple Continuation arguments found in method " + methodNode.name);
+            }
+            idx = i;
         }
-
-        return StreamSupport.stream(insnList.spliterator(), false)
-                .map((final AbstractInsnNode instructionNode) -> {
-                    if (instructionNode instanceof MethodInsnNode methodInsnNode) {
-                        Type methodType = Type.getType(methodInsnNode.desc);
-                        return Pair.of(methodType.getArgumentTypes(), instructionNode);
-                    } else if (instructionNode instanceof InvokeDynamicInsnNode invokeDynamicInsnNode) {
-                        Type methodType = Type.getType(invokeDynamicInsnNode.desc);
-                        return ImmutablePair.of(methodType.getArgumentTypes(), instructionNode);
-                    }
-                    return null;
-                }).filter(Objects::nonNull)
-                .filter((final Pair<Type[], AbstractInsnNode> pair) -> Arrays.asList(pair.getLeft()).contains(expectedParamType))
-                .map(Pair::getRight)
-                .toList();
+        return isStatic ? idx : idx + 1;
     }
 
-    private LineNumberNode getLineNumberForInsn(final InsnList insnList,
-                                                final AbstractInsnNode insnNode) {
-        int idx = insnList.indexOf(insnNode);
-        ListIterator<AbstractInsnNode> insnIt = insnList.iterator(idx);
-        while (insnIt.hasPrevious()) {
-            AbstractInsnNode node = insnIt.previous();
-            if (node instanceof LineNumberNode lineNumberNode) {
-                return lineNumberNode;
+    private VariableCache allocateCacheSlots(final VariableLUT varLUT,
+                                             final List<AbstractInsnNode> continueInvocationInsnNodes) {
+        final VariableCache cache = new VariableCache();
+        for (final AbstractInsnNode insnNode : continueInvocationInsnNodes) {
+            final Type returnType = MethodInsnUtils.getReturnTypeOfInvocation(insnNode);
+            if (returnType.getSort() == Type.VOID) {
+                continue;
+            }
+            final Class<?> matchType = TypeTranslationUtils.sortToClass(returnType);
+            if (matchType == null) {
+                throw new IllegalArgumentException("Unsupported type");
+            }
+            cache.put(returnType, varLUT.allocExtra(matchType));
+        }
+        return cache;
+    }
+
+    private PrimitiveStack allocateLVASlots(final VariableLUT varLUT,
+                                            final List<AbstractInsnNode> continueInvocationInsnNodes,
+                                            final List<AbstractInsnNode> suspendCallInsnNodes,
+                                            final Frame<BasicValue>[] frames,
+                                            final MethodNode methodNode) {
+        final PrimitiveStack LVA = new PrimitiveStack();
+        for (final AbstractInsnNode insnNode : CollectionUtils.union(continueInvocationInsnNodes, suspendCallInsnNodes)) {
+            final Frame<BasicValue> frame = frames[methodNode.instructions.indexOf(insnNode)];
+            for (int i = 0; i < frame.getLocals(); i++) {
+                final Type type = frame.getLocal(i).getType();
+                if (type == null || "Lnull;".equals(type.getDescriptor())) {
+                    continue;
+                }
+                final Class<?> matchType = TypeTranslationUtils.sortToClass(type);
+                if (matchType == null) {
+                    throw new IllegalArgumentException(String.format(
+                            "Unsupported type: %s",
+                            type
+                    ));
+                }
+                LVA.put(type, varLUT.allocExtra(matchType));
             }
         }
+        return LVA;
+    }
 
-        return null;
+    private PrimitiveStack allocateOSSlots(final VariableLUT varLUT,
+                                           final List<AbstractInsnNode> continueInvocationInsnNodes,
+                                           final List<AbstractInsnNode> suspendCallInsnNodes,
+                                           final Frame<BasicValue>[] frames,
+                                           final MethodNode methodNode) {
+        final PrimitiveStack LVA = new PrimitiveStack();
+        for (final AbstractInsnNode insnNode : CollectionUtils.union(continueInvocationInsnNodes, suspendCallInsnNodes)) {
+            final Frame<BasicValue> frame = frames[methodNode.instructions.indexOf(insnNode)];
+            for (int i = 0; i < frame.getStackSize(); i++) {
+                final Type type = frame.getStack(i).getType();
+                if ("Lnull;".equals(type.getDescriptor())) {
+                    continue;
+                }
+                final Class<?> matchType = TypeTranslationUtils.sortToClass(type);
+                if (matchType == null) {
+                    throw new IllegalArgumentException(String.format(
+                            "Unsupported type: %s",
+                            type
+                    ));
+                }
+                LVA.put(type, varLUT.allocExtra(matchType));
+            }
+        }
+        return LVA;
+    }
+
+    private List<? extends ContinuationPoint> createSuspendContinuationPoints(List<AbstractInsnNode> suspendCallInsnNodes,
+                                                                              final Frame<BasicValue>[] frames,
+                                                                              final MethodNode methodNode) {
+        return suspendCallInsnNodes.stream().map((final AbstractInsnNode insnNode) -> {
+            final LineNumberNode lineNumberNode = InsnUtils.getLineNumberForInsn(methodNode.instructions, insnNode);
+            return new SuspendMethodContinuationPoint(
+                    lineNumberNode != null ? lineNumberNode.line : null,
+                    (MethodInsnNode) insnNode,
+                    frames[methodNode.instructions.indexOf(insnNode)]
+            );
+        }).toList();
+    }
+
+    private List<? extends ContinuationPoint> createInvokeContinuationPoints(final List<AbstractInsnNode> continueInvocationInsnNodes,
+                                                                             final Frame<BasicValue>[] frames,
+                                                                             final MethodNode methodNode) {
+        return continueInvocationInsnNodes.stream().map((final AbstractInsnNode insnNode) -> {
+            LineNumberNode lineNumberNode = InsnUtils.getLineNumberForInsn(methodNode.instructions, insnNode);
+            return new InvokeContinuationPoint(
+                    lineNumberNode != null ? lineNumberNode.line : null,
+                    (MethodInsnNode) insnNode,
+                    frames[methodNode.instructions.indexOf(insnNode)]
+            );
+        }).toList();
     }
 }

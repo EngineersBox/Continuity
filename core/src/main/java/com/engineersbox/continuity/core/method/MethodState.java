@@ -16,8 +16,7 @@ public class MethodState {
                        final Object[] data) {
         if (continuationPoint < 0) {
             throw new IllegalArgumentException();
-        }
-        if (data == null) {
+        } else if (data == null) {
             throw new NullPointerException();
         }
         this.className = className;
@@ -33,4 +32,12 @@ public class MethodState {
     public MethodState previous() { return this.previous; }
 
     public void setPrevious(final MethodState state) { this.previous = state; }
+
+    public Object[] getData() {
+        return this.data;
+    }
+
+    public int getContinuationPoint() {
+        return this.continuationPoint;
+    }
 }

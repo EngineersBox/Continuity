@@ -1,8 +1,11 @@
 package com.engineersbox.continuity.instrumenter.method;
 
-import com.engineersbox.continuity.instrumenter.bytecode.SaveStateGenerator;
-import com.engineersbox.continuity.instrumenter.stack.ContinuationPoint;
-import org.objectweb.asm.tree.*;
+import com.engineersbox.continuity.instrumenter.method.bytecode.InitialCutpoint;
+import com.engineersbox.continuity.instrumenter.method.bytecode.SaveOperations;
+import com.engineersbox.continuity.instrumenter.stack.point.ContinuationPoint;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodNode;
 
 import java.util.List;
 
@@ -10,31 +13,20 @@ public class MethodInstrumenter {
 
     public void instrument(final ClassNode classNode,
                            final MethodNode methodNode,
-                           final MethodContext<?> context) {
-        if (!classNode.methods.contains(methodNode)) {
-            throw new IllegalArgumentException("Method does not belong to current class");
+                           final MethodContext methodContext) {
+        if (classNode == null) {
+            throw new IllegalArgumentException("ClassNode cannot be null");
+        } else if (methodNode == null) {
+            throw new IllegalArgumentException("MethodNode cannot be null");
+        } else if (methodContext == null) {
+            throw new IllegalArgumentException("MethodContext cannot be null");
         }
-        context.continuationPoints().stream()
-                .map(ContinuationPoint::getInvokeInstruction)
-                .forEach((final MethodInsnNode insn) -> {
-                    if (!methodNode.instructions.contains(insn)) {
-                        throw new IllegalStateException(String.format(
-                                "Instruction %s%s is not part of method %s%s",
-                                insn.name, insn.desc,
-                                methodNode.name, methodNode.desc
-                        ));
-                    }
-                });
-
-        final List<? extends ContinuationPoint> continuationPoints = context.continuationPoints();
+        methodNode.instructions.insert(InitialCutpoint.constructInitialInlineCutpoint(methodContext));
+        List<? extends ContinuationPoint> continuationPoints = methodContext.continuationPoints();
         for (int i = 0; i < continuationPoints.size(); i++) {
             final AbstractInsnNode nodeToReplace = continuationPoints.get(i).getInvokeInstruction();
-            methodNode.instructions.insertBefore(
-                    nodeToReplace,
-                    SaveStateGenerator.createSaveStateInsns(context, i)
-            );
+            methodNode.instructions.insertBefore(nodeToReplace, SaveOperations.constructSaveBytecode(methodContext, i));
             methodNode.instructions.remove(nodeToReplace);
         }
     }
-
 }
