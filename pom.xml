@@ -27,6 +27,7 @@
         <commons-collections.version>4.4</commons-collections.version>
         <asm.version>9.2</asm.version>
         <jansi.version>2.4.0</jansi.version>
+        <reflections.version>0.10.2</reflections.version>
 
         <!-- Maven -->
         <maven-compiler-plugin.version>3.9.0</maven-compiler-plugin.version>
@@ -48,6 +49,12 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Reflection Utils -->
+            <dependency>
+                <groupId>org.reflections</groupId>
+                <artifactId>reflections</artifactId>
+                <version>${reflections.version}</version>
+            </dependency>
             <!-- JANSI -->
             <dependency>
                 <groupId>org.fusesource.jansi</groupId>

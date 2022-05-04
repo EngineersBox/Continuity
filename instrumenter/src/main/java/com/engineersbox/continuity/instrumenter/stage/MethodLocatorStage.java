@@ -2,6 +2,7 @@ package com.engineersbox.continuity.instrumenter.stage;
 
 import com.engineersbox.continuity.core.continuation.Continuation;
 import com.engineersbox.continuity.instrumenter.clazz.bytecode.ContinuityField;
+import com.engineersbox.continuity.instrumenter.stage.annotation.StageProvider;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
@@ -15,6 +16,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@SuppressWarnings("unused")
+@StageProvider(priority = 0)
 public class MethodLocatorStage implements InstrumentationStage {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodLocatorStage.class);

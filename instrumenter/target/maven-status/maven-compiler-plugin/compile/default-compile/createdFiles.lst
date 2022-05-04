@@ -1,6 +1,7 @@
 com\engineersbox\continuity\instrumenter\stage\InstrumentationStageContext.class
 com\engineersbox\continuity\instrumenter\stack\point\InvokeContinuationPoint.class
 com\engineersbox\continuity\instrumenter\stage\BytecodeInjectionStage.class
+com\engineersbox\continuity\instrumenter\stage\annotation\StageProvider.class
 com\engineersbox\continuity\instrumenter\bytecode\builders\LabelBuilder.class
 com\engineersbox\continuity\instrumenter\util\MethodInsnUtils.class
 com\engineersbox\continuity\instrumenter\method\MethodSignature.class

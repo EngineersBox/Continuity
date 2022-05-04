@@ -2,6 +2,7 @@ package com.engineersbox.continuity.instrumenter.stage;
 
 import com.engineersbox.continuity.instrumenter.method.MethodContext;
 import com.engineersbox.continuity.instrumenter.method.MethodIntrospector;
+import com.engineersbox.continuity.instrumenter.stage.annotation.StageProvider;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.slf4j.Logger;
@@ -10,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressWarnings("unused")
+@StageProvider(priority = 1)
 public class MethodIntrospectionStage implements InstrumentationStage {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodIntrospectionStage.class);
