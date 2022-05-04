@@ -25,25 +25,27 @@ public class ContinuityInstrumenter implements Instrumenter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ContinuityInstrumenter.class);
     private static final String STAGES_SEARCH_PACKAGE = "com.engineersbox.continuity.instrumenter";
+    private static final Reflections STAGES_REFLECTIONS = new Reflections(STAGES_SEARCH_PACKAGE);
 
+    @SuppressWarnings("java:S1874")
     private ListOrderedSet<InstrumentationStage> findInstrumentationStages() {
-        return ListOrderedSet.listOrderedSet(new Reflections(STAGES_SEARCH_PACKAGE)
-                .getTypesAnnotatedWith(StageProvider.class)
-                .stream()
-                .sorted((final Class<?> class1, final Class<?> class2) -> {
-                    final StageProvider class1StageProvider = class1.getAnnotation(StageProvider.class);
-                    final StageProvider class2StageProvider = class2.getAnnotation(StageProvider.class);
-                    return Integer.compare(
-                            class1StageProvider.priority(),
-                            class2StageProvider.priority()
-                    );
-                }).map((final Class<?> clazz) -> {
-                    try {
-                        return (InstrumentationStage) clazz.newInstance();
-                    } catch (final InstantiationException | IllegalAccessException e) {
-                        throw new RuntimeException("Could not create instrumentation stage", e);
-                    }
-                }).toList()
+        return ListOrderedSet.listOrderedSet(
+                STAGES_REFLECTIONS.getTypesAnnotatedWith(StageProvider.class)
+                        .stream()
+                        .sorted((final Class<?> class1, final Class<?> class2) -> {
+                            final StageProvider class1StageProvider = class1.getAnnotation(StageProvider.class);
+                            final StageProvider class2StageProvider = class2.getAnnotation(StageProvider.class);
+                            return Integer.compare(
+                                    class1StageProvider.priority(),
+                                    class2StageProvider.priority()
+                            );
+                        }).map((final Class<?> clazz) -> {
+                            try {
+                                return (InstrumentationStage) clazz.newInstance();
+                            } catch (final InstantiationException | IllegalAccessException e) {
+                                throw new RuntimeException("Could not create instrumentation stage", e);
+                            }
+                        }).toList()
         );
     }
 
