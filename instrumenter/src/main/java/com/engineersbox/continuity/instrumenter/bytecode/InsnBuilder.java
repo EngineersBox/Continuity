@@ -4,6 +4,8 @@ import com.engineersbox.continuity.instrumenter.bytecode.builders.*;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
 import org.objectweb.asm.tree.LabelNode;
 
+import java.util.function.Supplier;
+
 public class InsnBuilder {
 
     private InsnBuilder() {}
@@ -46,5 +48,9 @@ public class InsnBuilder {
 
     public static LabelBuilder label(final LabelNode label) {
         return new LabelBuilder().label(label);
+    }
+
+    public static CombineIfBuilder combineIf(final boolean condition, final Supplier<Object[]> supplier) {
+        return new CombineIfBuilder().combineIf(condition, supplier);
     }
 }
