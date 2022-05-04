@@ -1,6 +1,6 @@
 package com.engineersbox.continuity.instrumenter.bytecode.builders;
 
-import com.engineersbox.continuity.instrumenter.bytecode.BaseBytecodeBuilder;
+import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnListBuilder;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
 import org.objectweb.asm.Opcodes;
@@ -8,7 +8,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.VarInsnNode;
 
-public class LoadVarBuilder implements BaseBytecodeBuilder {
+public class LoadVarBuilder implements BytecodeBuilder {
 
     private VariableLUT.Variable variable;
 

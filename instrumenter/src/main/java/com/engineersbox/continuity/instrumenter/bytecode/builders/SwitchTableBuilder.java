@@ -1,6 +1,6 @@
 package com.engineersbox.continuity.instrumenter.bytecode.builders;
 
-import com.engineersbox.continuity.instrumenter.bytecode.BaseBytecodeBuilder;
+import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.annotation.BytecodeGenerator;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.LabelNode;
@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 @BytecodeGenerator
-public class SwitchTableBuilder implements BaseBytecodeBuilder {
+public class SwitchTableBuilder implements BytecodeBuilder {
 
     private InsnList indexInsnList;
     private InsnList defaultInsnList;

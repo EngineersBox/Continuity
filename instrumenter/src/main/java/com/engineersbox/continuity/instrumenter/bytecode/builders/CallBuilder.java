@@ -1,6 +1,6 @@
 package com.engineersbox.continuity.instrumenter.bytecode.builders;
 
-import com.engineersbox.continuity.instrumenter.bytecode.BaseBytecodeBuilder;
+import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.InsnList;
@@ -11,7 +11,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class CallBuilder implements BaseBytecodeBuilder {
+public class CallBuilder implements BytecodeBuilder {
 
     private Method method;
     private InsnList[] args;

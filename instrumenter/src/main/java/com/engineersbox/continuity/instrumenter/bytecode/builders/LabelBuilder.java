@@ -1,11 +1,11 @@
 package com.engineersbox.continuity.instrumenter.bytecode.builders;
 
-import com.engineersbox.continuity.instrumenter.bytecode.BaseBytecodeBuilder;
+import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnListBuilder;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.LabelNode;
 
-public class LabelBuilder implements BaseBytecodeBuilder {
+public class LabelBuilder implements BytecodeBuilder {
 
     private LabelNode label;
 

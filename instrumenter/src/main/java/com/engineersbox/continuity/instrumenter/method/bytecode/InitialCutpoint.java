@@ -17,6 +17,8 @@ import java.util.stream.IntStream;
 @BytecodeGenerator
 public class InitialCutpoint {
 
+    private InitialCutpoint() {}
+
     private static final Method CONTINUATION_GETSTATE_METHOD = MethodUtils.getAccessibleMethod(
             Continuation.class,
             "getState"
@@ -41,7 +43,7 @@ public class InitialCutpoint {
         final VariableLUT.Variable methodState = methodContext.continuityVariables().methodStateVar();
         final VariableLUT.Variable containerVar = methodContext.containers().getContainerVar();
 
-        final LabelNode startOfMethodLabelNode = new LabelNode();
+        final LabelNode methodStartLabel = new LabelNode();
         return InsnBuilder.combine(
                 InsnBuilder.switchTable()
                         .index(InsnBuilder.combine(
@@ -65,13 +67,13 @@ public class InitialCutpoint {
                         .caseStartIndex(0)
                         .cases(createStateCases(
                                 markerType,
-                                startOfMethodLabelNode,
+                                methodStartLabel,
                                 continuationArgVar,
                                 containerVar,
                                 methodState,
                                 methodContext
                         )).build(),
-                InsnBuilder.label(startOfMethodLabelNode).build(),
+                InsnBuilder.label(methodStartLabel).build(),
                 InsnBuilder.debugMarker()
                         .marker(markerType)
                         .message("Executing method")
@@ -80,7 +82,7 @@ public class InitialCutpoint {
     }
 
     private static InsnList[] createStateCases(final DebugMarker markerType,
-                                               final LabelNode startOfMethodLabelNode,
+                                               final LabelNode methodStartLabel,
                                                final VariableLUT.Variable continuationArgVar,
                                                final VariableLUT.Variable containerVar,
                                                final VariableLUT.Variable methodState,
@@ -92,7 +94,7 @@ public class InitialCutpoint {
                                 .message("[Case 0]: Initial invocation, jumping to start of method")
                                 .build(),
                         InsnBuilder.jumpTo()
-                                .label(startOfMethodLabelNode)
+                                .label(methodStartLabel)
                                 .build()
                 ).build(),
                 InsnBuilder.combine(
@@ -115,10 +117,10 @@ public class InitialCutpoint {
     }
 
     private static InsnList loadContinuationState(final DebugMarker markerType,
-                                                    final VariableLUT.Variable continuationArgVar,
-                                                    final VariableLUT.Variable containerVar,
-                                                    final VariableLUT.Variable methodState,
-                                                    final MethodContext methodContext) {
+                                                  final VariableLUT.Variable continuationArgVar,
+                                                  final VariableLUT.Variable containerVar,
+                                                  final VariableLUT.Variable methodState,
+                                                  final MethodContext methodContext) {
         return InsnBuilder.combine(
                 InsnBuilder.debugMarker()
                         .marker(markerType)

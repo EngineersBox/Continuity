@@ -1,7 +1,6 @@
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\stack\storage\PrimitiveContainerStack.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\stack\point\ContinuationPoint.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\util\TypeTranslationUtils.java
-E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\bytecode\BaseBytecodeBuilder.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\stack\storage\VariableCache.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\bytecode\builders\ExceptionBuilder.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\clazz\CoreClassNode.java
@@ -20,6 +19,7 @@ E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumente
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\bytecode\builders\IfIntEqualBuilder.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\bytecode\builders\SwitchTableBuilder.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\stage\BytecodeInjectionStage.java
+E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\bytecode\builders\CombineIfBuilder.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\bytecode\builders\DebugMarkerBuilder.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\method\bytecode\InitialCutpoint.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\stage\MethodLocatorStage.java
@@ -34,7 +34,9 @@ E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumente
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\stack\point\InvokeContinuationPoint.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\clazz\bytecode\ContinuityField.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\method\MethodContext.java
+E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\bytecode\BytecodeBuilder.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\bytecode\builders\CombineBuilder.java
+E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\bytecode\Retriever.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\clazz\ClassInstrumenter.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\util\MethodInsnUtils.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\stack\ContinuityVariables.java

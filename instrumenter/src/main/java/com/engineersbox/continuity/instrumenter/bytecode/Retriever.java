@@ -19,8 +19,8 @@ public class Retriever {
             throw new IndexOutOfBoundsException("Index must be positive");
         }
         final List<? extends ContinuationPoint> points = methodContext.continuationPoints();
-        if (points == null || index >= points.size()) {
-            throw new IllegalStateException(String.format(
+        if (index >= points.size()) {
+            throw new IndexOutOfBoundsException(String.format(
                     "No continuation point at index %d",
                     index
             ));

@@ -1,6 +1,6 @@
 package com.engineersbox.continuity.instrumenter.bytecode.builders;
 
-import com.engineersbox.continuity.instrumenter.bytecode.BaseBytecodeBuilder;
+import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnListCollector;
 import com.engineersbox.continuity.instrumenter.bytecode.annotation.BytecodeGenerator;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.stream.StreamSupport;
 
 @BytecodeGenerator
-public class CombineBuilder implements BaseBytecodeBuilder {
+public class CombineBuilder implements BytecodeBuilder {
 
     private Object[] insns;
 
@@ -36,7 +36,7 @@ public class CombineBuilder implements BaseBytecodeBuilder {
                     throw new IllegalArgumentException("InsnList cannot contain null instructions");
                 }
                 return (InsnList) insn;
-            } else if (insn instanceof BaseBytecodeBuilder builder) {
+            } else if (insn instanceof BytecodeBuilder builder) {
                 final InsnList insnList = builder.build();
                 if (StreamSupport.stream(insnList.spliterator(), false).anyMatch(Objects::isNull)) {
                     throw new IllegalArgumentException("InsnList cannot contain null instructions");

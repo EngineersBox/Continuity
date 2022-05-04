@@ -7,6 +7,7 @@ import com.engineersbox.continuity.instrumenter.stage.*;
 import com.engineersbox.continuity.instrumenter.util.InsnUtils;
 import org.apache.commons.collections4.set.ListOrderedSet;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.slf4j.Logger;
@@ -42,7 +43,9 @@ public class ContinuityInstrumenter implements Instrumenter {
                 LOGGER.debug("{}: {}", node.signature, methodContext)
         );
 
-        return classByteBuffer;
+        final ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+        classNode.accept(classWriter);
+        return classWriter.toByteArray();
     }
 
     void printMethodNodes(final ClassNode node) {

@@ -1,6 +1,6 @@
 package com.engineersbox.continuity.instrumenter.bytecode.builders;
 
-import com.engineersbox.continuity.instrumenter.bytecode.BaseBytecodeBuilder;
+import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnListBuilder;
 import com.engineersbox.continuity.instrumenter.stage.DebugMarker;
 import org.objectweb.asm.Opcodes;
@@ -9,7 +9,7 @@ import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
-public class DebugMarkerBuilder implements BaseBytecodeBuilder {
+public class DebugMarkerBuilder implements BytecodeBuilder {
 
     private static final String SYSTEM_PATH_FQN = java.lang.System.class.getCanonicalName().replace('.', '/');
     private static final String STATIC_FIELD_OUT_NAME = "out";
