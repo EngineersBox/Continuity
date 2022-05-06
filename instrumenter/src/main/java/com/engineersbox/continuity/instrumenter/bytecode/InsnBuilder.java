@@ -53,4 +53,8 @@ public class InsnBuilder {
     public static CombineIfBuilder combineIf(final boolean condition, final Supplier<Object[]> supplier) {
         return new CombineIfBuilder().combineIf(condition, supplier);
     }
+
+    public static LineNumberBuilder lineNumber(final int number) {
+        return new LineNumberBuilder().lineNumber(number);
+    }
 }
