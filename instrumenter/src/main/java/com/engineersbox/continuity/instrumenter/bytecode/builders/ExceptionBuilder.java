@@ -2,13 +2,11 @@ package com.engineersbox.continuity.instrumenter.bytecode.builders;
 
 import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnListBuilder;
+import com.engineersbox.continuity.instrumenter.bytecode.ObjectConstants;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 public class ExceptionBuilder implements BytecodeBuilder {
-
-    private static final String CONSTRUCTOR_METHOD_NAME = "<init>";
-    private static final String STRING_PARAMETER_METHOD_SIGNATURE = "(Ljava/lang/String;)V";
 
     private Class<? extends RuntimeException> exceptionClass;
     private String message;
@@ -41,8 +39,8 @@ public class ExceptionBuilder implements BytecodeBuilder {
                 new MethodInsnNode(
                         Opcodes.INVOKESPECIAL,
                         pathCanonicalName,
-                        CONSTRUCTOR_METHOD_NAME,
-                        STRING_PARAMETER_METHOD_SIGNATURE,
+                        ObjectConstants.CONSTRUCTOR_METHOD_NAME,
+                        ObjectConstants.STRING_PARAMETER_METHOD_SIGNATURE,
                         false
                 ), new InsnNode(Opcodes.ATHROW)
         ).build();

@@ -1,7 +1,7 @@
 package com.engineersbox.continuity.instrumenter.bytecode.state.os;
 
 import com.engineersbox.continuity.instrumenter.bytecode.InsnBuilder;
-import com.engineersbox.continuity.instrumenter.bytecode.InsnListBuilder;
+import com.engineersbox.continuity.instrumenter.bytecode.ObjectConstants;
 import com.engineersbox.continuity.instrumenter.bytecode.annotation.BytecodeGenerator;
 import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveStack;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
@@ -15,8 +15,6 @@ import org.objectweb.asm.tree.analysis.Frame;
 
 @BytecodeGenerator
 public class OSSaveOperations {
-
-    private static final String NULL_OBJ_DESCRIPTOR = "Lnull;";
 
     private OSSaveOperations() {}
 
@@ -51,7 +49,7 @@ public class OSSaveOperations {
 
         for (int i = (frame.getStackSize() - 1); i >= (frame.getStackSize() - count); i--) {
             final Type type = frame.getStack(i).getType();
-            if (type.getDescriptor().equals(NULL_OBJ_DESCRIPTOR)) {
+            if (type.getDescriptor().equals(ObjectConstants.NULL_OBJ_DESCRIPTOR)) {
                 list.add(InsnBuilder.combine(
                         InsnBuilder.debugMarker()
                                 .marker(markerType)
@@ -80,7 +78,7 @@ public class OSSaveOperations {
         int objectsSize = 0;
         for (int i = offset + count - 1; i >= offset; i--) {
             Type type = frame.getStack(i).getType();
-            if (type.getDescriptor().equals(NULL_OBJ_DESCRIPTOR)) {
+            if (type.getDescriptor().equals(ObjectConstants.NULL_OBJ_DESCRIPTOR)) {
                 continue;
             }
             switch (type.getSort()) {
@@ -89,7 +87,8 @@ public class OSSaveOperations {
                 case Type.LONG -> longsSize++;
                 case Type.DOUBLE -> doublesSize++;
                 case Type.ARRAY, Type.OBJECT -> objectsSize++;
-                case Type.METHOD, Type.VOID, default -> throw new IllegalStateException("Unsupported type");
+                case Type.METHOD, Type.VOID -> throw new IllegalStateException("Unsupported type");
+                default -> throw new IllegalStateException("Unsupported type");
             }
         }
         return new VariableSizeManager(
@@ -133,7 +132,8 @@ public class OSSaveOperations {
                     new InsnNode(Opcodes.DUP2_X2),
                     new InsnNode(Opcodes.POP2)
             ).build();
-            case Type.METHOD, Type.VOID, default -> throw new IllegalStateException("Unsupported type");
+            case Type.METHOD, Type.VOID -> throw new IllegalStateException("Unsupported type");
+            default -> throw new IllegalStateException("Unsupported type");
         };
     }
 

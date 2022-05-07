@@ -2,6 +2,7 @@ package com.engineersbox.continuity.instrumenter.method;
 
 import com.engineersbox.continuity.core.continuation.Continuation;
 import com.engineersbox.continuity.core.method.MethodState;
+import com.engineersbox.continuity.instrumenter.bytecode.ObjectConstants;
 import com.engineersbox.continuity.instrumenter.stack.ContinuityVariables;
 import com.engineersbox.continuity.instrumenter.stack.point.ContinuationPoint;
 import com.engineersbox.continuity.instrumenter.stack.point.InvokeContinuationPoint;
@@ -29,14 +30,12 @@ import java.util.stream.StreamSupport;
 public class MethodIntrospector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodIntrospector.class);
-
-    private static final String CONSTRUCTOR_METHOD_NAME = "<init>";
     private static final Type CONTINUATION_CLASS_TYPE = Type.getType(Continuation.class);
     private static final Method CONTINUATION_SUSPEND_METHOD = MethodUtils.getAccessibleMethod(Continuation.class, "suspend");
 
     public MethodContext introspect(final ClassNode classNode,
                                     final MethodNode methodNode) {
-        if (methodNode.name.equals(CONSTRUCTOR_METHOD_NAME)) {
+        if (methodNode.name.equals(ObjectConstants.CONSTRUCTOR_METHOD_NAME)) {
             throw new IllegalStateException(String.format(
                     "Cannot instrument constructor: %s",
                     methodNode.signature

@@ -104,7 +104,6 @@ public class SaveOperations {
                                                         final int index,
                                                         final InvokeContinuationPoint point) {
         return InsnBuilder.combine(
-
         ).build();
     }
 }

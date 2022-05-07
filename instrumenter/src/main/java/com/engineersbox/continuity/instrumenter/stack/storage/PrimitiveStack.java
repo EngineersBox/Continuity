@@ -43,15 +43,7 @@ public class PrimitiveStack {
         }
     }
 
-    private void validateVariableState(final VariableLUT.Variable variable) {
-        if (variable == null) {
-            throw new IllegalStateException("Variable not assigned");
-        }
-    }
-
     public VariableLUT.Variable get(final Type type) {
-        final VariableLUT.Variable variable = this.stackVars.get(type);
-        validateVariableState(variable);
-        return variable;
+        return this.stackVars.get(type);
     }
 }
