@@ -45,9 +45,7 @@ public class OSSaveOperations {
                 .map((final Type type) -> saveVariable(markerType, os, sizes, type))
                 .forEach(list::add);
 
-        final int start = frame.getStackSize() - 1;
-        final int end = frame.getStackSize() - count;
-        for (int i = start; i >= end; i--) {
+        for (int i = (frame.getStackSize() - 1); i >= (frame.getStackSize() - count); i--) {
             final Type type = frame.getStack(i).getType();
             if (type.getDescriptor().equals("Lnull;")) {
                 list.add(InsnBuilder.combine(
