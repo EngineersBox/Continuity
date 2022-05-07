@@ -7,6 +7,7 @@ import org.objectweb.asm.tree.MethodNode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class VariableLUT {
 
@@ -120,6 +121,15 @@ public class VariableLUT {
     }
 
     public final class Variable {
+
+        public static final Set<Type> ALL_TYPES = Set.of(
+                Type.INT_TYPE,
+                Type.FLOAT_TYPE,
+                Type.LONG_TYPE,
+                Type.DOUBLE_TYPE,
+                Type.getType(Object.class)
+        );
+
         private final Type type;
         private final int index;
         private boolean used;

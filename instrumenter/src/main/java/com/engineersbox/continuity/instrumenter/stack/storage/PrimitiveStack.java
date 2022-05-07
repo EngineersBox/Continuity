@@ -49,7 +49,7 @@ public class PrimitiveStack {
         }
     }
 
-    private VariableLUT.Variable get(final Type type) {
+    public VariableLUT.Variable get(final Type type) {
         final VariableLUT.Variable variable = this.stackVars.get(type);
         validateVariableState(variable);
         return variable;
