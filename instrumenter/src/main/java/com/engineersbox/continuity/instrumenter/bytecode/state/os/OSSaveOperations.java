@@ -126,7 +126,7 @@ public class OSSaveOperations {
                     new InsnNode(Opcodes.POP2)
             ).build();
             case Type.METHOD, Type.VOID, default -> throw new IllegalStateException("Unsupported type");
-        }
+        };
     }
 
     private static InsnList saveVariable(final DebugMarker markerType,
