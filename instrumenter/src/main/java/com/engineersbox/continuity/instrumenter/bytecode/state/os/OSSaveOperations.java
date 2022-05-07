@@ -60,7 +60,7 @@ public class OSSaveOperations {
                         new InsnNode(Opcodes.POP)
                 ).build());
             }
-            list.add(storeVarInLVA(markerType, i, os, sizes, type));
+            list.add(storeVarInLVA(markerType, i, sizes, type));
             sizes.decrementSize(type);
         }
         return InsnBuilder.combine(
@@ -84,7 +84,6 @@ public class OSSaveOperations {
 
     private static InsnList storeVarInLVA(final DebugMarker markerType,
                                           final int index,
-                                          final PrimitiveStack os,
                                           final VariableSizeManager sizes,
                                           final Type type) {
         return InsnBuilder.combine(
