@@ -10,6 +10,7 @@ E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumente
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\util\InsnUtils.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\bytecode\builders\SaveVarBuilder.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\stack\storage\VariableLUT.java
+E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\bytecode\ObjectConstants.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\stage\BytecodeInjectionStage.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\bytecode\builders\DebugMarkerBuilder.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\stack\storage\VariableSizeManager.java

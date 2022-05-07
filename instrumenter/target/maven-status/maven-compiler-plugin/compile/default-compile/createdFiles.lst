@@ -40,6 +40,7 @@ com\engineersbox\continuity\instrumenter\clazz\ClassInstrumenter.class
 com\engineersbox\continuity\instrumenter\util\TypeTranslationUtils.class
 com\engineersbox\continuity\instrumenter\stack\storage\VariableLUT$Variable.class
 com\engineersbox\continuity\instrumenter\stack\storage\VariableCache.class
+com\engineersbox\continuity\instrumenter\bytecode\ObjectConstants.class
 com\engineersbox\continuity\instrumenter\Instrumenter.class
 com\engineersbox\continuity\instrumenter\bytecode\builders\CombineIfBuilder.class
 com\engineersbox\continuity\instrumenter\method\bytecode\InitialCutpoint.class

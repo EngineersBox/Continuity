@@ -1,0 +1,107 @@
+echo
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Retrieving continuation state"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    ALOAD 1
+    INVOKEVIRTUAL com/engineersbox/continuity/core/continuation/Continuation.getState ()I
+    TABLESWITCH
+      0: L17
+      1: L18
+      2: L19
+      default: L20
+   L17
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "[Case 0]: Initial invocation, jumping to start of method"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    GOTO L21
+   L18
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "[Case 1]: Attempt to save at an invalid time"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    NEW java/lang/RuntimeException
+    DUP
+    LDC "Saving is not allowed at this stage"
+    INVOKESPECIAL java/lang/RuntimeException.<init> (Ljava/lang/String;)V
+    ATHROW
+   L19
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "[Case 2]: Loading continuation state"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    ALOAD 1
+    INVOKEVIRTUAL com/engineersbox/continuity/core/continuation/Continuation.loadNextMethodState ()Lcom/engineersbox/continuity/core/method/MethodState;
+    ASTORE 8
+    ALOAD 8
+    INVOKEVIRTUAL com/engineersbox/continuity/core/method/MethodState.getData ()[Ljava/lang/Object;
+    ASTORE 7
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Retrieving continuation point"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    ALOAD 8
+    INVOKEVIRTUAL com/engineersbox/continuity/core/method/MethodState.getContinuationPoint ()I
+    TABLESWITCH
+      0: L22
+      default: L23
+   L22
+   L23
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Invalid continuation id"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    NEW java/lang/RuntimeException
+    DUP
+    LDC "Invalid continuation id"
+    INVOKESPECIAL java/lang/RuntimeException.<init> (Ljava/lang/String;)V
+    ATHROW
+   L20
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Received an unknown Continuation state"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    NEW java/lang/RuntimeException
+    DUP
+    LDC "Unknown state"
+    INVOKESPECIAL java/lang/RuntimeException.<init> (Ljava/lang/String;)V
+    ATHROW
+   L21
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Executing method"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+   L24
+    LINENUMBER 25 L24
+    GETSTATIC com/engineersbox/continuity/core/Main.LOGGER : Lorg/slf4j/Logger;
+    LDC "Value: {}"
+    ILOAD 2
+    INVOKESTATIC java/lang/Integer.valueOf (I)Ljava/lang/Integer;
+    INVOKEINTERFACE org/slf4j/Logger.info (Ljava/lang/String;Ljava/lang/Object;)V (itf)
+   L25
+    LINENUMBER 26 L25
+    ALOAD 1
+   L26
+    LINENUMBER 26 L26
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Saving suspend point 0"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Saving OS variables"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Generating java/lang/Object container of size 1"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    LDC 1
+    ANEWARRAY java/lang/Object
+    ASTORE 6
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Storing com/engineersbox/continuity/core/continuation/Continuation at 0 for index 1"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    ALOAD 1
+    SWAP
+    LDC 1
+    SWAP
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Saving LVA variables"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Packing LVA and OS variables"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+   L27
+    LINENUMBER 27 L27
+    RETURN
+   L28

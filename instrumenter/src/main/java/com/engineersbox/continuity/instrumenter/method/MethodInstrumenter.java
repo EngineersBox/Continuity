@@ -10,6 +10,9 @@ import org.objectweb.asm.tree.MethodNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 public class MethodInstrumenter {
@@ -33,6 +36,27 @@ public class MethodInstrumenter {
             methodNode.instructions.insertBefore(nodeToReplace, SaveOperations.constructSaveBytecode(methodContext, i));
             methodNode.instructions.remove(nodeToReplace);
         }
-        LOGGER.trace("Method Bytecode: {}\n{}", methodNode.name, InsnUtils.insnsToString(methodNode.instructions));
+        final String methodFqcn = String.format(
+                "%s-%s",
+                classNode.name.replace('/', '-'),
+                methodNode.name
+        );
+        LOGGER.info("Finished instrumenting {}",
+                methodFqcn
+        );
+        writeBytecodeToFile(
+                "./bytecode/" + methodFqcn  + ".bytecode",
+                methodNode
+        );
+//        LOGGER.trace("Method Bytecode: {}\n{}", methodNode.name, InsnUtils.insnsToString(methodNode.instructions));
+    }
+
+    private void writeBytecodeToFile(final String filename,
+                                     final MethodNode methodNode) {
+        try (final BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            writer.write(methodNode.name + "\n" + InsnUtils.insnsToString(methodNode.instructions));
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
