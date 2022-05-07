@@ -16,6 +16,10 @@ import org.objectweb.asm.tree.analysis.Frame;
 @BytecodeGenerator
 public class OSSaveOperations {
 
+    private static final String NULL_OBJ_DESCRIPTOR = "Lnull;";
+
+    private OSSaveOperations() {}
+
     public static InsnList save(final DebugMarker markerType,
                                 final PrimitiveStack os,
                                 final Frame<BasicValue> frame) {
@@ -47,7 +51,7 @@ public class OSSaveOperations {
 
         for (int i = (frame.getStackSize() - 1); i >= (frame.getStackSize() - count); i--) {
             final Type type = frame.getStack(i).getType();
-            if (type.getDescriptor().equals("Lnull;")) {
+            if (type.getDescriptor().equals(NULL_OBJ_DESCRIPTOR)) {
                 list.add(InsnBuilder.combine(
                         InsnBuilder.debugMarker()
                                 .marker(markerType)
@@ -76,7 +80,7 @@ public class OSSaveOperations {
         int objectsSize = 0;
         for (int i = offset + count - 1; i >= offset; i--) {
             Type type = frame.getStack(i).getType();
-            if ("Lnull;".equals(type.getDescriptor())) {
+            if (type.getDescriptor().equals(NULL_OBJ_DESCRIPTOR)) {
                 continue;
             }
             switch (type.getSort()) {
@@ -88,8 +92,13 @@ public class OSSaveOperations {
                 case Type.METHOD, Type.VOID, default -> throw new IllegalStateException("Unsupported type");
             }
         }
-
-        return new VariableSizeManager(intsSize, longsSize, floatsSize, doublesSize, objectsSize);
+        return new VariableSizeManager(
+                intsSize,
+                longsSize,
+                floatsSize,
+                doublesSize,
+                objectsSize
+        );
     }
 
     private static InsnList storeVarInLVA(final DebugMarker markerType,
@@ -107,12 +116,11 @@ public class OSSaveOperations {
                                 sizes.getSize(type)
                         )),
                 new VarInsnNode(Opcodes.ALOAD, sizes.getSize(type)),
-                getStoreSwapOps(os, sizes, type)
+                getStoreSwapOps(sizes, type)
         ).build();
     }
 
-    private static InsnList getStoreSwapOps(final PrimitiveStack os,
-                                            final VariableSizeManager sizes,
+    private static InsnList getStoreSwapOps(final VariableSizeManager sizes,
                                             final Type type) {
         return switch (type.getSort()) {
             case Type.BOOLEAN, Type.BYTE, Type.SHORT, Type.CHAR, Type.INT, Type.FLOAT, Type.ARRAY, Type.OBJECT -> InsnBuilder.combine(
