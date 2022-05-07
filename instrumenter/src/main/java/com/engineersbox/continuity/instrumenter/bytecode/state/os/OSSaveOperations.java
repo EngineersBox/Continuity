@@ -71,33 +71,15 @@ public class OSSaveOperations {
     private static VariableSizeManager computeSizes(final Frame<BasicValue> frame,
                                                     final int offset,
                                                     final int count) {
-        int intsSize = 0;
-        int longsSize = 0;
-        int floatsSize = 0;
-        int doublesSize = 0;
-        int objectsSize = 0;
+        final VariableSizeManager manager = new VariableSizeManager();
         for (int i = offset + count - 1; i >= offset; i--) {
             Type type = frame.getStack(i).getType();
             if (type.getDescriptor().equals(ObjectConstants.NULL_OBJ_DESCRIPTOR)) {
                 continue;
             }
-            switch (type.getSort()) {
-                case Type.BOOLEAN, Type.BYTE, Type.SHORT, Type.CHAR, Type.INT -> intsSize++;
-                case Type.FLOAT -> floatsSize++;
-                case Type.LONG -> longsSize++;
-                case Type.DOUBLE -> doublesSize++;
-                case Type.ARRAY, Type.OBJECT -> objectsSize++;
-                case Type.METHOD, Type.VOID -> throw new IllegalStateException("Unsupported type");
-                default -> throw new IllegalStateException("Unsupported type");
-            }
+            manager.incrementSize(type);
         }
-        return new VariableSizeManager(
-                intsSize,
-                longsSize,
-                floatsSize,
-                doublesSize,
-                objectsSize
-        );
+        return manager;
     }
 
     private static InsnList storeVarInLVA(final DebugMarker markerType,

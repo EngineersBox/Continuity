@@ -22,6 +22,10 @@ public class VariableSizeManager {
          this.objectsSize = objectsSize;
     }
 
+    public VariableSizeManager() {
+        this(0,0,0,0,0);
+    }
+
 
     public int getSize(final Type type) {
         return switch (type.getSort()) {
@@ -41,6 +45,17 @@ public class VariableSizeManager {
             case Type.LONG -> this.longsSize--;
             case Type.DOUBLE -> this.doublesSize--;
             case Type.ARRAY, Type.OBJECT -> this.objectsSize--;
+            case Type.METHOD, Type.VOID, default -> throw new IllegalStateException("Unsupported type");
+        };
+    }
+
+    public void incrementSize(final Type type) {
+        switch (type.getSort()) {
+            case Type.BOOLEAN, Type.BYTE, Type.SHORT, Type.CHAR, Type.INT -> this.intsSize++;
+            case Type.FLOAT -> this.floatsSize++;
+            case Type.LONG -> this.longsSize++;
+            case Type.DOUBLE -> this.doublesSize++;
+            case Type.ARRAY, Type.OBJECT -> this.objectsSize++;
             case Type.METHOD, Type.VOID, default -> throw new IllegalStateException("Unsupported type");
         };
     }
