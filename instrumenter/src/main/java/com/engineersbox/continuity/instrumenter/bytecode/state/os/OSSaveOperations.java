@@ -74,7 +74,7 @@ public class OSSaveOperations {
         final VariableSizeManager manager = new VariableSizeManager();
         for (int i = offset + count - 1; i >= offset; i--) {
             Type type = frame.getStack(i).getType();
-            if (type.getDescriptor().equals(ObjectConstants.NULL_OBJ_DESCRIPTOR)) {
+            if (type == null || type.getDescriptor().equals(ObjectConstants.NULL_OBJ_DESCRIPTOR)) {
                 continue;
             }
             manager.incrementSize(type);
