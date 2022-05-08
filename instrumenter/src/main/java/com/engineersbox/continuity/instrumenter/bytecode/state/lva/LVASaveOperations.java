@@ -109,6 +109,9 @@ public class LVASaveOperations {
                                          final VariableSizeManager sizes,
                                          final Type type) {
         final VariableLUT.Variable variable = lva.get(type);
+        if (variable == null) {
+            return new InsnList();
+        }
         final int containerSize = sizes.getSize(type);
         final boolean isObjectType = type.equals(Type.getType(Object.class));
         return InsnBuilder.combineIf(
