@@ -14,7 +14,7 @@ public class InsnBuilder {
         return new CombineBuilder().insns(insns);
     }
 
-    public static IfIntEqualBuilder IfIntEqual() {
+    public static IfIntEqualBuilder ifIntEqual() {
         return new IfIntEqualBuilder();
     }
 

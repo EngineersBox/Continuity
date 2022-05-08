@@ -4,9 +4,9 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.FieldNode;
 
-import java.util.Objects;
-
 public class ContinuityField {
+
+    private ContinuityField() {}
 
     public static final int FIELD_ACCESS_MODIFIERS = Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC | Opcodes.ACC_FINAL;
     public static final String FIELD_NAME = "__CONTINUITY_INSTRUMENTATION_MARKER";

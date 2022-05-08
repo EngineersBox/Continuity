@@ -3,23 +3,19 @@ package com.engineersbox.continuity.instrumenter;
 import com.engineersbox.continuity.instrumenter.clazz.CoreClassNode;
 import com.engineersbox.continuity.instrumenter.method.MethodContext;
 import com.engineersbox.continuity.instrumenter.stack.StackReconstructor;
-import com.engineersbox.continuity.instrumenter.stage.*;
+import com.engineersbox.continuity.instrumenter.stage.InstrumentationStage;
+import com.engineersbox.continuity.instrumenter.stage.InstrumentationStageContext;
 import com.engineersbox.continuity.instrumenter.stage.annotation.StageProvider;
-import com.engineersbox.continuity.instrumenter.util.InsnUtils;
 import org.apache.commons.collections4.set.ListOrderedSet;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
-import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.lang.reflect.InvocationTargetException;
 
 public class ContinuityInstrumenter implements Instrumenter {
 
@@ -41,9 +37,9 @@ public class ContinuityInstrumenter implements Instrumenter {
                             );
                         }).map((final Class<?> clazz) -> {
                             try {
-                                return (InstrumentationStage) clazz.newInstance();
-                            } catch (final InstantiationException | IllegalAccessException e) {
-                                throw new RuntimeException("Could not create instrumentation stage", e);
+                                return (InstrumentationStage) clazz.getDeclaredConstructor().newInstance();
+                            } catch (final NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                                throw new IllegalStateException("Could not create instrumentation stage", e);
                             }
                         }).toList()
         );
