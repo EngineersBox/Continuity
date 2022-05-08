@@ -41,7 +41,13 @@ public class OSSaveOperations {
                     frame.getStackSize()
             ));
         }
-        final VariableSizeManager sizes = computeSizes(frame, frame.getStackSize() - count, count);
+        final VariableSizeManager sizes = VariableSizeManager.computeSizes(
+                (final int i) -> frame.getStack(i).getType(),
+                frame.getStackSize() - 1,
+                frame.getStackSize() - count,
+                true,
+                true
+        );
         final InsnList list = new InsnList();
         VariableLUT.Variable.ALL_TYPES.stream()
                 .map((final Type type) -> saveVariable(markerType, os, sizes, type))
@@ -59,6 +65,7 @@ public class OSSaveOperations {
                                 )).build(),
                         new InsnNode(Opcodes.POP)
                 ).build());
+                continue;
             }
             list.add(storeVarInLVA(markerType, i, sizes, type));
             sizes.decrementSize(type);
@@ -66,20 +73,6 @@ public class OSSaveOperations {
         return InsnBuilder.combine(
                 list
         ).build();
-    }
-
-    private static VariableSizeManager computeSizes(final Frame<BasicValue> frame,
-                                                    final int offset,
-                                                    final int count) {
-        final VariableSizeManager manager = new VariableSizeManager();
-        for (int i = offset + count - 1; i >= offset; i--) {
-            Type type = frame.getStack(i).getType();
-            if (type == null || type.getDescriptor().equals(ObjectConstants.NULL_OBJ_DESCRIPTOR)) {
-                continue;
-            }
-            manager.incrementSize(type);
-        }
-        return manager;
     }
 
     private static InsnList storeVarInLVA(final DebugMarker markerType,
@@ -96,7 +89,8 @@ public class OSSaveOperations {
                                 sizes.getSize(type)
                         )),
                 new VarInsnNode(Opcodes.ALOAD, sizes.getSize(type)),
-                getStoreSwapOps(sizes, type)
+                getStoreSwapOps(sizes, type),
+                getStoreOp(type)
         ).build();
     }
 
@@ -116,6 +110,17 @@ public class OSSaveOperations {
             case Type.METHOD, Type.VOID -> throw new IllegalStateException("Unsupported type");
             default -> throw new IllegalStateException("Unsupported type");
         };
+    }
+
+    private static InsnNode getStoreOp(final Type type) {
+        return new InsnNode(switch (type.getSort()) {
+            case Type.BOOLEAN, Type.BYTE, Type.SHORT, Type.CHAR, Type.INT -> Opcodes.IASTORE;
+            case Type.FLOAT -> Opcodes.FASTORE;
+            case Type.LONG -> Opcodes.LASTORE;
+            case Type.DOUBLE -> Opcodes.DASTORE;
+            case Type.ARRAY, Type.OBJECT -> Opcodes.AASTORE;
+            default -> throw new IllegalArgumentException("No such operand for type");
+        });
     }
 
     private static InsnList saveVariable(final DebugMarker markerType,

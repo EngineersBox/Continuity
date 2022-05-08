@@ -72,14 +72,14 @@ public class MethodIntrospector {
 
         final VariableLUT varLUT = new VariableLUT(classNode, methodNode);
         final VariableCache cache = allocateCacheSlots(varLUT, continueInvocationInsnNodes);
-        final PrimitiveStack LVA = allocateLVASlots(
+        final PrimitiveStack lva = allocateLVASlots(
                 varLUT,
                 continueInvocationInsnNodes,
                 suspendCallInsnNodes,
                 frames,
                 methodNode
         );
-        final PrimitiveStack OS = allocateOSSlots(
+        final PrimitiveStack os = allocateOSSlots(
                 varLUT,
                 continueInvocationInsnNodes,
                 suspendCallInsnNodes,
@@ -101,8 +101,8 @@ public class MethodIntrospector {
                 ),
                 continuationPoints,
                 cache,
-                LVA,
-                OS,
+                lva,
+                os,
                 containerStack,
                 continuityVariables
         );
@@ -146,18 +146,18 @@ public class MethodIntrospector {
                                             final List<AbstractInsnNode> suspendCallInsnNodes,
                                             final Frame<BasicValue>[] frames,
                                             final MethodNode methodNode) {
-        final PrimitiveStack LVA = new PrimitiveStack();
+        final PrimitiveStack lva = new PrimitiveStack();
         for (final AbstractInsnNode insnNode : CollectionUtils.union(continueInvocationInsnNodes, suspendCallInsnNodes)) {
             final Frame<BasicValue> frame = frames[methodNode.instructions.indexOf(insnNode)];
             for (int i = 0; i < frame.getLocals(); i++) {
                 final Type type = frame.getLocal(i).getType();
-                if (type == null || "Lnull;".equals(type.getDescriptor())) {
+                if (type == null || type.getDescriptor().equals(ObjectConstants.NULL_OBJ_DESCRIPTOR)) {
                     continue;
                 }
-                LVA.put(type, varLUT.allocExtra(type));
+                lva.put(type, varLUT.allocExtra(type));
             }
         }
-        return LVA;
+        return lva;
     }
 
     private PrimitiveStack allocateOSSlots(final VariableLUT varLUT,
@@ -165,18 +165,18 @@ public class MethodIntrospector {
                                            final List<AbstractInsnNode> suspendCallInsnNodes,
                                            final Frame<BasicValue>[] frames,
                                            final MethodNode methodNode) {
-        final PrimitiveStack LVA = new PrimitiveStack();
+        final PrimitiveStack os = new PrimitiveStack();
         for (final AbstractInsnNode insnNode : CollectionUtils.union(continueInvocationInsnNodes, suspendCallInsnNodes)) {
             final Frame<BasicValue> frame = frames[methodNode.instructions.indexOf(insnNode)];
             for (int i = 0; i < frame.getStackSize(); i++) {
                 final Type type = frame.getStack(i).getType();
-                if ("Lnull;".equals(type.getDescriptor())) {
+                if (type == null || type.getDescriptor().equals(ObjectConstants.NULL_OBJ_DESCRIPTOR)) {
                     continue;
                 }
-                LVA.put(type, varLUT.allocExtra(type));
+                os.put(type, varLUT.allocExtra(type));
             }
         }
-        return LVA;
+        return os;
     }
 
     private List<? extends ContinuationPoint> createSuspendContinuationPoints(List<AbstractInsnNode> suspendCallInsnNodes,

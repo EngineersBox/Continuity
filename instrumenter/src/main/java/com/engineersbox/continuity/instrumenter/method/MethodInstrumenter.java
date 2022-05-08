@@ -30,7 +30,7 @@ public class MethodInstrumenter {
             throw new IllegalArgumentException("MethodContext cannot be null");
         }
         methodNode.instructions.insert(InitialCutpoint.constructInitialInlineCutpoint(methodContext));
-        List<? extends ContinuationPoint> continuationPoints = methodContext.continuationPoints();
+        final List<? extends ContinuationPoint> continuationPoints = methodContext.continuationPoints();
         for (int i = 0; i < continuationPoints.size(); i++) {
             final AbstractInsnNode nodeToReplace = continuationPoints.get(i).getInvokeInstruction();
             methodNode.instructions.insertBefore(nodeToReplace, SaveOperations.constructSaveBytecode(methodContext, i));

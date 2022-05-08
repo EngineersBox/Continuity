@@ -7,29 +7,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PrimitiveStack {
-    private final Map<Type, VariableLUT.Variable> stackVars;
+    private final Map<Integer, VariableLUT.Variable> stackVars;
 
     public PrimitiveStack() {
         this.stackVars = new HashMap<>();
     }
 
     private void putIfNotExists(final Type type, final VariableLUT.Variable variable) {
-        if (this.stackVars.containsKey(type)) {
+        if (this.stackVars.containsKey(internalSort(type))) {
             return;
         }
-        this.stackVars.put(type, variable);
+        this.stackVars.put(internalSort(type), variable);
     }
 
     public void put(final Type type, final VariableLUT.Variable variable) {
         validateVariable(type, variable);
-        switch (type.getSort()) {
-            case Type.BOOLEAN, Type.BYTE, Type.CHAR, Type.SHORT, Type.INT -> putIfNotExists(Type.INT_TYPE, variable);
-            case Type.LONG -> putIfNotExists(Type.LONG_TYPE, variable);
-            case Type.FLOAT -> putIfNotExists(Type.FLOAT_TYPE, variable);
-            case Type.DOUBLE -> putIfNotExists(Type.DOUBLE_TYPE, variable);
-            case Type.ARRAY, Type.OBJECT -> putIfNotExists(Type.getType(Object.class), variable);
-            default -> throw new IllegalArgumentException("Unsupported variable type");
-        }
+        putIfNotExists(type, variable);
     }
 
     private void validateVariable(final Type type,
@@ -44,6 +37,17 @@ public class PrimitiveStack {
     }
 
     public VariableLUT.Variable get(final Type type) {
-        return this.stackVars.get(type);
+        return this.stackVars.get(internalSort(type));
+    }
+
+    private int internalSort(final Type type) {
+        return switch (type.getSort()) {
+            case Type.BOOLEAN, Type.BYTE, Type.CHAR, Type.SHORT, Type.INT -> Type.INT;
+            case Type.LONG -> Type.LONG;
+            case Type.FLOAT -> Type.FLOAT;
+            case Type.DOUBLE -> Type.DOUBLE;
+            case Type.ARRAY, Type.OBJECT -> Type.OBJECT;
+            default -> throw new IllegalArgumentException("Unsupported variable type");
+        };
     }
 }

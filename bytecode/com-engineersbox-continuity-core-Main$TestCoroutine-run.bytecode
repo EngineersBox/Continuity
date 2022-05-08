@@ -97,21 +97,55 @@ run
     LDC "Saving OS variables"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "Generating java/lang/Object container of size 1"
+    LDC "Generating I container of size 1"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     LDC 1
-    ANEWARRAY java/lang/Object
-    ASTORE 9
+    NEWARRAY T_INT
+    ASTORE 11
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "Storing com/engineersbox/continuity/core/continuation/Continuation at 0 for index 1"
+    LDC "Storing com/engineersbox/continuity/core/continuation/Continuation at 0 for index 0"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-    ALOAD 1
+    ALOAD 0
     SWAP
-    LDC 1
+    LDC 0
     SWAP
+    AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "Saving LVA variables"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Generating I container of size 1"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    LDC 1
+    NEWARRAY T_INT
+    ASTORE 5
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Generating java/lang/Object container of size 2"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    LDC 2
+    ANEWARRAY java/lang/Object
+    ASTORE 3
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Storing com/engineersbox/continuity/core/Main$TestCoroutine at 0 for index 2"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    ALOAD 3
+    LDC 2
+    ALOAD 0
+    AASTORE
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Storing com/engineersbox/continuity/core/continuation/Continuation at 1 for index 3"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    ALOAD 3
+    LDC 3
+    ALOAD 1
+    AASTORE
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Storing I at 2 for index 1"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    ALOAD 5
+    LDC 1
+    ILOAD 2
+    IASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "Packing LVA and OS variables"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V

@@ -65,17 +65,17 @@ echo
     LDC "Executing method"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
    L24
-    LINENUMBER 25 L24
+    LINENUMBER 27 L24
     GETSTATIC com/engineersbox/continuity/core/Main.LOGGER : Lorg/slf4j/Logger;
     LDC "Value: {}"
     ILOAD 2
     INVOKESTATIC java/lang/Integer.valueOf (I)Ljava/lang/Integer;
     INVOKEINTERFACE org/slf4j/Logger.info (Ljava/lang/String;Ljava/lang/Object;)V (itf)
    L25
-    LINENUMBER 26 L25
+    LINENUMBER 28 L25
     ALOAD 1
    L26
-    LINENUMBER 26 L26
+    LINENUMBER 28 L26
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "Saving suspend point 0"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
@@ -102,6 +102,6 @@ echo
     LDC "Packing LVA and OS variables"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
    L27
-    LINENUMBER 27 L27
+    LINENUMBER 29 L27
     RETURN
    L28
