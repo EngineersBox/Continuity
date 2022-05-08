@@ -12,6 +12,9 @@ import org.objectweb.asm.tree.analysis.Frame;
 @BytecodeGenerator
 public class ArrayStoreSaveOperations {
 
+    private ArrayStoreSaveOperations() {}
+
+
     public static InsnList save(final DebugMarker markerType,
                                 final VariableLUT.Variable container,
                                 final PrimitiveStack lva,

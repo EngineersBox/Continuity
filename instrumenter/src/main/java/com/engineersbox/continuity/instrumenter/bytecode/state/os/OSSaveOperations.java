@@ -3,6 +3,7 @@ package com.engineersbox.continuity.instrumenter.bytecode.state.os;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.ObjectConstants;
 import com.engineersbox.continuity.instrumenter.bytecode.annotation.BytecodeGenerator;
+import com.engineersbox.continuity.instrumenter.bytecode.state.StackStateSaveOperations;
 import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveStack;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableSizeManager;
@@ -14,7 +15,7 @@ import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
 @BytecodeGenerator
-public class OSSaveOperations {
+public class OSSaveOperations extends StackStateSaveOperations {
 
     private OSSaveOperations() {}
 
@@ -121,44 +122,5 @@ public class OSSaveOperations {
             case Type.ARRAY, Type.OBJECT -> Opcodes.AASTORE;
             default -> throw new IllegalArgumentException("No such operand for type");
         });
-    }
-
-    private static InsnList saveVariable(final DebugMarker markerType,
-                                         final PrimitiveStack os,
-                                         final VariableSizeManager sizes,
-                                         final Type type) {
-        final VariableLUT.Variable variable = os.get(type);
-        if (variable == null) {
-            return new InsnList();
-        }
-        final int containerSize = sizes.getSize(type);
-        final boolean isObjectType = type.equals(Type.getType(Object.class));
-        return InsnBuilder.combineIf(
-                containerSize > 0,
-                () -> new Object[]{
-                        InsnBuilder.debugMarker()
-                                .marker(markerType)
-                                .message(String.format(
-                                        "Generating %s container of size %d",
-                                        type.getInternalName(),
-                                        containerSize
-                                )).build(),
-                        new LdcInsnNode(containerSize),
-                        isObjectType
-                                ? new TypeInsnNode(Opcodes.ANEWARRAY, "java/lang/Object")
-                                : new IntInsnNode(Opcodes.NEWARRAY, mapTypeToTypeOperandInsn(type)),
-                        new VarInsnNode(Opcodes.ASTORE, variable.getIndex())
-                }
-        ).build();
-    }
-
-    private static int mapTypeToTypeOperandInsn(final Type type) {
-        return switch (type.getSort()) {
-            case Type.BOOLEAN, Type.BYTE, Type.SHORT, Type.CHAR, Type.INT -> Opcodes.T_INT;
-            case Type.FLOAT -> Opcodes.T_FLOAT;
-            case Type.LONG -> Opcodes.T_LONG;
-            case Type.DOUBLE -> Opcodes.T_DOUBLE;
-            default -> throw new IllegalArgumentException("No such operand for type");
-        };
     }
 }
