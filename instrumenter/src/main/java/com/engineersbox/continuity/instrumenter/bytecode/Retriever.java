@@ -7,6 +7,8 @@ import java.util.List;
 
 public class Retriever {
 
+    private Retriever() {}
+
     @SuppressWarnings("unchecked")
     public static <T extends ContinuationPoint> T getContinuationPoint(final MethodContext methodContext,
                                                                        final int index,

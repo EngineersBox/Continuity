@@ -108,7 +108,6 @@ public class OSSaveOperations extends StackStateSaveOperations {
                     new InsnNode(Opcodes.DUP2_X2),
                     new InsnNode(Opcodes.POP2)
             ).build();
-            case Type.METHOD, Type.VOID -> throw new IllegalStateException("Unsupported type");
             default -> throw new IllegalStateException("Unsupported type");
         };
     }
