@@ -5,6 +5,7 @@ import com.engineersbox.continuity.instrumenter.bytecode.Retriever;
 import com.engineersbox.continuity.instrumenter.bytecode.annotation.BytecodeGenerator;
 import com.engineersbox.continuity.instrumenter.bytecode.state.lva.LVASaveOperations;
 import com.engineersbox.continuity.instrumenter.bytecode.state.os.OSSaveOperations;
+import com.engineersbox.continuity.instrumenter.bytecode.state.store.ArrayStoreSaveOperations;
 import com.engineersbox.continuity.instrumenter.method.MethodContext;
 import com.engineersbox.continuity.instrumenter.stack.point.ContinuationPoint;
 import com.engineersbox.continuity.instrumenter.stack.point.InvokeContinuationPoint;
@@ -96,7 +97,14 @@ public class SaveOperations {
                 InsnBuilder.debugMarker()
                         .marker(markerType)
                         .message("Packing LVA and OS variables")
-                        .build()
+                        .build(),
+                ArrayStoreSaveOperations.save(
+                        markerType,
+                        container,
+                        lva,
+                        os,
+                        frame
+                )
         ).build();
     }
 
