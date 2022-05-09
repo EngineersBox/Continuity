@@ -1,6 +1,7 @@
 package com.engineersbox.continuity.instrumenter.method.bytecode;
 
 import com.engineersbox.continuity.core.annotation.BytecodeInternal;
+import com.engineersbox.continuity.core.state.ContinuationState;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.Retriever;
 import com.engineersbox.continuity.instrumenter.bytecode.annotation.BytecodeGenerator;
@@ -84,9 +85,81 @@ public class SaveOperations {
                 InsnBuilder.debugMarker()
                         .marker(markerType)
                         .message("Setting save state")
-                        .build()
+                        .build(),
+                InsnBuilder.call()
+                        .method(BytecodeInternal.Accessor.getMethod("Continuation.setState"))
+                        .args(
+                                InsnBuilder.loadVar(methodContext.continuityVariables().continuationArgVar()).build(),
+                                InsnBuilder.constant(ContinuationState.SAVING.ordinal()).build()
+                        )
+                        .build(),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Returning dummy (none if void)")
+                        .build(),
+                InsnBuilder.dummyReturn(methodContext.signature().descriptor().getReturnType()), // <- BUG: Error originates from here (*)
+                InsnBuilder.label(point.getContinueExecutionLabel()).build()
         ).build();
     }
+
+    /*
+     * BUG: Fix this bytecode verification error [Location: (*)]
+     * Exception in thread "main" java.lang.VerifyError: Bad type on operand stack in aastore
+     * Exception Details:
+     *   Location:
+     *     com/engineersbox/continuity/core/Main$TestCoroutine.run(Lcom/engineersbox/continuity/core/continuation/Continuation;)V @233: aastore
+     *   Reason:
+     *     Type 'com/engineersbox/continuity/core/Main$TestCoroutine' (current frame, stack[3]) is not assignable to reference type
+     *   Current Frame:
+     *     bci: @233
+     *     flags: { }
+     *     locals: { 'com/engineersbox/continuity/core/Main$TestCoroutine', 'com/engineersbox/continuity/core/continuation/Continuation', integer, top, top, top, top, top, top, top, top, '[I' }
+     *     stack: { 'com/engineersbox/continuity/core/Main$TestCoroutine', 'com/engineersbox/continuity/core/continuation/Continuation', integer, 'com/engineersbox/continuity/core/Main$TestCoroutine', integer, 'com/engineersbox/continuity/core/continuation/Continuation' }
+     *   Bytecode:
+     *     0000000: b200 1c12 1eb6 0024 2bb6 002a aa00 0000
+     *     0000010: 0000 0082 0000 0000 0000 0002 0000 001c
+     *     0000020: 0000 0027 0000 0039 b200 1c12 2cb6 0024
+     *     0000030: a700 70b2 001c 122e b600 24bb 0030 5912
+     *     0000040: 32b7 0034 bfb2 001c 1236 b600 242b b600
+     *     0000050: 3a3a 0e19 0eb6 0040 3a0d b200 1c12 42b6
+     *     0000060: 0024 190e b600 45aa 0000 0015 0000 0000
+     *     0000070: 0000 0001 0000 0015 0000 0015 b200 1c12
+     *     0000080: 47b6 0024 bb00 3059 1247 b700 34bf b200
+     *     0000090: 1c12 49b6 0024 bb00 3059 124b b700 34bf
+     *     00000a0: b200 1c12 4db6 0024 b200 5112 53b9 0058
+     *     00000b0: 0200 033d 1c10 0aa2 00fb 2a2b 1c2b b200
+     *     00000c0: 1c12 5ab6 0024 b200 1c12 5cb6 0024 b200
+     *     00000d0: 1c12 5eb6 0024 125f bc0a 3a0b b200 1c12
+     *     00000e0: 61b6 0024 2a5f 1262 5f53 b200 1c12 64b6
+     *     00000f0: 0024 b200 1c12 66b6 0024 1267 bd00 044e
+     *     0000100: b200 1c12 5eb6 0024 125f bc0a 3a05 b200
+     *     0000110: 1c12 69b6 0024 2d12 672a 53b2 001c 126b
+     *     0000120: b600 242d 126c 2b53 b200 1c12 6eb6 0024
+     *     0000130: 1905 125f 1c4f b200 1c12 70b6 0024 b200
+     *     0000140: 1c12 72b6 0024 1273 bd00 043a 0db2 001c
+     *     0000150: 1275 b600 2419 0d12 622d 53b2 001c 1277
+     *     0000160: b600 2419 0d12 6c19 0553 b200 1c12 79b6
+     *     0000170: 0024 190d 127a 1909 53b2 001c 127c b600
+     *     0000180: 2419 0ebb 003c 5912 7e12 5f12 6219 0db7
+     *     0000190: 0081 b600 85b2 001c 1287 b600 242b 125f
+     *     00001a0: b600 8bb2 001c 128d b600 24b1 0000 0000
+     *     00001b0: 00bf b1
+     *   Stackmap Table:
+     *     same_frame(@40)
+     *     same_frame(@51)
+     *     same_frame(@69)
+     *     full_frame(@124,{Object[#2],Object[#38],Top,Top,Top,Top,Top,Top,Top,Top,Top,Top,Top,Object[#147],Object[#60]},{})
+     *     full_frame(@142,{Object[#2],Object[#38]},{})
+     *     same_frame(@160)
+     *     append_frame(@180,Integer)
+     *     full_frame(@428,{},{Object[#149]})
+     *     append_frame(@434,Object[#2],Object[#38],Integer)
+     *
+     *     at com.engineersbox.continuity.core.Main.main(Main.java:31)
+     * Disconnected from the target VM, address: '127.0.0.1:58583', transport: 'socket'
+     *
+     * Process finished with exit code 1
+     */
 
     private static InsnList saveVariables(final DebugMarker markerType,
                                           final int index,

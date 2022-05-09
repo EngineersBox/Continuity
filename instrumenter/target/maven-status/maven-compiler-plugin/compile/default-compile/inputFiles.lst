@@ -21,6 +21,7 @@ E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumente
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\stack\point\SuspendMethodContinuationPoint.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\method\MethodIntrospector.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\bytecode\builders\LineNumberBuilder.java
+E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\bytecode\builders\DummyReturnBuilder.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\bytecode\InsnListCollector.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\stack\point\InvokeContinuationPoint.java
 E:\Continuity\instrumenter\src\main\java\com\engineersbox\continuity\instrumenter\bytecode\BytecodeBuilder.java

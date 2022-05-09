@@ -2,6 +2,7 @@ package com.engineersbox.continuity.instrumenter.bytecode;
 
 import com.engineersbox.continuity.instrumenter.bytecode.builders.*;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.LabelNode;
 
 import java.util.function.Supplier;
@@ -64,5 +65,9 @@ public class InsnBuilder {
 
     public static ConstantBuilder constant(final Object value) {
         return new ConstantBuilder().constant(value);
+    }
+
+    public static DummyReturnBuilder dummyReturn(final Type returnType) {
+        return new DummyReturnBuilder().dummyType(returnType);
     }
 }

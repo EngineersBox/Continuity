@@ -1,4 +1,5 @@
 com\engineersbox\continuity\instrumenter\stage\InstrumentationStageContext.class
+com\engineersbox\continuity\instrumenter\bytecode\builders\DummyReturnBuilder.class
 com\engineersbox\continuity\instrumenter\bytecode\state\os\OSRestoreOperations.class
 com\engineersbox\continuity\instrumenter\stack\point\InvokeContinuationPoint.class
 com\engineersbox\continuity\instrumenter\stage\BytecodeInjectionStage.class

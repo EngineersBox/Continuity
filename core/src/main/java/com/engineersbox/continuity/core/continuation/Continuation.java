@@ -20,7 +20,7 @@ public final class Continuation implements Serializable {
     public Continuation() {}
 
     public void suspend() {
-        // TODO
+//        throw new UnsupportedOperationException("Continuation context was not instrumented");
     }
 
     @BytecodeInternal
