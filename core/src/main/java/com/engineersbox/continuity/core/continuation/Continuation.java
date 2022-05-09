@@ -49,7 +49,7 @@ public final class Continuation implements Serializable {
         this.state = state.ordinal();
     }
 
-    @BytecodeInternal(key = "Continuation.setState")
+    @BytecodeInternal
     public void setState(final int state) {
         this.state = ContinuationState.fromOrdinal(state).ordinal();
     }
