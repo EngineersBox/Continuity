@@ -114,17 +114,17 @@ run
     LDC "Saving LVA variables"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "Generating java/lang/Object container of size 2"
-    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-    LDC 2
-    ANEWARRAY java/lang/Object
-    ASTORE 3
-    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "Generating I container of size 1"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     LDC 1
     NEWARRAY T_INT
     ASTORE 5
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Generating java/lang/Object container of size 2"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    LDC 2
+    ANEWARRAY java/lang/Object
+    ASTORE 3
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "Storing com/engineersbox/continuity/core/Main$TestCoroutine at 0 for index 2"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
@@ -156,13 +156,6 @@ run
     ANEWARRAY java/lang/Object
     ASTORE 13
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "Storing java/lang/Object into array at index 0"
-    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-    ALOAD 13
-    LDC 0
-    ALOAD 3
-    AASTORE
-    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "Storing I into array at index 2"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 13
@@ -170,10 +163,17 @@ run
     ALOAD 5
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "Storing java/lang/Object into array at index 5"
+    LDC "Storing java/lang/Object into array at index 4"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 13
-    LDC 5
+    LDC 4
+    ALOAD 3
+    AASTORE
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Storing java/lang/Object into array at index 9"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    ALOAD 13
+    LDC 9
     ALOAD 9
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;

@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -34,36 +35,39 @@ public @interface BytecodeInternal {
         );
 
         @SuppressWarnings({"rawtypes","java:S3740"})
-        private static final Map<String, Constructor> CAPTURED_CONSTRUCTORS;
-        private static final Map<String, Method> CAPTURED_METHODS;
+        private static final Map<String, Constructor> CAPTURED_CONSTRUCTORS = convertCallablesToMap(
+                BYTECODE_INTERNAL_REFLECTIONS.getConstructorsAnnotatedWith(BytecodeInternal.class),
+                Accessor::getConstructorKey
+        );
+        private static final Map<String, Method> CAPTURED_METHODS = convertCallablesToMap(
+                BYTECODE_INTERNAL_REFLECTIONS.getMethodsAnnotatedWith(BytecodeInternal.class),
+                Accessor::getMethodKey
+        );
 
-        static {
-            CAPTURED_CONSTRUCTORS = BYTECODE_INTERNAL_REFLECTIONS.getConstructorsAnnotatedWith(BytecodeInternal.class)
-                    .stream()
-                    .collect(Collectors.toMap(
+        private static <T> Map<String, T> convertCallablesToMap(final Set<T> callables,
+                                                                final Function<T, String> keyMapper) {
+            return callables.stream().collect(Collectors.toMap(
+                    keyMapper,
+                    Function.identity()
+            ));
+        }
 
-                            (@SuppressWarnings({"rawtypes","java:S3740"}) final Constructor constructor) -> {
-                                final String annotationKey = ((Constructor<?>) constructor).getAnnotation(BytecodeInternal.class).key();
-                                return !annotationKey.equals("") ? annotationKey : String.format(
-                                        "%s.init",
-                                        constructor.getDeclaringClass().getSimpleName()
-                                );
-                            },
-                            Function.identity()
-                    ));
-            CAPTURED_METHODS = BYTECODE_INTERNAL_REFLECTIONS.getMethodsAnnotatedWith(BytecodeInternal.class)
-                    .stream()
-                    .collect(Collectors.toMap(
-                            (final Method method) -> {
-                                final String annotationKey = method.getAnnotation(BytecodeInternal.class).key();
-                                return !annotationKey.equals("") ? annotationKey : String.format(
-                                        "%s.%s",
-                                        method.getDeclaringClass().getSimpleName(),
-                                        method.getName()
-                                );
-                            },
-                            Function.identity()
-                    ));
+        @SuppressWarnings({"rawtypes","java:S3740"})
+        private static String getConstructorKey(final Constructor constructor) {
+            final String annotationKey = ((Constructor<?>) constructor).getAnnotation(BytecodeInternal.class).key();
+            return !annotationKey.equals("") ? annotationKey : String.format(
+                    "%s.init",
+                    constructor.getDeclaringClass().getSimpleName()
+            );
+        }
+
+        private static String getMethodKey(final Method method) {
+            final String annotationKey = method.getAnnotation(BytecodeInternal.class).key();
+            return !annotationKey.equals("") ? annotationKey : String.format(
+                    "%s.%s",
+                    method.getDeclaringClass().getSimpleName(),
+                    method.getName()
+            );
         }
 
         public static Constructor<?> getConstructor(final String key) {
