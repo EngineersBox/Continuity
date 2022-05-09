@@ -91,8 +91,7 @@ public class SaveOperations {
                         .args(
                                 InsnBuilder.loadVar(methodContext.continuityVariables().continuationArgVar()).build(),
                                 InsnBuilder.constant(ContinuationState.SAVING.ordinal()).build()
-                        )
-                        .build(),
+                        ).build(),
                 InsnBuilder.debugMarker()
                         .marker(markerType)
                         .message("Returning dummy (none if void)")
