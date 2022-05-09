@@ -31,6 +31,11 @@ public final class Continuation implements Serializable {
         return ret;
     }
 
+    public void pushNewMethodState(final MethodState newState) {
+        newState.setNext(firstCutpointPointer);
+        this.firstCutpointPointer = newState;
+    }
+
     public int getState() {
         return this.state;
     }

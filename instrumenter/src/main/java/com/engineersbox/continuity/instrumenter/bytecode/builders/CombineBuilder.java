@@ -36,6 +36,16 @@ public class CombineBuilder implements BytecodeBuilder {
                     throw new IllegalArgumentException("InsnList cannot contain null instructions");
                 }
                 return (InsnList) insn;
+            } else if (insn instanceof InsnList[] insnListArray) {
+                final boolean containsNull = Arrays.stream(insnListArray)
+                        .anyMatch((final InsnList insnList) ->
+                                insnList == null || StreamSupport.stream(insnList.spliterator(), false)
+                                        .anyMatch(Objects::isNull)
+                        );
+                if (containsNull) {
+                    throw new IllegalArgumentException("InsnList cannot contain null or be null");
+                }
+                return Arrays.stream(insnListArray).collect(InsnListCollector.toInsnList());
             } else if (insn instanceof BytecodeBuilder builder) {
                 final InsnList insnList = builder.build();
                 if (StreamSupport.stream(insnList.spliterator(), false).anyMatch(Objects::isNull)) {
