@@ -1,5 +1,7 @@
 package com.engineersbox.continuity.core.method;
 
+import com.engineersbox.continuity.core.annotation.BytecodeInternal;
+
 public class MethodState {
 
     private final String className;
@@ -10,6 +12,7 @@ public class MethodState {
     private MethodState next;
     private MethodState previous;
 
+    @BytecodeInternal(key = "methodState.init")
     public MethodState(final String className,
                        final int methodId,
                        final int continuationPoint,
@@ -25,18 +28,24 @@ public class MethodState {
         this.data = data;
     }
 
+    @BytecodeInternal(key = "methodState.next")
     public MethodState next() { return this.next; }
 
+    @BytecodeInternal(key = "methodState.setNext")
     public void setNext(final MethodState state) { this.next = state; }
 
+    @BytecodeInternal(key = "methodState.previous")
     public MethodState previous() { return this.previous; }
 
+    @BytecodeInternal(key = "methodState.setPrevious")
     public void setPrevious(final MethodState state) { this.previous = state; }
 
+    @BytecodeInternal(key = "methodState.getData")
     public Object[] getData() {
         return this.data;
     }
 
+    @BytecodeInternal(key = "methodState.getContinuationPoint")
     public int getContinuationPoint() {
         return this.continuationPoint;
     }

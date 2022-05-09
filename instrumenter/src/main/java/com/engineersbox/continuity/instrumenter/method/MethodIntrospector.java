@@ -95,9 +95,10 @@ public class MethodIntrospector {
 
         return new MethodContext(
                 new MethodSignature(
-                    classNode.name,
-                    methodNode.name,
-                    Type.getMethodType(methodNode.desc)
+                        classNode.name,
+                        methodNode.name,
+                        Type.getMethodType(methodNode.desc),
+                    1
                 ),
                 continuationPoints,
                 cache,

@@ -19,6 +19,11 @@
     </properties>
 
     <dependencies>
+        <!-- Reflection Utils -->
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+        </dependency>
         <!-- Log4J -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

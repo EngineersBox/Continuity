@@ -1,5 +1,6 @@
 package com.engineersbox.continuity.core.continuation;
 
+import com.engineersbox.continuity.core.annotation.BytecodeInternal;
 import com.engineersbox.continuity.core.method.MethodState;
 import com.engineersbox.continuity.core.state.ContinuationState;
 
@@ -22,6 +23,7 @@ public final class Continuation implements Serializable {
         // TODO
     }
 
+    @BytecodeInternal(key = "continuation.loadNextMethodState")
     public MethodState loadNextMethodState() {
         final MethodState ret = this.nextLoadPointer;
         this.nextLoadPointer = this.nextLoadPointer.next();
@@ -31,19 +33,23 @@ public final class Continuation implements Serializable {
         return ret;
     }
 
+    @BytecodeInternal(key = "continuation.pushNewMethodState")
     public void pushNewMethodState(final MethodState newState) {
         newState.setNext(firstCutpointPointer);
         this.firstCutpointPointer = newState;
     }
 
+    @BytecodeInternal(key = "continuation.getState")
     public int getState() {
         return this.state;
     }
 
+    @BytecodeInternal(key = "continuation.setState")
     public void setState(final ContinuationState state) {
         this.state = state.ordinal();
     }
 
+    @BytecodeInternal(key = "continuation.setState")
     public void setState(final int state) {
         this.state = ContinuationState.fromOrdinal(state).ordinal();
     }

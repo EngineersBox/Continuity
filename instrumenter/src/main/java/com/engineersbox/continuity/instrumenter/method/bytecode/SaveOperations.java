@@ -1,5 +1,6 @@
 package com.engineersbox.continuity.instrumenter.method.bytecode;
 
+import com.engineersbox.continuity.core.annotation.BytecodeInternal;
 import com.engineersbox.continuity.core.continuation.Continuation;
 import com.engineersbox.continuity.core.method.MethodState;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnBuilder;
@@ -26,19 +27,6 @@ import java.lang.reflect.Method;
 
 @BytecodeGenerator
 public class SaveOperations {
-
-    private static final Method CONTINUATION_PUSHNEWMETHODSTATE_METHOD = MethodUtils.getAccessibleMethod(
-            Continuation.class,
-            "pushNewMethodState"
-    );
-
-    private static final Constructor<MethodState> METHODSTATE_CONSTRUCTOR = ConstructorUtils.getAccessibleConstructor(
-            MethodState.class,
-            String.class,
-            Integer.TYPE,
-            Integer.TYPE,
-            Object[].class
-    );
 
     private SaveOperations() {}
 
@@ -88,18 +76,22 @@ public class SaveOperations {
                         .message("Pushing method state snapshot")
                         .build(),
                 InsnBuilder.call()
-                        .method(CONTINUATION_PUSHNEWMETHODSTATE_METHOD)
+                        .method(BytecodeInternal.Accessor.getMethod("continuation.pushNewMethodState"))
                         .args(
                                 InsnBuilder.loadVar(methodContext.continuityVariables().methodStateVar()).build(),
                                 InsnBuilder.newInstance()
-                                        .constructor(METHODSTATE_CONSTRUCTOR)
+                                        .constructor(BytecodeInternal.Accessor.getConstructor("methodState.init"))
                                         .args(
                                                 InsnBuilder.constant(className).build(),
                                                 InsnBuilder.constant(methodContext.signature().id()).build(),
                                                 InsnBuilder.constant(index).build(),
                                                 InsnBuilder.loadVar(container).build()
                                         ).build()
-                        ).build()
+                        ).build(),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Setting save state")
+                        .build()
         ).build();
     }
 
