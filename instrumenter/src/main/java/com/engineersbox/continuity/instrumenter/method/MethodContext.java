@@ -7,7 +7,6 @@ import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveStack;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableCache;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public record MethodContext(MethodSignature signature,
                             List<? extends ContinuationPoint> continuationPoints,

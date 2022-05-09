@@ -35,7 +35,7 @@ public class CombineBuilder implements BytecodeBuilder {
                 if (StreamSupport.stream(insnList.spliterator(), false).anyMatch(Objects::isNull)) {
                     throw new IllegalArgumentException("InsnList cannot contain null instructions");
                 }
-                return (InsnList) insn;
+                return insnList;
             } else if (insn instanceof InsnList[] insnListArray) {
                 final boolean containsNull = Arrays.stream(insnListArray)
                         .anyMatch((final InsnList insnList) ->

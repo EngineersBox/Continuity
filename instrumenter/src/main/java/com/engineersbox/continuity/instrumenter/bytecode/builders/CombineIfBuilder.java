@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 
 public class CombineIfBuilder implements BytecodeBuilder {
 
-    private List<Object> generatedInstructions;
+    private final List<Object> generatedInstructions;
 
     public CombineIfBuilder() {
         this.generatedInstructions = new ArrayList<>();

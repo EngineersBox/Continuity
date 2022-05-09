@@ -13,16 +13,16 @@ import java.util.List;
 import java.util.stream.StreamSupport;
 
 public class MethodInsnUtils {
+
+    private MethodInsnUtils() {}
+
     public static Type getReturnTypeOfInvocation(AbstractInsnNode invokeNode) {
-        if (invokeNode == null) {
-            throw new IllegalArgumentException("InsnNode cannot be null");
-        } else  if (invokeNode instanceof MethodInsnNode methodInsnNode) {
-            return Type.getType(methodInsnNode.desc).getReturnType();
-        } else if (invokeNode instanceof InvokeDynamicInsnNode invokeDynamicInsnNode) {
-            return Type.getType(invokeDynamicInsnNode.desc).getReturnType();
-        } else {
-            throw new IllegalArgumentException("Unsupported node type");
-        }
+        return switch (invokeNode) {
+            case MethodInsnNode methodInsnNode -> Type.getType(methodInsnNode.desc).getReturnType();
+            case InvokeDynamicInsnNode invokeDynamicInsnNode -> Type.getType(invokeDynamicInsnNode.desc).getReturnType();
+            case null -> throw new IllegalArgumentException("InsnNode cannot be null");
+            default -> throw new IllegalArgumentException("Unsupported node type");
+        };
     }
 
     public static List<AbstractInsnNode> getInvocationWithParameterType(final InsnList insnList,

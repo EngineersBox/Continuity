@@ -1,6 +1,5 @@
 package com.engineersbox.continuity.instrumenter.stack.storage;
 
-import com.engineersbox.continuity.instrumenter.util.TypeTranslationUtils;
 import org.objectweb.asm.Type;
 
 import java.util.HashMap;

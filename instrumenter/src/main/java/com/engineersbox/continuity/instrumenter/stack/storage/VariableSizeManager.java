@@ -2,10 +2,7 @@ package com.engineersbox.continuity.instrumenter.stack.storage;
 
 import com.engineersbox.continuity.instrumenter.bytecode.ObjectConstants;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.analysis.BasicValue;
-import org.objectweb.asm.tree.analysis.Frame;
 
-import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
@@ -53,7 +50,7 @@ public class VariableSizeManager {
             case Type.DOUBLE -> this.doublesSize--;
             case Type.ARRAY, Type.OBJECT -> this.objectsSize--;
             case Type.METHOD, Type.VOID, default -> throw new IllegalStateException("Unsupported type");
-        };
+        }
     }
 
     public void incrementSize(final Type type) {
@@ -64,7 +61,7 @@ public class VariableSizeManager {
             case Type.DOUBLE -> this.doublesSize++;
             case Type.ARRAY, Type.OBJECT -> this.objectsSize++;
             case Type.METHOD, Type.VOID, default -> throw new IllegalStateException("Unsupported type");
-        };
+        }
     }
 
     private static IntStream createStream(final int from,

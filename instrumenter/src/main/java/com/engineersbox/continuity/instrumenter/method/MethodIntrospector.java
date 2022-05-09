@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.stream.StreamSupport;
 
 public class MethodIntrospector {
 

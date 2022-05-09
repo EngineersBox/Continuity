@@ -7,8 +7,7 @@ import org.objectweb.asm.Type;
 
 public record ContinuityVariables(VariableLUT.Variable continuationArgVar,
                                   VariableLUT.Variable methodStateVar) {
-    public ContinuityVariables(VariableLUT.Variable continuationArgVar,
-                               VariableLUT.Variable methodStateVar) {
+    public ContinuityVariables {
         if (continuationArgVar == null) {
             throw new IllegalArgumentException("Continuation argument cannot be null");
         } else if (methodStateVar == null) {
@@ -18,7 +17,5 @@ public record ContinuityVariables(VariableLUT.Variable continuationArgVar,
         } else if (!methodStateVar.getType().equals(Type.getType(MethodState.class))) {
             throw new IllegalArgumentException("Method state arguments not of type MethodState");
         }
-        this.continuationArgVar = continuationArgVar;
-        this.methodStateVar = methodStateVar;
     }
 }
