@@ -1,6 +1,11 @@
 # Continuity
 
-A Java state persistence/continuation/checkpointing library with runtime JVM state reification
+A Java state persistence/continuation/checkpointing library with runtime JVM state reification.
+
+### Attribution
+
+This implementation is based around OffByNull's Coroutines library <https://github.com/offbynull/coroutines>. I'm aiming
+to attempt at providing support for lambdas via `INVOKEDYNAMIC` calls which are not supported in the coroutines library.
 
 ## Instrumentation Stages
 
