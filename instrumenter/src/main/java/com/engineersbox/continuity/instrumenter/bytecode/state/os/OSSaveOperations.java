@@ -44,8 +44,8 @@ public class OSSaveOperations extends StackStateSaveOperations {
         }
         final VariableSizeManager sizes = VariableSizeManager.computeSizes(
                 (final int i) -> frame.getStack(i).getType(),
-                frame.getStackSize() - 1,
                 frame.getStackSize() - count,
+                frame.getStackSize() - 1,
                 true,
                 true
         );
