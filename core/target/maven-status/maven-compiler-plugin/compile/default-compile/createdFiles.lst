@@ -1,4 +1,5 @@
 com\engineersbox\continuity\core\Main.class
+com\engineersbox\continuity\core\annotation\exception\UnknownBytecodeInvokeTargetException.class
 com\engineersbox\continuity\core\method\MethodState.class
 com\engineersbox\continuity\core\Main$TestCoroutine.class
 com\engineersbox\continuity\core\annotation\BytecodeInternal$Accessor.class
@@ -7,4 +8,3 @@ com\engineersbox\continuity\core\state\ContinuationState.class
 com\engineersbox\continuity\core\annotation\BytecodeInternal.class
 com\engineersbox\continuity\core\coroutine\Coroutine.class
 com\engineersbox\continuity\core\continuation\Continuation.class
-com\engineersbox\continuity\core\exception\UnknownBytecodeInvokeTargetException.class

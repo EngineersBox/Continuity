@@ -12,7 +12,7 @@ public class MethodState {
     private MethodState next;
     private MethodState previous;
 
-    @BytecodeInternal(key = "methodState.init")
+    @BytecodeInternal
     public MethodState(final String className,
                        final int methodId,
                        final int continuationPoint,
@@ -28,24 +28,24 @@ public class MethodState {
         this.data = data;
     }
 
-    @BytecodeInternal(key = "methodState.next")
+    @BytecodeInternal
     public MethodState next() { return this.next; }
 
-    @BytecodeInternal(key = "methodState.setNext")
+    @BytecodeInternal
     public void setNext(final MethodState state) { this.next = state; }
 
-    @BytecodeInternal(key = "methodState.previous")
+    @BytecodeInternal
     public MethodState previous() { return this.previous; }
 
-    @BytecodeInternal(key = "methodState.setPrevious")
+    @BytecodeInternal
     public void setPrevious(final MethodState state) { this.previous = state; }
 
-    @BytecodeInternal(key = "methodState.getData")
+    @BytecodeInternal
     public Object[] getData() {
         return this.data;
     }
 
-    @BytecodeInternal(key = "methodState.getContinuationPoint")
+    @BytecodeInternal
     public int getContinuationPoint() {
         return this.continuationPoint;
     }

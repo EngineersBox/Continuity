@@ -38,8 +38,8 @@ public class ContinuityClassFileTransformer implements ClassFileTransformer {
             return instrumenter.instrument(classfileBuffer);
         } catch (final Throwable e) {
             LOGGER.error(
-                    "{}:\n\t{}",
-                    e.getMessage(),
+                    "{}\n\t{}",
+                    e,
                     Arrays.stream(e.getStackTrace())
                             .map(StackTraceElement::toString)
                             .collect(Collectors.joining("\n\t"))

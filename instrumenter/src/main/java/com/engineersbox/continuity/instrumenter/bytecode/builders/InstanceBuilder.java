@@ -22,7 +22,7 @@ public class InstanceBuilder implements BytecodeBuilder {
     public InstanceBuilder() {}
 
     public InstanceBuilder constructor(final Constructor<?> constructor) {
-        if (this.constructor == null) {
+        if (constructor == null) {
             throw new IllegalArgumentException("Constructor cannot be null");
         }
         this.constructor = constructor;

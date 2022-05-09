@@ -1,18 +1,14 @@
 package com.engineersbox.continuity.instrumenter.method.bytecode;
 
 import com.engineersbox.continuity.core.annotation.BytecodeInternal;
-import com.engineersbox.continuity.core.continuation.Continuation;
-import com.engineersbox.continuity.core.method.MethodState;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.annotation.BytecodeGenerator;
 import com.engineersbox.continuity.instrumenter.method.MethodContext;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
 import com.engineersbox.continuity.instrumenter.stage.DebugMarker;
-import org.apache.commons.lang3.reflect.MethodUtils;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.LabelNode;
 
-import java.lang.reflect.Method;
 import java.util.stream.IntStream;
 
 @BytecodeGenerator
@@ -36,7 +32,7 @@ public class InitialCutpoint {
                                         .message("Retrieving continuation state")
                                         .build(),
                                 InsnBuilder.call()
-                                        .method(BytecodeInternal.Accessor.getMethod("continuation.getState"))
+                                        .method(BytecodeInternal.Accessor.getMethod("Continuation.getState"))
                                         .args(InsnBuilder.loadVar(continuationArgVar).build()).build()
                         ).build())
                         .defaultBranch(InsnBuilder.combine(
@@ -111,12 +107,12 @@ public class InitialCutpoint {
                         .message("[Case 2]: Loading continuation state")
                         .build(),
                 InsnBuilder.call()
-                        .method(BytecodeInternal.Accessor.getMethod("continuation.loadNextMethodState"))
+                        .method(BytecodeInternal.Accessor.getMethod("Continuation.loadNextMethodState"))
                         .args(InsnBuilder.loadVar(continuationArgVar).build())
                         .build(),
                 InsnBuilder.saveVar(methodState).build(),
                 InsnBuilder.call()
-                        .method(BytecodeInternal.Accessor.getMethod("methodState.getData"))
+                        .method(BytecodeInternal.Accessor.getMethod("MethodState.getData"))
                         .args(InsnBuilder.loadVar(methodState).build())
                         .build(),
                 InsnBuilder.saveVar(containerVar).build(),
@@ -127,7 +123,7 @@ public class InitialCutpoint {
                                         .message("Retrieving continuation point")
                                         .build(),
                                 InsnBuilder.call()
-                                        .method(BytecodeInternal.Accessor.getMethod("methodState.getContinuationPoint"))
+                                        .method(BytecodeInternal.Accessor.getMethod("MethodState.getContinuationPoint"))
                                         .args(InsnBuilder.loadVar(methodState).build())
                                         .build()
                         ).build())

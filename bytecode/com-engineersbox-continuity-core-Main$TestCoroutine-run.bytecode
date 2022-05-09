@@ -5,16 +5,16 @@ run
     ALOAD 1
     INVOKEVIRTUAL com/engineersbox/continuity/core/continuation/Continuation.getState ()I
     TABLESWITCH
-      0: L12
-      1: L13
-      2: L14
-      default: L15
-   L12
+      0: L0
+      1: L1
+      2: L2
+      default: L3
+   L0
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "[Case 0]: Initial invocation, jumping to start of method"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-    GOTO L16
-   L13
+    GOTO L4
+   L1
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "[Case 1]: Attempt to save at an invalid time"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
@@ -23,7 +23,7 @@ run
     LDC "Saving is not allowed at this stage"
     INVOKESPECIAL java/lang/RuntimeException.<init> (Ljava/lang/String;)V
     ATHROW
-   L14
+   L2
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "[Case 2]: Loading continuation state"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
@@ -39,12 +39,12 @@ run
     ALOAD 14
     INVOKEVIRTUAL com/engineersbox/continuity/core/method/MethodState.getContinuationPoint ()I
     TABLESWITCH
-      0: L17
-      1: L18
-      default: L19
-   L17
-   L18
-   L19
+      0: L5
+      1: L6
+      default: L7
+   L5
+   L6
+   L7
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "Invalid continuation id"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
@@ -53,7 +53,7 @@ run
     LDC "Invalid continuation id"
     INVOKESPECIAL java/lang/RuntimeException.<init> (Ljava/lang/String;)V
     ATHROW
-   L15
+   L3
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "Received an unknown Continuation state"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
@@ -62,34 +62,34 @@ run
     LDC "Unknown state"
     INVOKESPECIAL java/lang/RuntimeException.<init> (Ljava/lang/String;)V
     ATHROW
-   L16
+   L4
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "Executing method"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-   L20
-    LINENUMBER 16 L20
+   L8
+    LINENUMBER 16 L8
     GETSTATIC com/engineersbox/continuity/core/Main.LOGGER : Lorg/slf4j/Logger;
     LDC "Started"
     INVOKEINTERFACE org/slf4j/Logger.info (Ljava/lang/String;)V (itf)
-   L21
-    LINENUMBER 17 L21
+   L9
+    LINENUMBER 17 L9
     ICONST_0
     ISTORE 2
-   L22
+   L10
    FRAME APPEND [I]
     ILOAD 2
     BIPUSH 10
-    IF_ICMPGE L23
-   L24
-    LINENUMBER 18 L24
+    IF_ICMPGE L11
+   L12
+    LINENUMBER 18 L12
     ALOAD 0
     ALOAD 1
     ILOAD 2
-   L25
-    LINENUMBER 19 L25
+   L13
+    LINENUMBER 19 L13
     ALOAD 1
-   L26
-    LINENUMBER 19 L26
+   L14
+    LINENUMBER 19 L14
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "Saving suspend point 0"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
@@ -156,10 +156,10 @@ run
     ANEWARRAY java/lang/Object
     ASTORE 13
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "Storing java/lang/Object into array at index 0"
+    LDC "Storing java/lang/Object into array at index 1"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 13
-    LDC 0
+    LDC 1
     ALOAD 3
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
@@ -170,18 +170,33 @@ run
     ALOAD 5
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "Storing java/lang/Object into array at index 5"
+    LDC "Storing java/lang/Object into array at index 6"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 13
-    LDC 5
+    LDC 6
     ALOAD 9
     AASTORE
-   L27
-    LINENUMBER 17 L27
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Pushing method state snapshot"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    ALOAD 14
+    NEW com/engineersbox/continuity/core/method/MethodState
+    DUP
+    LDC "com.engineersbox.continuity.core.Main$TestCoroutine"
+    LDC 1
+    LDC 0
+    ALOAD 13
+    INVOKESPECIAL com/engineersbox/continuity/core/method/MethodState.<init> (Ljava/lang/String;II[Ljava/lang/Object;)V
+    INVOKEVIRTUAL com/engineersbox/continuity/core/continuation/Continuation.pushNewMethodState (Lcom/engineersbox/continuity/core/method/MethodState;)V
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "Setting save state"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+   L15
+    LINENUMBER 17 L15
     IINC 2 1
-    GOTO L22
-   L23
-    LINENUMBER 21 L23
+    GOTO L10
+   L11
+    LINENUMBER 21 L11
    FRAME SAME
     RETURN
-   L28
+   L16

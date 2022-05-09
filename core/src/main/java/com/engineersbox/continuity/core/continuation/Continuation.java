@@ -23,7 +23,7 @@ public final class Continuation implements Serializable {
         // TODO
     }
 
-    @BytecodeInternal(key = "continuation.loadNextMethodState")
+    @BytecodeInternal
     public MethodState loadNextMethodState() {
         final MethodState ret = this.nextLoadPointer;
         this.nextLoadPointer = this.nextLoadPointer.next();
@@ -33,23 +33,23 @@ public final class Continuation implements Serializable {
         return ret;
     }
 
-    @BytecodeInternal(key = "continuation.pushNewMethodState")
+    @BytecodeInternal
     public void pushNewMethodState(final MethodState newState) {
         newState.setNext(firstCutpointPointer);
         this.firstCutpointPointer = newState;
     }
 
-    @BytecodeInternal(key = "continuation.getState")
+    @BytecodeInternal
     public int getState() {
         return this.state;
     }
 
-    @BytecodeInternal(key = "continuation.setState")
+    @BytecodeInternal(key = "Continuation.setStateEnum")
     public void setState(final ContinuationState state) {
         this.state = state.ordinal();
     }
 
-    @BytecodeInternal(key = "continuation.setState")
+    @BytecodeInternal(key = "Continuation.setState")
     public void setState(final int state) {
         this.state = ContinuationState.fromOrdinal(state).ordinal();
     }

@@ -1,8 +1,6 @@
 package com.engineersbox.continuity.instrumenter.method.bytecode;
 
 import com.engineersbox.continuity.core.annotation.BytecodeInternal;
-import com.engineersbox.continuity.core.continuation.Continuation;
-import com.engineersbox.continuity.core.method.MethodState;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.Retriever;
 import com.engineersbox.continuity.instrumenter.bytecode.annotation.BytecodeGenerator;
@@ -16,14 +14,9 @@ import com.engineersbox.continuity.instrumenter.stack.point.SuspendMethodContinu
 import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveStack;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
 import com.engineersbox.continuity.instrumenter.stage.DebugMarker;
-import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 
 @BytecodeGenerator
 public class SaveOperations {
@@ -76,11 +69,11 @@ public class SaveOperations {
                         .message("Pushing method state snapshot")
                         .build(),
                 InsnBuilder.call()
-                        .method(BytecodeInternal.Accessor.getMethod("continuation.pushNewMethodState"))
+                        .method(BytecodeInternal.Accessor.getMethod("Continuation.pushNewMethodState"))
                         .args(
                                 InsnBuilder.loadVar(methodContext.continuityVariables().methodStateVar()).build(),
                                 InsnBuilder.newInstance()
-                                        .constructor(BytecodeInternal.Accessor.getConstructor("methodState.init"))
+                                        .constructor(BytecodeInternal.Accessor.getConstructor("MethodState.init"))
                                         .args(
                                                 InsnBuilder.constant(className).build(),
                                                 InsnBuilder.constant(methodContext.signature().id()).build(),
