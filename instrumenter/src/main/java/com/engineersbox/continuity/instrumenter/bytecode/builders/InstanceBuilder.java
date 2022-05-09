@@ -2,6 +2,7 @@ package com.engineersbox.continuity.instrumenter.bytecode.builders;
 
 import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnBuilder;
+import com.engineersbox.continuity.instrumenter.bytecode.ObjectConstants;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.InsnList;
@@ -50,7 +51,13 @@ public class InstanceBuilder implements BytecodeBuilder {
                 new TypeInsnNode(Opcodes.NEW, clsType.getInternalName()),
                 new InsnNode(Opcodes.DUP),
                 this.args,
-                new MethodInsnNode(Opcodes.INVOKESPECIAL, clsType.getInternalName(), "<init>", methodType.getDescriptor(), false)
+                new MethodInsnNode(
+                        Opcodes.INVOKESPECIAL,
+                        clsType.getInternalName(),
+                        ObjectConstants.CONSTRUCTOR_METHOD_NAME,
+                        methodType.getDescriptor(),
+                        false
+                )
         ).build();
     }
 }
