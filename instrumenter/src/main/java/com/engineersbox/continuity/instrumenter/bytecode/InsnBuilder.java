@@ -57,4 +57,12 @@ public class InsnBuilder {
     public static LineNumberBuilder lineNumber(final int number) {
         return new LineNumberBuilder().lineNumber(number);
     }
+
+    public static InstanceBuilder newInstance() {
+        return new InstanceBuilder();
+    }
+
+    public static ConstantBuilder constant(final Object value) {
+        return new ConstantBuilder().constant(value);
+    }
 }

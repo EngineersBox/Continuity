@@ -4,7 +4,8 @@ import org.objectweb.asm.Type;
 
 public record MethodSignature(String className,
                               String methodName,
-                              Type descriptor) {
+                              Type descriptor,
+                              int id) {
     public MethodSignature {
         if (descriptor.getSort() != Type.METHOD) {
             throw new IllegalArgumentException("Method descriptor must be of sort Type.METHOD");

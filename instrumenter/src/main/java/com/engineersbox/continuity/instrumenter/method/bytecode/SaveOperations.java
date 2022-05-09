@@ -1,6 +1,7 @@
 package com.engineersbox.continuity.instrumenter.method.bytecode;
 
 import com.engineersbox.continuity.core.continuation.Continuation;
+import com.engineersbox.continuity.core.method.MethodState;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.Retriever;
 import com.engineersbox.continuity.instrumenter.bytecode.annotation.BytecodeGenerator;
@@ -14,11 +15,13 @@ import com.engineersbox.continuity.instrumenter.stack.point.SuspendMethodContinu
 import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveStack;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
 import com.engineersbox.continuity.instrumenter.stage.DebugMarker;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 @BytecodeGenerator
@@ -27,6 +30,14 @@ public class SaveOperations {
     private static final Method CONTINUATION_PUSHNEWMETHODSTATE_METHOD = MethodUtils.getAccessibleMethod(
             Continuation.class,
             "pushNewMethodState"
+    );
+
+    private static final Constructor<MethodState> METHODSTATE_CONSTRUCTOR = ConstructorUtils.getAccessibleConstructor(
+            MethodState.class,
+            String.class,
+            Integer.TYPE,
+            Integer.TYPE,
+            Object[].class
     );
 
     private SaveOperations() {}
@@ -58,6 +69,7 @@ public class SaveOperations {
         final PrimitiveStack os = methodContext.OS();
         final Frame<BasicValue> frame = point.getFrame();
         final VariableLUT.Variable container = methodContext.containers().getContainerVar();
+        final String className = methodContext.signature().className().replace('/', '.');
 
         return InsnBuilder.combine(
                 InsnBuilder.combineIf(lineNumber != null, () -> new Object[]{
@@ -74,14 +86,20 @@ public class SaveOperations {
                 InsnBuilder.debugMarker()
                         .marker(markerType)
                         .message("Pushing method state snapshot")
-                        .build()
+                        .build(),
                 InsnBuilder.call()
                         .method(CONTINUATION_PUSHNEWMETHODSTATE_METHOD)
                         .args(
                                 InsnBuilder.loadVar(methodContext.continuityVariables().methodStateVar()).build(),
-                                InsnBuilder.
-                        )
-                        .build()
+                                InsnBuilder.newInstance()
+                                        .constructor(METHODSTATE_CONSTRUCTOR)
+                                        .args(
+                                                InsnBuilder.constant(className).build(),
+                                                InsnBuilder.constant(methodContext.signature().id()).build(),
+                                                InsnBuilder.constant(index).build(),
+                                                InsnBuilder.loadVar(container).build()
+                                        ).build()
+                        ).build()
         ).build();
     }
 
