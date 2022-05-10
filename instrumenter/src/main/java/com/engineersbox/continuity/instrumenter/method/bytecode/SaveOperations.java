@@ -65,27 +65,27 @@ public class SaveOperations {
                         container,
                         frame
                 ),
-//                InsnBuilder.debugMarker()
-//                        .marker(markerType)
-//                        .message("Pushing method state snapshot")
-//                        .build(),
-//                InsnBuilder.call()
-//                        .method(BytecodeInternal.Accessor.getMethod("Continuation.pushNewMethodState"))
-//                        .args(
-//                                InsnBuilder.loadVar(methodContext.continuityVariables().methodStateVar()).build(),
-//                                InsnBuilder.newInstance()
-//                                        .constructor(BytecodeInternal.Accessor.getConstructor("MethodState.init"))
-//                                        .args(
-//                                                InsnBuilder.constant(className).build(),
-//                                                InsnBuilder.constant(methodContext.signature().id()).build(),
-//                                                InsnBuilder.constant(index).build(),
-//                                                InsnBuilder.loadVar(container).build()
-//                                        ).build()
-//                        ).build(),
-//                InsnBuilder.debugMarker()
-//                        .marker(markerType)
-//                        .message("Setting save state")
-//                        .build(),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Pushing method state snapshot")
+                        .build(),
+                InsnBuilder.call()
+                        .method(BytecodeInternal.Accessor.getMethod("Continuation.pushNewMethodState"))
+                        .args(
+                                InsnBuilder.loadVar(methodContext.continuityVariables().methodStateVar()).build(),
+                                InsnBuilder.newInstance()
+                                        .constructor(BytecodeInternal.Accessor.getConstructor("MethodState.init"))
+                                        .args(
+                                                InsnBuilder.constant(className).build(),
+                                                InsnBuilder.constant(methodContext.signature().id()).build(),
+                                                InsnBuilder.constant(index).build(),
+                                                InsnBuilder.loadVar(container).build()
+                                        ).build()
+                        ).build(),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Setting save state")
+                        .build(),
 //                InsnBuilder.call()
 //                        .method(BytecodeInternal.Accessor.getMethod("Continuation.setState"))
 //                        .args(
