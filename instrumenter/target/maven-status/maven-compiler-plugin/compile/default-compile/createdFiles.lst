@@ -26,7 +26,6 @@ com\engineersbox\continuity\instrumenter\bytecode\InsnListBuilder.class
 com\engineersbox\continuity\instrumenter\stage\MethodLocatorStage.class
 com\engineersbox\continuity\instrumenter\bytecode\builders\LineNumberBuilder.class
 com\engineersbox\continuity\instrumenter\clazz\CoreClassNode.class
-com\engineersbox\continuity\instrumenter\bytecode\Retriever.class
 com\engineersbox\continuity\instrumenter\bytecode\builders\ExceptionBuilder.class
 com\engineersbox\continuity\instrumenter\stack\StackReconstructor.class
 com\engineersbox\continuity\instrumenter\bytecode\builders\CombineBuilder.class

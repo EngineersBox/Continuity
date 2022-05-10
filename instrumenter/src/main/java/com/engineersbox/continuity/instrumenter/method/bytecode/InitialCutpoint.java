@@ -86,13 +86,19 @@ public class InitialCutpoint {
                                 .exceptionClass(RuntimeException.class)
                                 .message("Saving is not allowed at this stage").build()
                 ).build(),
-                loadContinuationState(
-                        markerType,
-                        continuationArgVar,
-                        containerVar,
-                        methodState,
-                        methodContext
-                )
+                InsnBuilder.combine(
+                        InsnBuilder.debugMarker()
+                                .marker(markerType)
+                                .message("[Case 2]: Loading continuation state")
+                                .build(),
+                        loadContinuationState(
+                                markerType,
+                                continuationArgVar,
+                                containerVar,
+                                methodState,
+                                methodContext
+                        )
+                ).build()
         };
     }
 
@@ -102,10 +108,6 @@ public class InitialCutpoint {
                                                   final VariableLUT.Variable methodState,
                                                   final MethodContext methodContext) {
         return InsnBuilder.combine(
-                InsnBuilder.debugMarker()
-                        .marker(markerType)
-                        .message("[Case 2]: Loading continuation state")
-                        .build(),
                 InsnBuilder.call()
                         .method(BytecodeInternal.Accessor.getMethod("Continuation.loadNextMethodState"))
                         .args(InsnBuilder.loadVar(continuationArgVar).build())

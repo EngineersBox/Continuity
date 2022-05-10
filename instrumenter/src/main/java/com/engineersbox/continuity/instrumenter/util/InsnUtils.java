@@ -15,6 +15,8 @@ import java.util.stream.StreamSupport;
 
 public class InsnUtils {
 
+    private InsnUtils() {}
+
     private static final Printer PRINTER = new Textifier();
     private static final TraceMethodVisitor METHOD_VISITOR = new TraceMethodVisitor(PRINTER);
 

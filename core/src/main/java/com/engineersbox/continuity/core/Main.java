@@ -31,6 +31,8 @@ public class Main {
         final CoroutineExecutor coroutineExecutor = new CoroutineExecutor(new TestCoroutine());
         coroutineExecutor.execute();
         coroutineExecutor.execute();
+        coroutineExecutor.execute();
+        coroutineExecutor.execute();
     }
 
 }

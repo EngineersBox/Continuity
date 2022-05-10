@@ -4,6 +4,8 @@ import org.objectweb.asm.Type;
 
 public class TypeTranslationUtils {
 
+    private TypeTranslationUtils() {}
+
     public static Class<?> sortToClass(final Type type) {
         return switch (type.getSort()) {
             case Type.BOOLEAN, Type.BYTE, Type.CHAR, Type.SHORT, Type.INT -> Integer.TYPE;
