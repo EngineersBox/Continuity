@@ -97,15 +97,15 @@ run
     LDC "Saving OS variables"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "Generating I container of size 1"
+    LDC "Generating java/lang/Object container of size 1"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     LDC 1
-    NEWARRAY T_INT
-    ASTORE 11
+    ANEWARRAY java/lang/Object
+    ASTORE 9
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "Storing com/engineersbox/continuity/core/continuation/Continuation at 0 for index 0"
+    LDC "Storing com/engineersbox/continuity/core/continuation/Continuation at 0 for index 1"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-    ALOAD 0
+    ALOAD 9
     SWAP
     LDC 0
     SWAP
@@ -126,24 +126,24 @@ run
     ANEWARRAY java/lang/Object
     ASTORE 3
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "Storing com/engineersbox/continuity/core/Main$TestCoroutine at 0 for index 2"
+    LDC "Storing com/engineersbox/continuity/core/Main$TestCoroutine at 0 for index 0"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 3
-    LDC 2
+    LDC 0
     ALOAD 0
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "Storing com/engineersbox/continuity/core/continuation/Continuation at 1 for index 3"
+    LDC "Storing com/engineersbox/continuity/core/continuation/Continuation at 1 for index 1"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 3
-    LDC 3
+    LDC 1
     ALOAD 1
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "Storing I at 2 for index 1"
+    LDC "Storing I at 2 for index 0"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 5
-    LDC 1
+    LDC 0
     ILOAD 2
     IASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
@@ -156,47 +156,30 @@ run
     ANEWARRAY java/lang/Object
     ASTORE 13
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "Storing I into array at index 1"
+    LDC "Storing I into array at index 2"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 13
-    LDC 1
+    LDC 2
     ALOAD 5
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "Storing java/lang/Object into array at index 3"
+    LDC "Storing java/lang/Object into array at index 4"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 13
-    LDC 3
+    LDC 4
     ALOAD 3
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "Storing java/lang/Object into array at index 8"
+    LDC "Storing java/lang/Object into array at index 9"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 13
-    LDC 8
+    LDC 9
     ALOAD 9
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "Pushing method state snapshot"
-    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-    ALOAD 14
-    NEW com/engineersbox/continuity/core/method/MethodState
-    DUP
-    LDC "com.engineersbox.continuity.core.Main$TestCoroutine"
-    LDC 1
-    LDC 0
-    ALOAD 13
-    INVOKESPECIAL com/engineersbox/continuity/core/method/MethodState.<init> (Ljava/lang/String;II[Ljava/lang/Object;)V
-    INVOKEVIRTUAL com/engineersbox/continuity/core/continuation/Continuation.pushNewMethodState (Lcom/engineersbox/continuity/core/method/MethodState;)V
-    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "Setting save state"
-    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-    ALOAD 1
-    LDC 1
-    INVOKEVIRTUAL com/engineersbox/continuity/core/continuation/Continuation.setState (I)V
-    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "Returning dummy (none if void)"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    RETURN
    L28
    L29
     LINENUMBER 17 L29

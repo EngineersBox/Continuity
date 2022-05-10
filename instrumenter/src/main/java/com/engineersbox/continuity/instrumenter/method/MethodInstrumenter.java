@@ -4,8 +4,10 @@ import com.engineersbox.continuity.instrumenter.method.bytecode.InitialCutpoint;
 import com.engineersbox.continuity.instrumenter.method.bytecode.SaveOperations;
 import com.engineersbox.continuity.instrumenter.stack.point.ContinuationPoint;
 import com.engineersbox.continuity.instrumenter.util.InsnUtils;
+import org.apache.commons.lang3.Validate;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,14 @@ public class MethodInstrumenter {
         } else if (methodContext == null) {
             throw new IllegalArgumentException("MethodContext cannot be null");
         }
+        methodContext.continuationPoints()
+                .stream()
+                .map(ContinuationPoint::getInvokeInstruction)
+                .forEach((final MethodInsnNode insnNode) -> {
+                    if (!methodNode.instructions.contains(insnNode)) {
+                        throw new IllegalStateException("Invocation instruction does not belong to method");
+                    }
+                });
         methodNode.instructions.insert(InitialCutpoint.constructInitialInlineCutpoint(methodContext));
         final List<? extends ContinuationPoint> continuationPoints = methodContext.continuationPoints();
         for (int i = 0; i < continuationPoints.size(); i++) {

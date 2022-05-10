@@ -44,10 +44,10 @@ public class OSSaveOperations extends StackStateSaveOperations {
         }
         final VariableSizeManager sizes = VariableSizeManager.computeSizes(
                 (final int i) -> frame.getStack(i).getType(),
-                frame.getStackSize() - count,
-                frame.getStackSize() - 1,
+                0,
+                frame.getStackSize(),
                 true,
-                true
+                false
         );
         final InsnList list = new InsnList();
         VariableLUT.Variable.ALL_TYPES.stream()
@@ -68,7 +68,13 @@ public class OSSaveOperations extends StackStateSaveOperations {
                 ).build());
                 continue;
             }
-            list.add(storeVarInLVA(markerType, i, sizes, type));
+            list.add(storeVarInLVA(
+                    markerType,
+                    i,
+                    sizes,
+                    os,
+                    type
+            ));
             sizes.decrementSize(type);
         }
         return InsnBuilder.combine(
@@ -79,6 +85,7 @@ public class OSSaveOperations extends StackStateSaveOperations {
     private static InsnList storeVarInLVA(final DebugMarker markerType,
                                           final int index,
                                           final VariableSizeManager sizes,
+                                          final PrimitiveStack os,
                                           final Type type) {
         return InsnBuilder.combine(
                 InsnBuilder.debugMarker()
@@ -89,7 +96,7 @@ public class OSSaveOperations extends StackStateSaveOperations {
                                 index,
                                 sizes.getSize(type)
                         )),
-                new VarInsnNode(Opcodes.ALOAD, sizes.getSize(type)),
+                new VarInsnNode(Opcodes.ALOAD, os.get(type).getIndex()),
                 getStoreSwapOps(sizes, type),
                 getStoreOp(type)
         ).build();
@@ -100,11 +107,11 @@ public class OSSaveOperations extends StackStateSaveOperations {
         return switch (type.getSort()) {
             case Type.BOOLEAN, Type.BYTE, Type.SHORT, Type.CHAR, Type.INT, Type.FLOAT, Type.ARRAY, Type.OBJECT -> InsnBuilder.combine(
                     new InsnNode(Opcodes.SWAP),
-                    new LdcInsnNode(sizes.getSize(type)),
+                    new LdcInsnNode(sizes.getSize(type) - 1),
                     new InsnNode(Opcodes.SWAP)
             ).build();
             case Type.LONG, Type.DOUBLE -> InsnBuilder.combine(
-                    new LdcInsnNode(sizes.getSize(type)),
+                    new LdcInsnNode(sizes.getSize(type) - 1),
                     new InsnNode(Opcodes.DUP2_X2),
                     new InsnNode(Opcodes.POP2)
             ).build();

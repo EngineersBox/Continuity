@@ -36,6 +36,7 @@ public class LVASaveOperations extends StackStateSaveOperations {
                 false,
                 false
         );
+        final VariableSizeManager lvaStoreSizes = new VariableSizeManager();
         final InsnList list = new InsnList();
         VariableLUT.Variable.ALL_TYPES.stream()
                 .map((final Type type) -> saveVariable(markerType, lva, sizes, type))
@@ -52,8 +53,8 @@ public class LVASaveOperations extends StackStateSaveOperations {
                         )).build());
                 continue;
             }
-            list.add(storeVarInStorageArray(markerType, i, sizes, lva.get(type), type));
-            sizes.incrementSize(type);
+            list.add(storeVarInStorageArray(markerType, i, lvaStoreSizes, lva.get(type), type));
+            lvaStoreSizes.incrementSize(type);
         }
         return InsnBuilder.combine(
                 list
