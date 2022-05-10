@@ -12,6 +12,8 @@ import org.objectweb.asm.tree.MethodInsnNode;
 
 public class DebugMarkerBuilder implements BytecodeBuilder {
 
+    private static final String DEBUG_LOG_PREFIX = "[BYTECODE DEBUG] ";
+
     private DebugMarker marker;
     private String message;
 
@@ -26,7 +28,7 @@ public class DebugMarkerBuilder implements BytecodeBuilder {
     }
 
     public DebugMarkerBuilder message(final String message) {
-        this.message = message;
+        this.message = DEBUG_LOG_PREFIX + message;
         return this;
     }
 
