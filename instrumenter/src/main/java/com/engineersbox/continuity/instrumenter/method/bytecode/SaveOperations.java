@@ -86,12 +86,12 @@ public class SaveOperations {
                         .marker(markerType)
                         .message("Setting save state")
                         .build(),
-//                InsnBuilder.call()
-//                        .method(BytecodeInternal.Accessor.getMethod("Continuation.setState"))
-//                        .args(
-//                                InsnBuilder.loadVar(methodContext.continuityVariables().continuationArgVar()).build(),
-//                                InsnBuilder.constant(ContinuationState.SAVING.ordinal()).build()
-//                        ).build(),
+                InsnBuilder.call()
+                        .method(BytecodeInternal.Accessor.getMethod("Continuation.setState"))
+                        .args(
+                                InsnBuilder.loadVar(methodContext.continuityVariables().continuationArgVar()).build(),
+                                InsnBuilder.constant(ContinuationState.SAVING.ordinal()).build()
+                        ).build(),
                 InsnBuilder.debugMarker()
                         .marker(markerType)
                         .message("Returning dummy (none if void)")

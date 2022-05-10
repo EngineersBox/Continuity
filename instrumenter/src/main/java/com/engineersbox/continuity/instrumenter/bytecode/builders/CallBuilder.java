@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.BiFunction;
 
 public class CallBuilder implements BytecodeBuilder {
 
@@ -48,34 +49,22 @@ public class CallBuilder implements BytecodeBuilder {
     public InsnList build() {
         final InsnList ret = new InsnList();
         Arrays.stream(args).forEach(ret::add);
-        final Type clsType = Type.getType(method.getDeclaringClass());
-        final Type methodType = Type.getType(method);
+        final BiFunction<Integer, Boolean, MethodInsnNode> createMethodNode = (final Integer opcode, final Boolean isInterface) -> new MethodInsnNode(
+                opcode,
+                Type.getType(method.getDeclaringClass()).getInternalName(),
+                method.getName(),
+                Type.getType(method).getDescriptor(),
+            isInterface
+        );
         if ((method.getModifiers() & Modifier.STATIC) == Modifier.STATIC) {
             validateMethodParameters(method.getParameterCount(), this.args.length);
-            ret.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
-                    clsType.getInternalName(),
-                    method.getName(),
-                    methodType.getDescriptor(),
-                    false
-            ));
+            ret.add(createMethodNode.apply(Opcodes.INVOKESTATIC, false));
         } else if (method.getDeclaringClass().isInterface()) {
             validateMethodParameters(method.getParameterCount() + 1, this.args.length);
-            ret.add(new MethodInsnNode(
-                    Opcodes.INVOKEINTERFACE,
-                    clsType.getInternalName(),
-                    method.getName(),
-                    methodType.getDescriptor(),
-                    true
-            ));
+            ret.add(createMethodNode.apply(Opcodes.INVOKEINTERFACE, true));
         } else {
             validateMethodParameters(method.getParameterCount() + 1, this.args.length);
-            ret.add(new MethodInsnNode(
-                    Opcodes.INVOKEVIRTUAL,
-                    clsType.getInternalName(),
-                    method.getName(),
-                    methodType.getDescriptor(),
-                    false
-            ));
+            ret.add(createMethodNode.apply(Opcodes.INVOKEVIRTUAL, false));
         }
         return ret;
     }

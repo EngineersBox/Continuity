@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MethodIntrospector {
 
@@ -97,7 +98,7 @@ public class MethodIntrospector {
                         classNode.name,
                         methodNode.name,
                         Type.getMethodType(methodNode.desc),
-                    1
+                        ThreadLocalRandom.current().nextInt()
                 ),
                 continuationPoints,
                 cache,
