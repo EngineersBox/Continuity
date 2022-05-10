@@ -17,6 +17,7 @@ public class CoroutineExecutor {
         this.continuation = continuation;
     }
 
+    @SuppressWarnings("java:S112")
     public void execute() {
         try {
             this.coroutine.run(this.continuation);
