@@ -72,7 +72,7 @@ public class SaveOperations {
                 InsnBuilder.call()
                         .method(BytecodeInternal.Accessor.getMethod("Continuation.pushNewMethodState"))
                         .args(
-                                InsnBuilder.loadVar(methodContext.continuityVariables().methodStateVar()).build(),
+                                InsnBuilder.loadVar(methodContext.continuityVariables().continuationArgVar()).build(),
                                 InsnBuilder.newInstance()
                                         .constructor(BytecodeInternal.Accessor.getConstructor("MethodState.init"))
                                         .args(

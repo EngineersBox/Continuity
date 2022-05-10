@@ -1,6 +1,7 @@
 package com.engineersbox.continuity.instrumenter.bytecode.builders;
 
 import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
+import com.engineersbox.continuity.instrumenter.bytecode.InsnBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnListBuilder;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
 import org.objectweb.asm.Opcodes;
@@ -35,7 +36,7 @@ public class LoadVarBuilder implements BytecodeBuilder {
 
     @Override
     public InsnList build() {
-        return new InsnListBuilder().addAll(new VarInsnNode(
+        return InsnBuilder.combine(new VarInsnNode(
                 getLoadOp(this.variable.getType().getSort()),
                 this.variable.getIndex()
         )).build();
