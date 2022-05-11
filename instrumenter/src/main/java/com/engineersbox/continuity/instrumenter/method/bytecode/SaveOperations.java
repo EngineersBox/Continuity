@@ -5,6 +5,7 @@ import com.engineersbox.continuity.core.state.ContinuationState;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.annotation.BytecodeGenerator;
 import com.engineersbox.continuity.instrumenter.bytecode.state.lva.LVASaveOperations;
+import com.engineersbox.continuity.instrumenter.bytecode.state.os.OSRestoreOperations;
 import com.engineersbox.continuity.instrumenter.bytecode.state.os.OSSaveOperations;
 import com.engineersbox.continuity.instrumenter.bytecode.state.store.ArrayStoreSaveOperations;
 import com.engineersbox.continuity.instrumenter.method.MethodContext;
@@ -14,6 +15,7 @@ import com.engineersbox.continuity.instrumenter.stack.point.SuspendMethodContinu
 import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveStack;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
 import com.engineersbox.continuity.instrumenter.stage.DebugMarker;
+import com.engineersbox.continuity.instrumenter.util.InsnUtils;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
@@ -168,6 +170,7 @@ public class SaveOperations {
         final PrimitiveStack lva = methodContext.LVA();
         final Frame<BasicValue> frame = point.getFrame();
 
+        final int invokeArgCount = InsnUtils.argumentCountForInvocation(point.getInvokeInstruction());
         return InsnBuilder.combine(
                 InsnBuilder.combineIf(lineNumber != null, () -> new Object[]{
                         InsnBuilder.lineNumber(lineNumber).build()
@@ -184,6 +187,18 @@ public class SaveOperations {
                         markerType,
                         os,
                         frame
+                ),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Loading invoke arguments")
+                        .build(),
+                OSRestoreOperations.restore(
+                        markerType,
+                        methodContext.OS(),
+                        frame,
+                        frame.getStackSize() - invokeArgCount,
+                        frame.getStackSize() - invokeArgCount,
+                        invokeArgCount
                 )
         ).build();
     }

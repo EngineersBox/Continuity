@@ -1,8 +1,8 @@
 package com.engineersbox.continuity.instrumenter.util;
 
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.InsnList;
-import org.objectweb.asm.tree.LineNumberNode;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.*;
 import org.objectweb.asm.util.Printer;
 import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceMethodVisitor;
@@ -44,5 +44,31 @@ public class InsnUtils {
             }
         }
         return null;
+    }
+
+    public static int argumentCountForInvocation(final AbstractInsnNode insnNode) {
+        if (insnNode == null) {
+            throw new IllegalArgumentException("Node cannot be null");
+        }
+        if (insnNode instanceof MethodInsnNode methodInsnNode) {
+            return argumentCountForMethodInvocation(methodInsnNode);
+        } else if (insnNode instanceof InvokeDynamicInsnNode invokeDynamicInsnNode) {
+            return argumentCountForDynamicInvocation(invokeDynamicInsnNode);
+        }
+        throw new IllegalArgumentException("Unknown invocation type");
+    }
+
+    private static int argumentCountForMethodInvocation(final MethodInsnNode methodInsnNode) {
+        final int extra = switch (methodInsnNode.getOpcode()) {
+            case Opcodes.INVOKEVIRTUAL, Opcodes.INVOKESPECIAL, Opcodes.INVOKEINTERFACE -> 1;
+            case Opcodes.INVOKESTATIC -> 0;
+            default -> throw new IllegalArgumentException("Unknown invocation type");
+        };
+        final int argCount = Type.getType(methodInsnNode.desc).getArgumentTypes().length;
+        return argCount + extra;
+    }
+
+    private static int argumentCountForDynamicInvocation(final InvokeDynamicInsnNode invokeDynamicInsnNode) {
+        return Type.getType(invokeDynamicInsnNode.desc).getArgumentTypes().length;
     }
 }
