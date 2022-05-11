@@ -194,7 +194,7 @@ public class SaveOperations {
                         .build(),
                 OSRestoreOperations.restore(
                         markerType,
-                        methodContext.OS(),
+                        os,
                         frame,
                         frame.getStackSize() - invokeArgCount,
                         frame.getStackSize() - invokeArgCount,
