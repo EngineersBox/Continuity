@@ -38,10 +38,10 @@ public class SaveOperations {
                 index,
                 ContinuationPoint.class
         );
-        if (point instanceof SuspendMethodContinuationPoint suspendPoint) {
+        if (point instanceof SuspendMethodContinuationPoint) {
             LOGGER.info("Point matched to: SuspendMethodContinuationPoint");
             return constructSuspendSaveBytecode(methodContext, index);
-        } else if (point instanceof InvokeContinuationPoint invokePoint) {
+        } else if (point instanceof InvokeContinuationPoint) {
             LOGGER.info("Point matched to: InvokeContinuationPoint");
             return constructInvokeSaveBytecode(methodContext, index);
         }
