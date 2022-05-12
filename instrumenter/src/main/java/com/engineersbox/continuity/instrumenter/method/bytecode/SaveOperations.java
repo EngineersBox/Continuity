@@ -199,7 +199,22 @@ public class SaveOperations {
                         frame.getStackSize() - invokeArgCount,
                         frame.getStackSize() - invokeArgCount,
                         invokeArgCount
-                )
+                ),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Invoking method")
+                        .build(),
+                InsnBuilder.cloneMethod(point.getInvokeInstruction()).build(),
+                InsnBuilder.ifIntEqual()
+                        .lhs(InsnBuilder.call()
+                                .method(BytecodeInternal.Accessor.getMethod("Continuation.getState"))
+                                .args(InsnBuilder.loadVar(methodContext.continuityVariables().continuationArgVar()).build())
+                                .build()
+                        ).rhs(InsnBuilder.constant(ContinuationState.SAVING.ordinal()).build())
+                        .action(InsnBuilder.combine(
+
+                        ).build())
+                        .build()
         ).build();
     }
 }
