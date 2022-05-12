@@ -205,16 +205,17 @@ public class SaveOperations {
                         .message("Invoking method")
                         .build(),
                 InsnBuilder.cloneMethod(point.getInvokeInstruction()).build(),
-                InsnBuilder.ifIntEqual()
+                InsnBuilder.ifIntNotEqual()
                         .lhs(InsnBuilder.call()
                                 .method(BytecodeInternal.Accessor.getMethod("Continuation.getState"))
                                 .args(InsnBuilder.loadVar(methodContext.continuityVariables().continuationArgVar()).build())
                                 .build()
                         ).rhs(InsnBuilder.constant(ContinuationState.SAVING.ordinal()).build())
-                        .action(InsnBuilder.combine(
-
-                        ).build())
+                        .action(InsnBuilder.jumpTo()
+                                .label(point.getContinueExecutionLabel())
+                                .build())
                         .build(),
+                // TODO: Save method context here before invoking
                 InsnBuilder.label(point.getContinueExecutionLabel()).build()
         ).build();
     }

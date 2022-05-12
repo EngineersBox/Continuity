@@ -9,35 +9,41 @@ import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 
 @BytecodeGenerator
-public class IfIntEqualBuilder implements BytecodeBuilder {
+public class IfIntCompareBuilder implements BytecodeBuilder {
 
     private InsnList lhsArg;
     private InsnList rhsArg;
     private InsnList trueAction;
+    private int comparisonOpcode;
 
-    public IfIntEqualBuilder() {}
+    public IfIntCompareBuilder() {}
 
-    public IfIntEqualBuilder lhs(final InsnList lhsArg) {
+    public IfIntCompareBuilder lhs(final InsnList lhsArg) {
         if (lhsArg == null) {
-            throw new IllegalArgumentException("Left hand side of equality cannot be null for primitive int");
+            throw new IllegalArgumentException("Left hand side of comparison cannot be null for primitive int");
         }
         this.lhsArg = lhsArg;
         return this;
     }
 
-    public IfIntEqualBuilder rhs(final InsnList rhsArg) {
+    public IfIntCompareBuilder rhs(final InsnList rhsArg) {
         if (rhsArg == null) {
-            throw new IllegalArgumentException("Right hand side of equality cannot be null for primitive int");
+            throw new IllegalArgumentException("Right hand side of comparison cannot be null for primitive int");
         }
         this.rhsArg = rhsArg;
         return this;
     }
 
-    public IfIntEqualBuilder action(final InsnList trueAction) {
+    public IfIntCompareBuilder action(final InsnList trueAction) {
         if (trueAction == null) {
-            throw new IllegalArgumentException("Action to perform when equality true cannot be null");
+            throw new IllegalArgumentException("Action to perform when comparison true cannot be null");
         }
         this.trueAction = trueAction;
+        return this;
+    }
+
+    public IfIntCompareBuilder invertedComparisonType(final int comparisonOpcode) {
+        this.comparisonOpcode = comparisonOpcode;
         return this;
     }
 
@@ -47,7 +53,7 @@ public class IfIntEqualBuilder implements BytecodeBuilder {
         return InsnBuilder.combine(
                 this.lhsArg,
                 this.rhsArg,
-                new JumpInsnNode(Opcodes.IF_ICMPNE, neqLabel),
+                new JumpInsnNode(this.comparisonOpcode, neqLabel),
                 this.trueAction,
                 neqLabel
         ).build();

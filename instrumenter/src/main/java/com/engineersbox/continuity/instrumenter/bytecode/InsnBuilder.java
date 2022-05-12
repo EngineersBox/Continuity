@@ -2,6 +2,7 @@ package com.engineersbox.continuity.instrumenter.bytecode;
 
 import com.engineersbox.continuity.instrumenter.bytecode.builders.*;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.LabelNode;
@@ -16,8 +17,12 @@ public class InsnBuilder {
         return new CombineBuilder().insns(insns);
     }
 
-    public static IfIntEqualBuilder ifIntEqual() {
-        return new IfIntEqualBuilder();
+    public static IfIntCompareBuilder ifIntEqual() {
+        return new IfIntCompareBuilder().invertedComparisonType(Opcodes.IF_ICMPNE);
+    }
+
+    public static IfIntCompareBuilder ifIntNotEqual() {
+        return new IfIntCompareBuilder().invertedComparisonType(Opcodes.IF_ICMPEQ);
     }
 
     public static SwitchTableBuilder switchTable() {
