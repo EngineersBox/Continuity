@@ -214,7 +214,8 @@ public class SaveOperations {
                         .action(InsnBuilder.combine(
 
                         ).build())
-                        .build()
+                        .build(),
+                InsnBuilder.label(point.getContinueExecutionLabel()).build()
         ).build();
     }
 }
