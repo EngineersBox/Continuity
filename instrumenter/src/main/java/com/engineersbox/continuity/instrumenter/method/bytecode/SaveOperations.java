@@ -163,10 +163,7 @@ public final class SaveOperations extends CoreOperations {
         );
         final Integer lineNumber = point.getLineNumber();
         final PrimitiveStack os = methodContext.OS();
-        final PrimitiveStack lva = methodContext.LVA();
-        final VariableLUT.Variable container = methodContext.containers().getContainerVar();
         final Frame<BasicValue> frame = point.getFrame();
-        final String className = methodContext.signature().className().replace('/', '.');
 
         final int invokeArgCount = InsnUtils.argumentCountForInvocation(point.getInvokeInstruction());
         return InsnBuilder.combine(
@@ -218,10 +215,7 @@ public final class SaveOperations extends CoreOperations {
                         methodContext,
                         index,
                         os,
-                        lva,
-                        container,
                         frame,
-                        className,
                         point,
                         invokeArgCount
                 ),
@@ -233,12 +227,12 @@ public final class SaveOperations extends CoreOperations {
                                                 final MethodContext methodContext,
                                                 final int index,
                                                 final PrimitiveStack os,
-                                                final PrimitiveStack lva,
-                                                final VariableLUT.Variable container,
                                                 final Frame<BasicValue> frame,
-                                                final String className,
                                                 final InvokeContinuationPoint point,
                                                 final int invokeArgCount) {
+        final PrimitiveStack lva = methodContext.LVA();
+        final VariableLUT.Variable container = methodContext.containers().getContainerVar();
+        final String className = methodContext.signature().className().replace('/', '.');
         return InsnBuilder.combine(
                 InsnBuilder.debugMarker()
                         .marker(markerType)
