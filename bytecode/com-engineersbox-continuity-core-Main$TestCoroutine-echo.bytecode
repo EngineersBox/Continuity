@@ -5,16 +5,16 @@ echo
     ALOAD 1
     INVOKEVIRTUAL com/engineersbox/continuity/core/continuation/Continuation.getState ()I
     TABLESWITCH
-      0: L19
-      1: L20
-      2: L21
-      default: L22
-   L19
+      0: L21
+      1: L22
+      2: L23
+      default: L24
+   L21
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "[BYTECODE DEBUG] [Case 0]: Initial invocation, jumping to start of method"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-    GOTO L23
-   L20
+    GOTO L25
+   L22
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "[BYTECODE DEBUG] [Case 1]: Attempt to save at an invalid time"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
@@ -23,7 +23,7 @@ echo
     LDC "Saving is not allowed at this stage"
     INVOKESPECIAL java/lang/RuntimeException.<init> (Ljava/lang/String;)V
     ATHROW
-   L21
+   L23
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "[BYTECODE DEBUG] [Case 2]: Loading continuation state"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
@@ -39,10 +39,10 @@ echo
     ALOAD 8
     INVOKEVIRTUAL com/engineersbox/continuity/core/method/MethodState.getContinuationPoint ()I
     TABLESWITCH
-      0: L24
-      default: L25
-   L24
-   L25
+      0: L26
+      default: L27
+   L26
+   L27
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "[BYTECODE DEBUG] Invalid continuation id"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
@@ -51,7 +51,7 @@ echo
     LDC "Invalid continuation id"
     INVOKESPECIAL java/lang/RuntimeException.<init> (Ljava/lang/String;)V
     ATHROW
-   L22
+   L24
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "[BYTECODE DEBUG] Received an unknown Continuation state"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
@@ -60,22 +60,22 @@ echo
     LDC "Unknown state"
     INVOKESPECIAL java/lang/RuntimeException.<init> (Ljava/lang/String;)V
     ATHROW
-   L23
+   L25
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "[BYTECODE DEBUG] Executing method"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-   L26
-    LINENUMBER 25 L26
+   L28
+    LINENUMBER 25 L28
     GETSTATIC com/engineersbox/continuity/core/Main.LOGGER : Lorg/slf4j/Logger;
     LDC "Value: {}"
     ILOAD 2
     INVOKESTATIC java/lang/Integer.valueOf (I)Ljava/lang/Integer;
     INVOKEINTERFACE org/slf4j/Logger.info (Ljava/lang/String;Ljava/lang/Object;)V (itf)
-   L27
-    LINENUMBER 26 L27
+   L29
+    LINENUMBER 26 L29
     ALOAD 1
-   L28
-    LINENUMBER 26 L28
+   L30
+    LINENUMBER 26 L30
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "[BYTECODE DEBUG] Saving suspend point 0"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
@@ -100,17 +100,17 @@ echo
     LDC "[BYTECODE DEBUG] Saving LVA variables"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "[BYTECODE DEBUG] Generating java/lang/Object container of size 2"
-    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-    LDC 2
-    ANEWARRAY java/lang/Object
-    ASTORE 3
-    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "[BYTECODE DEBUG] Generating I container of size 1"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     LDC 1
     NEWARRAY T_INT
     ASTORE 5
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "[BYTECODE DEBUG] Generating java/lang/Object container of size 2"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    LDC 2
+    ANEWARRAY java/lang/Object
+    ASTORE 3
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "[BYTECODE DEBUG] Storing com/engineersbox/continuity/core/Main$TestCoroutine at 0 for index 0"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
@@ -142,24 +142,24 @@ echo
     ANEWARRAY java/lang/Object
     ASTORE 7
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "[BYTECODE DEBUG] Storing java/lang/Object into array at index 0"
+    LDC "[BYTECODE DEBUG] Storing I into array at index 0"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 7
     LDC 0
-    ALOAD 3
-    AASTORE
-    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "[BYTECODE DEBUG] Storing I into array at index 2"
-    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-    ALOAD 7
-    LDC 2
     ALOAD 5
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "[BYTECODE DEBUG] Storing java/lang/Object into array at index 5"
+    LDC "[BYTECODE DEBUG] Storing java/lang/Object into array at index 3"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 7
-    LDC 5
+    LDC 3
+    ALOAD 3
+    AASTORE
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "[BYTECODE DEBUG] Storing java/lang/Object into array at index 8"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    ALOAD 7
+    LDC 8
     ALOAD 6
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
@@ -169,7 +169,7 @@ echo
     NEW com/engineersbox/continuity/core/method/MethodState
     DUP
     LDC "com.engineersbox.continuity.core.Main$TestCoroutine"
-    LDC 1864244843
+    LDC 784154403
     LDC 0
     ALOAD 7
     INVOKESPECIAL com/engineersbox/continuity/core/method/MethodState.<init> (Ljava/lang/String;II[Ljava/lang/Object;)V
@@ -184,8 +184,8 @@ echo
     LDC "[BYTECODE DEBUG] Returning dummy (none if void)"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     RETURN
-   L29
-   L30
-    LINENUMBER 27 L30
-    RETURN
    L31
+   L32
+    LINENUMBER 27 L32
+    RETURN
+   L33

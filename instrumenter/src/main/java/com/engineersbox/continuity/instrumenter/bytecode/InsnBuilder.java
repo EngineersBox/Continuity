@@ -80,4 +80,8 @@ public class InsnBuilder {
     public static MethodCloneBuilder cloneMethod(final AbstractInsnNode insnNode) {
         return new MethodCloneBuilder().method(insnNode);
     }
+
+    public static PopMethodResultBuilder popMethodResult(final AbstractInsnNode insnNode) {
+        return new PopMethodResultBuilder().methodNode(insnNode);
+    }
 }

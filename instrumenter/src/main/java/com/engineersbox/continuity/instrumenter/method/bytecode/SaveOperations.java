@@ -168,7 +168,9 @@ public class SaveOperations {
         final Integer lineNumber = point.getLineNumber();
         final PrimitiveStack os = methodContext.OS();
         final PrimitiveStack lva = methodContext.LVA();
+        final VariableLUT.Variable container = methodContext.containers().getContainerVar();
         final Frame<BasicValue> frame = point.getFrame();
+        final String className = methodContext.signature().className().replace('/', '.');
 
         final int invokeArgCount = InsnUtils.argumentCountForInvocation(point.getInvokeInstruction());
         return InsnBuilder.combine(
@@ -215,7 +217,78 @@ public class SaveOperations {
                                 .label(point.getContinueExecutionLabel())
                                 .build())
                         .build(),
-                // TODO: Save method context here before invoking
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Popping method result")
+                        .build(),
+                InsnBuilder.popMethodResult(point.getInvokeInstruction()).build(),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Loading invocation arguments")
+                        .build(),
+                OSRestoreOperations.restore(
+                        markerType,
+                        os,
+                        frame,
+                        frame.getStackSize() - invokeArgCount,
+                        frame.getStackSize() - invokeArgCount,
+                        invokeArgCount
+                ),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Saving OS variables")
+                        .build(),
+                OSSaveOperations.save(
+                        markerType,
+                        os,
+                        frame
+                ),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Saving LVA variables")
+                        .build(),
+                LVASaveOperations.save(
+                        markerType,
+                        lva,
+                        frame
+                ),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Packing LVA and OS variables")
+                        .build(),
+                ArrayStoreSaveOperations.save(
+                        markerType,
+                        container,
+                        lva,
+                        os,
+                        frame
+                ),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Creating and storing method state")
+                        .build(),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Pushing method state snapshot")
+                        .build(),
+                InsnBuilder.call()
+                        .method(BytecodeInternal.Accessor.getMethod("Continuation.pushNewMethodState"))
+                        .args(
+                                InsnBuilder.loadVar(methodContext.continuityVariables().continuationArgVar()).build(),
+                                InsnBuilder.newInstance()
+                                        .constructor(BytecodeInternal.Accessor.getConstructor("MethodState.init"))
+                                        .args(
+                                                InsnBuilder.constant(className).build(),
+                                                InsnBuilder.constant(methodContext.signature().id()).build(),
+                                                InsnBuilder.constant(index).build(),
+                                                InsnBuilder.loadVar(container).build()
+                                        ).build()
+                        ).build(),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Returning dummy (none if void)")
+                        .build(),
+                InsnBuilder.dummyReturn(methodContext.signature().descriptor().getReturnType()),
                 InsnBuilder.label(point.getContinueExecutionLabel()).build()
         ).build();
     }

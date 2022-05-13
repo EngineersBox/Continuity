@@ -5,6 +5,7 @@ com\engineersbox\continuity\instrumenter\bytecode\state\os\OSRestoreOperations.c
 com\engineersbox\continuity\instrumenter\stack\point\InvokeContinuationPoint.class
 com\engineersbox\continuity\instrumenter\stage\BytecodeInjectionStage.class
 com\engineersbox\continuity\instrumenter\stage\annotation\StageProvider.class
+com\engineersbox\continuity\instrumenter\bytecode\builders\MethodCloneBuilder.class
 com\engineersbox\continuity\instrumenter\bytecode\builders\LabelBuilder.class
 com\engineersbox\continuity\instrumenter\util\MethodInsnUtils.class
 com\engineersbox\continuity\instrumenter\bytecode\state\store\ArrayStoreRestoreOperations.class
@@ -18,7 +19,6 @@ com\engineersbox\continuity\instrumenter\bytecode\BytecodeBuilder.class
 com\engineersbox\continuity\instrumenter\bytecode\state\lva\LVASaveOperations.class
 com\engineersbox\continuity\instrumenter\method\bytecode\RestoreOperations.class
 com\engineersbox\continuity\instrumenter\method\bytecode\SaveOperations.class
-com\engineersbox\continuity\instrumenter\bytecode\builders\IfIntEqualBuilder.class
 com\engineersbox\continuity\instrumenter\bytecode\state\StackStateSaveOperations.class
 com\engineersbox\continuity\instrumenter\bytecode\builders\DebugMarkerBuilder$1.class
 com\engineersbox\continuity\instrumenter\bytecode\builders\SaveVarBuilder.class
@@ -31,6 +31,7 @@ com\engineersbox\continuity\instrumenter\bytecode\builders\ExceptionBuilder.clas
 com\engineersbox\continuity\instrumenter\stack\StackReconstructor.class
 com\engineersbox\continuity\instrumenter\bytecode\builders\CombineBuilder.class
 com\engineersbox\continuity\instrumenter\bytecode\annotation\BytecodeGenerator.class
+com\engineersbox\continuity\instrumenter\bytecode\builders\PopMethodResultBuilder.class
 com\engineersbox\continuity\instrumenter\stage\InstrumentationStage.class
 com\engineersbox\continuity\instrumenter\stack\point\SuspendMethodContinuationPoint.class
 com\engineersbox\continuity\instrumenter\bytecode\InsnListCollector.class
@@ -57,6 +58,7 @@ com\engineersbox\continuity\instrumenter\bytecode\state\os\OSSaveOperations.clas
 com\engineersbox\continuity\instrumenter\stack\point\ContinuationPoint.class
 com\engineersbox\continuity\instrumenter\stack\ContinuityVariables.class
 com\engineersbox\continuity\instrumenter\util\InsnUtils.class
+com\engineersbox\continuity\instrumenter\bytecode\builders\IfIntCompareBuilder.class
 com\engineersbox\continuity\instrumenter\stage\DebugMarker.class
 com\engineersbox\continuity\instrumenter\stack\storage\PrimitiveContainerStack.class
 com\engineersbox\continuity\instrumenter\bytecode\builders\SwitchTableBuilder.class
