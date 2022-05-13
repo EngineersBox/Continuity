@@ -234,39 +234,14 @@ public class SaveOperations {
                         frame.getStackSize() - invokeArgCount,
                         invokeArgCount
                 ),
-                InsnBuilder.debugMarker()
-                        .marker(markerType)
-                        .message("Saving OS variables")
-                        .build(),
-                OSSaveOperations.save(
+                saveVariables(
                         markerType,
-                        os,
-                        frame
-                ),
-                InsnBuilder.debugMarker()
-                        .marker(markerType)
-                        .message("Saving LVA variables")
-                        .build(),
-                LVASaveOperations.save(
-                        markerType,
+                        index,
                         lva,
-                        frame
-                ),
-                InsnBuilder.debugMarker()
-                        .marker(markerType)
-                        .message("Packing LVA and OS variables")
-                        .build(),
-                ArrayStoreSaveOperations.save(
-                        markerType,
+                        os,
                         container,
-                        lva,
-                        os,
                         frame
                 ),
-                InsnBuilder.debugMarker()
-                        .marker(markerType)
-                        .message("Creating and storing method state")
-                        .build(),
                 InsnBuilder.debugMarker()
                         .marker(markerType)
                         .message("Pushing method state snapshot")
