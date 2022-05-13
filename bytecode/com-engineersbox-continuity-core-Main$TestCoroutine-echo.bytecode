@@ -149,10 +149,10 @@ echo
     ALOAD 3
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "[BYTECODE DEBUG] Storing I into array at index 4"
+    LDC "[BYTECODE DEBUG] Storing I into array at index 3"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 7
-    LDC 4
+    LDC 3
     ALOAD 5
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
@@ -169,7 +169,7 @@ echo
     NEW com/engineersbox/continuity/core/method/MethodState
     DUP
     LDC "com.engineersbox.continuity.core.Main$TestCoroutine"
-    LDC -1064378842
+    LDC -1564074624
     LDC 0
     ALOAD 7
     INVOKESPECIAL com/engineersbox/continuity/core/method/MethodState.<init> (Ljava/lang/String;II[Ljava/lang/Object;)V

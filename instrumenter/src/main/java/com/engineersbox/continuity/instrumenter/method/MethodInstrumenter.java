@@ -16,6 +16,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class MethodInstrumenter {
 
@@ -34,11 +35,9 @@ public class MethodInstrumenter {
         methodContext.continuationPoints()
                 .stream()
                 .map(ContinuationPoint::getInvokeInstruction)
-                .forEach((final MethodInsnNode insnNode) -> {
-                    if (!methodNode.instructions.contains(insnNode)) {
-                        throw new IllegalStateException("Invocation instruction does not belong to method");
-                    }
-                });
+                .filter(Predicate.not(methodNode.instructions::contains))
+                .findAny()
+                .ifPresent((final MethodInsnNode node) -> { throw new IllegalStateException("Invocation instruction does not belong to method"); });
         methodNode.instructions.insert(InitialCutpoint.constructInitialInlineCutpoint(methodContext));
         final List<? extends ContinuationPoint> continuationPoints = methodContext.continuationPoints();
         for (int i = 0; i < continuationPoints.size(); i++) {
