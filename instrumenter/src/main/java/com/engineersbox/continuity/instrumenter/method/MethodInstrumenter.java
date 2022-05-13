@@ -57,7 +57,6 @@ public class MethodInstrumenter {
                 "./bytecode/" + methodFqcn  + ".bytecode",
                 methodNode
         );
-//        LOGGER.trace("Method Bytecode: {}\n{}", methodNode.name, InsnUtils.insnsToString(methodNode.instructions));
     }
 
     private void writeBytecodeToFile(final String filename,
