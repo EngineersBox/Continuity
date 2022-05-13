@@ -20,13 +20,9 @@ import com.engineersbox.continuity.instrumenter.util.InsnUtils;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @BytecodeGenerator
 public final class SaveOperations extends CoreOperations {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SaveOperations.class);
 
     private SaveOperations() {}
 
@@ -49,6 +45,7 @@ public final class SaveOperations extends CoreOperations {
         );
     }
 
+    @SuppressWarnings("unused")
     @ClassInstancedInvokable(SuspendMethodContinuationPoint.class)
     static InsnList constructSuspendSaveBytecode(final MethodContext methodContext,
                                                  final int index) {
@@ -155,6 +152,7 @@ public final class SaveOperations extends CoreOperations {
         ).build();
     }
 
+    @SuppressWarnings("unused")
     @ClassInstancedInvokable(InvokeContinuationPoint.class)
     static InsnList constructInvokeSaveBytecode(final MethodContext methodContext,
                                                 final int index) {

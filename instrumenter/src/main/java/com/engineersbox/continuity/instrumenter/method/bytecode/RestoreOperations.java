@@ -8,13 +8,9 @@ import com.engineersbox.continuity.instrumenter.stack.point.ContinuationPoint;
 import com.engineersbox.continuity.instrumenter.stack.point.InvokeContinuationPoint;
 import com.engineersbox.continuity.instrumenter.stack.point.SuspendMethodContinuationPoint;
 import org.objectweb.asm.tree.InsnList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @BytecodeGenerator
 public final class RestoreOperations extends CoreOperations {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RestoreOperations.class);
 
     private RestoreOperations() {}
 
@@ -37,6 +33,7 @@ public final class RestoreOperations extends CoreOperations {
         );
     }
 
+    @SuppressWarnings("unused")
     @ClassInstancedInvokable(SuspendMethodContinuationPoint.class)
     static InsnList constructSuspendRestoreBytecode(final MethodContext methodContext,
                                                     final int index) {
@@ -45,6 +42,7 @@ public final class RestoreOperations extends CoreOperations {
         ).build();
     }
 
+    @SuppressWarnings("unused")
     @ClassInstancedInvokable(InvokeContinuationPoint.class)
     static InsnList constructInvokeRestoreBytecode(final MethodContext methodContext,
                                                    final int index) {
