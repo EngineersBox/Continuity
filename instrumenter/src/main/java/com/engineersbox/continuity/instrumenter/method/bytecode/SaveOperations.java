@@ -213,6 +213,33 @@ public final class SaveOperations extends CoreOperations {
                                 .label(point.getContinueExecutionLabel())
                                 .build())
                         .build(),
+                saveInvocationState(
+                        markerType,
+                        methodContext,
+                        index,
+                        os,
+                        lva,
+                        container,
+                        frame,
+                        className,
+                        point,
+                        invokeArgCount
+                ),
+                InsnBuilder.label(point.getContinueExecutionLabel()).build()
+        ).build();
+    }
+
+    private static InsnList saveInvocationState(final DebugMarker markerType,
+                                                final MethodContext methodContext,
+                                                final int index,
+                                                final PrimitiveStack os,
+                                                final PrimitiveStack lva,
+                                                final VariableLUT.Variable container,
+                                                final Frame<BasicValue> frame,
+                                                final String className,
+                                                final InvokeContinuationPoint point,
+                                                final int invokeArgCount) {
+        return InsnBuilder.combine(
                 InsnBuilder.debugMarker()
                         .marker(markerType)
                         .message("Popping method result")
@@ -259,8 +286,7 @@ public final class SaveOperations extends CoreOperations {
                         .marker(markerType)
                         .message("Returning dummy (none if void)")
                         .build(),
-                InsnBuilder.dummyReturn(methodContext.signature().descriptor().getReturnType()),
-                InsnBuilder.label(point.getContinueExecutionLabel()).build()
+                InsnBuilder.dummyReturn(methodContext.signature().descriptor().getReturnType())
         ).build();
     }
 }
