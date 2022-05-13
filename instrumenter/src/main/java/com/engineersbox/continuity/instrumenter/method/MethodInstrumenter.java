@@ -4,7 +4,6 @@ import com.engineersbox.continuity.instrumenter.method.bytecode.InitialCutpoint;
 import com.engineersbox.continuity.instrumenter.method.bytecode.SaveOperations;
 import com.engineersbox.continuity.instrumenter.stack.point.ContinuationPoint;
 import com.engineersbox.continuity.instrumenter.util.InsnUtils;
-import org.apache.commons.lang3.Validate;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
