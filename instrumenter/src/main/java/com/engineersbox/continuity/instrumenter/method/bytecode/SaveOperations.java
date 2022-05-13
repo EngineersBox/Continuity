@@ -9,6 +9,7 @@ import com.engineersbox.continuity.instrumenter.bytecode.state.os.OSRestoreOpera
 import com.engineersbox.continuity.instrumenter.bytecode.state.os.OSSaveOperations;
 import com.engineersbox.continuity.instrumenter.bytecode.state.store.ArrayStoreSaveOperations;
 import com.engineersbox.continuity.instrumenter.method.MethodContext;
+import com.engineersbox.continuity.instrumenter.method.bytecode.annotation.ClassInstancedInvokable;
 import com.engineersbox.continuity.instrumenter.stack.point.ContinuationPoint;
 import com.engineersbox.continuity.instrumenter.stack.point.InvokeContinuationPoint;
 import com.engineersbox.continuity.instrumenter.stack.point.SuspendMethodContinuationPoint;
@@ -23,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @BytecodeGenerator
-public class SaveOperations {
+public final class SaveOperations extends CoreOperations {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SaveOperations.class);
 
@@ -40,21 +41,17 @@ public class SaveOperations {
                 index,
                 ContinuationPoint.class
         );
-        if (point instanceof SuspendMethodContinuationPoint) {
-            LOGGER.info("Point matched to: SuspendMethodContinuationPoint");
-            return constructSuspendSaveBytecode(methodContext, index);
-        } else if (point instanceof InvokeContinuationPoint) {
-            LOGGER.info("Point matched to: InvokeContinuationPoint");
-            return constructInvokeSaveBytecode(methodContext, index);
-        }
-        throw new IllegalStateException(String.format(
-                "Unknown continuation point type: %s",
-                point.getClass().getName()
-        ));
+        return invokeInstanceDeterminedOperation(
+                SaveOperations.class,
+                point.getClass(),
+                methodContext,
+                index
+        );
     }
 
-    private static InsnList constructSuspendSaveBytecode(final MethodContext methodContext,
-                                                         final int index) {
+    @ClassInstancedInvokable(SuspendMethodContinuationPoint.class)
+    static InsnList constructSuspendSaveBytecode(final MethodContext methodContext,
+                                                 final int index) {
         final DebugMarker markerType = DebugMarker.STDOUT;
         final SuspendMethodContinuationPoint point = methodContext.getContinuationPointByClass(
                 index,
@@ -158,8 +155,9 @@ public class SaveOperations {
         ).build();
     }
 
-    private static InsnList constructInvokeSaveBytecode(final MethodContext methodContext,
-                                                        final int index) {
+    @ClassInstancedInvokable(InvokeContinuationPoint.class)
+    static InsnList constructInvokeSaveBytecode(final MethodContext methodContext,
+                                                final int index) {
         final DebugMarker markerType = DebugMarker.STDOUT;
         final InvokeContinuationPoint point = methodContext.getContinuationPointByClass(
                 index,

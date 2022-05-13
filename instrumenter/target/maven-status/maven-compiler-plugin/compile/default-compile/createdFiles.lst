@@ -21,6 +21,7 @@ com\engineersbox\continuity\instrumenter\method\bytecode\RestoreOperations.class
 com\engineersbox\continuity\instrumenter\method\bytecode\SaveOperations.class
 com\engineersbox\continuity\instrumenter\bytecode\state\StackStateSaveOperations.class
 com\engineersbox\continuity\instrumenter\bytecode\builders\DebugMarkerBuilder$1.class
+com\engineersbox\continuity\instrumenter\method\bytecode\CoreOperations.class
 com\engineersbox\continuity\instrumenter\bytecode\builders\SaveVarBuilder.class
 com\engineersbox\continuity\instrumenter\stage\MethodIntrospectionStage.class
 com\engineersbox\continuity\instrumenter\bytecode\InsnListBuilder.class
@@ -38,6 +39,7 @@ com\engineersbox\continuity\instrumenter\bytecode\InsnListCollector.class
 com\engineersbox\continuity\instrumenter\stack\storage\PrimitiveStack.class
 com\engineersbox\continuity\instrumenter\bytecode\InsnBuilder.class
 com\engineersbox\continuity\instrumenter\bytecode\builders\CallBuilder.class
+com\engineersbox\continuity\instrumenter\method\bytecode\annotation\ClassInstancedInvokable.class
 com\engineersbox\continuity\instrumenter\stack\storage\VariableLUT.class
 com\engineersbox\continuity\instrumenter\ContinuityInstrumenter.class
 com\engineersbox\continuity\instrumenter\clazz\ClassInstrumenter.class
