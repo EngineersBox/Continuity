@@ -123,7 +123,7 @@ public class OSRestoreOperations extends StackStateLoadOperations {
                 0,
                 frame.getStackSize(),
                 false,
-                false
+                true
         );
         return unpackVariablesFromContainer0(
                 markerType,

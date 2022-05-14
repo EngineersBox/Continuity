@@ -47,7 +47,7 @@ public class OSSaveOperations extends StackStateSaveOperations {
                 0,
                 frame.getStackSize(),
                 true,
-                false
+                true
         );
         final InsnList list = new InsnList();
         VariableLUT.Variable.ALL_TYPES.stream()

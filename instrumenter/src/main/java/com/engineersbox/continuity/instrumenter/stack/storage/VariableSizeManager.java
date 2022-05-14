@@ -76,16 +76,16 @@ public class VariableSizeManager {
                                                    final int from,
                                                    final int to,
                                                    final boolean reverse,
-                                                   final boolean inclusive) {
+                                                   final boolean isNullable) {
         final VariableSizeManager manager = new VariableSizeManager();
         createStream(
                 from,
                 to,
                 reverse,
-                inclusive
+                false
         ).forEach((final int i) -> {
             Type type = frameParser.apply(i);
-            if (type == null || type.getDescriptor().equals(ObjectConstants.NULL_OBJ_DESCRIPTOR)) {
+            if ((isNullable && type == null) || type.getDescriptor().equals(ObjectConstants.NULL_OBJ_DESCRIPTOR)) {
                 return;
             }
             manager.incrementSize(type);
