@@ -33,7 +33,8 @@ public class InitialCutpoint {
                                         .build(),
                                 InsnBuilder.call()
                                         .method(BytecodeInternal.Accessor.getMethod("Continuation.getState"))
-                                        .args(InsnBuilder.loadVar(continuationArgVar).build()).build()
+                                        .args(InsnBuilder.loadVar(continuationArgVar).build())
+                                        .build()
                         ).build())
                         .defaultBranch(InsnBuilder.combine(
                                 InsnBuilder.debugMarker()
@@ -84,7 +85,8 @@ public class InitialCutpoint {
                                 .build(),
                         InsnBuilder.exception()
                                 .exceptionClass(RuntimeException.class)
-                                .message("Saving is not allowed at this stage").build()
+                                .message("Saving is not allowed at this stage")
+                                .build()
                 ).build(),
                 InsnBuilder.combine(
                         InsnBuilder.debugMarker()
