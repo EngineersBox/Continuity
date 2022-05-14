@@ -66,9 +66,8 @@ public class VariableSizeManager {
 
     private static IntStream createStream(final int from,
                                           final int to,
-                                          final boolean reverse,
-                                          final boolean inclusive) {
-        final IntStream stream = inclusive ? IntStream.rangeClosed(from, to) : IntStream.range(from, to);
+                                          final boolean reverse) {
+        final IntStream stream = IntStream.range(from, to);
         return reverse ? stream.map(i -> to - i + from - 1) : stream;
     }
 
@@ -81,8 +80,7 @@ public class VariableSizeManager {
         createStream(
                 from,
                 to,
-                reverse,
-                false
+                reverse
         ).forEach((final int i) -> {
             Type type = frameParser.apply(i);
             if ((isNullable && type == null) || type.getDescriptor().equals(ObjectConstants.NULL_OBJ_DESCRIPTOR)) {
