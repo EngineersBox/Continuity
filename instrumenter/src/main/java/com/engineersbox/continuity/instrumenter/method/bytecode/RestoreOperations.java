@@ -142,7 +142,7 @@ public final class RestoreOperations extends CoreOperations {
         ).build();
     }
 
-    /* BUG: Fix this AALOAD bad type issue
+    /* BUG: Fix this AALOAD bad type issue. Originates at OSRestoreOperations.restore(...) it seems.
      *  Exception in thread "main" java.lang.VerifyError: Bad type on operand stack in aaload
      *  Exception Details:
      *    Location:
