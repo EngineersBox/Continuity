@@ -122,7 +122,7 @@ public class OSRestoreOperations extends StackStateLoadOperations {
                 (final int i) -> frame.getStack(i).getType(),
                 0,
                 frame.getStackSize(),
-                false,
+                true,
                 true
         );
         return unpackVariablesFromContainer0(

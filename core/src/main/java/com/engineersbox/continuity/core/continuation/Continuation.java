@@ -40,7 +40,7 @@ public final class Continuation implements Serializable {
 
     @BytecodeInternal
     public void pushNewMethodState(final MethodState newState) {
-        newState.setNext(firstCutpointPointer);
+        newState.setNext(this.firstCutpointPointer);
         this.firstCutpointPointer = newState;
     }
 
@@ -57,5 +57,31 @@ public final class Continuation implements Serializable {
     @BytecodeInternal
     public void setState(final int state) {
         this.state = ContinuationState.fromOrdinal(state).ordinal();
+    }
+
+    public void successExecutionCycle() {
+        if (this.nextUnloadPointer != null) {
+            this.nextUnloadPointer.setNext(this.firstCutpointPointer);
+        } else {
+            this.firstPointer = this.firstCutpointPointer;
+        }
+
+        this.nextLoadPointer = this.firstPointer;
+        this.nextUnloadPointer = null;
+        this.firstCutpointPointer = null;
+    }
+
+    public void failedExecutionCycle() {
+        this.nextLoadPointer = this.firstPointer;
+        this.nextUnloadPointer = null;
+        this.firstCutpointPointer = null;
+    }
+
+    public void reset() {
+        this.firstPointer = null;
+        this.nextLoadPointer = null;
+        this.nextUnloadPointer = null;
+        this.firstCutpointPointer = null;
+        this.state = ContinuationState.IDLE.ordinal();
     }
 }
