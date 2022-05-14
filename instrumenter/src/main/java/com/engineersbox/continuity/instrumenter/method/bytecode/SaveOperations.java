@@ -47,7 +47,7 @@ public final class SaveOperations extends CoreOperations {
 
     @SuppressWarnings("unused")
     @ClassInstancedInvokable(SuspendMethodContinuationPoint.class)
-    static InsnList constructSuspendSaveBytecode(final MethodContext methodContext,
+    public static InsnList constructSuspendSaveBytecode(final MethodContext methodContext,
                                                  final int index) {
         final DebugMarker markerType = DebugMarker.STDOUT;
         final SuspendMethodContinuationPoint point = methodContext.getContinuationPointByClass(
@@ -58,7 +58,7 @@ public final class SaveOperations extends CoreOperations {
         final PrimitiveStack lva = methodContext.LVA();
         final PrimitiveStack os = methodContext.OS();
         final Frame<BasicValue> frame = point.getFrame();
-        final VariableLUT.Variable container = methodContext.containers().getContainerVar();
+        final VariableLUT.Variable container = methodContext.containers().containerVariable();
         final String className = methodContext.signature().className().replace('/', '.');
 
         return InsnBuilder.combine(
@@ -154,7 +154,7 @@ public final class SaveOperations extends CoreOperations {
 
     @SuppressWarnings("unused")
     @ClassInstancedInvokable(InvokeContinuationPoint.class)
-    static InsnList constructInvokeSaveBytecode(final MethodContext methodContext,
+    public static InsnList constructInvokeSaveBytecode(final MethodContext methodContext,
                                                 final int index) {
         final DebugMarker markerType = DebugMarker.STDOUT;
         final InvokeContinuationPoint point = methodContext.getContinuationPointByClass(
@@ -231,7 +231,7 @@ public final class SaveOperations extends CoreOperations {
                                                 final InvokeContinuationPoint point,
                                                 final int invokeArgCount) {
         final PrimitiveStack lva = methodContext.LVA();
-        final VariableLUT.Variable container = methodContext.containers().getContainerVar();
+        final VariableLUT.Variable container = methodContext.containers().containerVariable();
         final String className = methodContext.signature().className().replace('/', '.');
         return InsnBuilder.combine(
                 InsnBuilder.debugMarker()

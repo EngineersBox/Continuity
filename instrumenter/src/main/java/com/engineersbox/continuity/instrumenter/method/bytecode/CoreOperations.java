@@ -34,14 +34,16 @@ public abstract sealed class CoreOperations permits RestoreOperations, SaveOpera
                     ));
                 });
         LOGGER.debug(
-                "Point matched to {} for method {}",
+                "Point matched to {} for method {}${}",
                 invokableMethod.getAnnotation(ClassInstancedInvokable.class).value().getSimpleName(),
+                invokableMethod.getDeclaringClass().getSimpleName(),
                 invokableMethod.getName()
         );
         try {
             return (InsnList) invokableMethod.invoke(null, args);
         } catch (final InvocationTargetException | IllegalAccessException e) {
-            throw new IllegalStateException("Handler for continuation point class was not invokable", e);
+            final Throwable exception = e.getCause() != null ? e.getCause() : e;
+            throw new IllegalStateException(exception);
         }
     }
 

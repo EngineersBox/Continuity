@@ -1,13 +1,24 @@
 package com.engineersbox.continuity.instrumenter.method.bytecode;
 
+import com.engineersbox.continuity.core.annotation.BytecodeInternal;
+import com.engineersbox.continuity.core.state.ContinuationState;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.annotation.BytecodeGenerator;
+import com.engineersbox.continuity.instrumenter.bytecode.state.lva.LVARestoreOperations;
+import com.engineersbox.continuity.instrumenter.bytecode.state.os.OSRestoreOperations;
 import com.engineersbox.continuity.instrumenter.method.MethodContext;
 import com.engineersbox.continuity.instrumenter.method.bytecode.annotation.ClassInstancedInvokable;
 import com.engineersbox.continuity.instrumenter.stack.point.ContinuationPoint;
 import com.engineersbox.continuity.instrumenter.stack.point.InvokeContinuationPoint;
 import com.engineersbox.continuity.instrumenter.stack.point.SuspendMethodContinuationPoint;
+import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveStack;
+import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
+import com.engineersbox.continuity.instrumenter.stage.DebugMarker;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.analysis.BasicValue;
+import org.objectweb.asm.tree.analysis.Frame;
 
 @BytecodeGenerator
 public final class RestoreOperations extends CoreOperations {
@@ -35,16 +46,105 @@ public final class RestoreOperations extends CoreOperations {
 
     @SuppressWarnings("unused")
     @ClassInstancedInvokable(SuspendMethodContinuationPoint.class)
-    static InsnList constructSuspendRestoreBytecode(final MethodContext methodContext,
+    public static InsnList constructSuspendRestoreBytecode(final MethodContext methodContext,
                                                     final int index) {
-        return InsnBuilder.combine(
+        final DebugMarker markerType = DebugMarker.STDOUT;
+        final SuspendMethodContinuationPoint point = methodContext.getContinuationPointByClass(
+                index,
+                SuspendMethodContinuationPoint.class
+        );
+        final Integer lineNumber = point.getLineNumber();
+        final PrimitiveStack os = methodContext.OS();
+        final PrimitiveStack lva = methodContext.LVA();
+        final Frame<BasicValue> frame = point.getFrame();
+        final VariableLUT.Variable container = methodContext.containers().containerVariable();
+        final VariableLUT.Variable continuationArgVar = methodContext.continuityVariables().continuationArgVar();
 
+        return InsnBuilder.combine(
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Restoring from suspend point")
+                        .build(),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Unpacking OS variables from container")
+                        .build(),
+                OSRestoreOperations.unpackVariablesFromContainer(
+                        markerType,
+                        frame,
+                        container,
+                        os
+                ),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Unpacking LVA variables from container")
+                        .build(),
+                LVARestoreOperations.unpackVariablesFromContainer(
+                        markerType,
+                        frame,
+                        container,
+                        lva
+                ),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Restoring OS variables")
+                        .build(),
+                OSRestoreOperations.restore(
+                        markerType,
+                        os,
+                        frame
+                ),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Restoring LVA variables")
+                        .build(),
+                LVARestoreOperations.restore(
+                        markerType,
+                        lva,
+                        frame
+                ),
+                InsnBuilder.combineIf(
+                        lineNumber != null,
+                        () -> new Object[]{
+                                InsnBuilder.lineNumber(lineNumber).build()
+                        }
+                ).build(),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Popping continuation object")
+                        .build(),
+                new InsnNode(Opcodes.POP),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Setting mode to IDLE")
+                        .build(),
+                InsnBuilder.call()
+                        .method(BytecodeInternal.Accessor.getMethod("Continuation.setState"))
+                        .args(
+                                InsnBuilder.loadVar(continuationArgVar).build(),
+                                InsnBuilder.constant(ContinuationState.IDLE.ordinal()).build()
+                        ).build(),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Setting mode to IDLE")
+                        .build(),
+                InsnBuilder.call()
+                        .method(BytecodeInternal.Accessor.getMethod("Continuation.unloadCurrentMethodState"))
+                        .args(InsnBuilder.loadVar(continuationArgVar).build())
+                        .build(),
+                InsnBuilder.debugMarker()
+                        .marker(markerType)
+                        .message("Continuing execution")
+                        .build(),
+                InsnBuilder.jumpTo()
+                        .label(point.getContinueExecutionLabel())
+                        .build()
         ).build();
     }
 
     @SuppressWarnings("unused")
     @ClassInstancedInvokable(InvokeContinuationPoint.class)
-    static InsnList constructInvokeRestoreBytecode(final MethodContext methodContext,
+    public static InsnList constructInvokeRestoreBytecode(final MethodContext methodContext,
                                                    final int index) {
         return InsnBuilder.combine(
 

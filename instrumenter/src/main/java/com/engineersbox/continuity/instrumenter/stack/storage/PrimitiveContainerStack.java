@@ -11,8 +11,4 @@ public record PrimitiveContainerStack(Variable containerVariable) {
             throw new IllegalArgumentException("Container variable must be an Object[]");
         }
     }
-
-    public Variable getContainerVar() {
-        return this.containerVariable;
-    }
 }

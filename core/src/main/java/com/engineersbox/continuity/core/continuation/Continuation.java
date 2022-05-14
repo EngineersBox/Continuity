@@ -34,6 +34,11 @@ public final class Continuation implements Serializable {
     }
 
     @BytecodeInternal
+    public void unloadCurrentMethodState() {
+        this.nextUnloadPointer = this.nextUnloadPointer.previous();
+    }
+
+    @BytecodeInternal
     public void pushNewMethodState(final MethodState newState) {
         newState.setNext(firstCutpointPointer);
         this.firstCutpointPointer = newState;

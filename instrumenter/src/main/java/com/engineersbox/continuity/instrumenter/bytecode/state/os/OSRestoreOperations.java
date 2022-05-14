@@ -1,18 +1,23 @@
 package com.engineersbox.continuity.instrumenter.bytecode.state.os;
 
 import com.engineersbox.continuity.instrumenter.bytecode.InsnBuilder;
+import com.engineersbox.continuity.instrumenter.bytecode.InsnListCollector;
 import com.engineersbox.continuity.instrumenter.bytecode.ObjectConstants;
 import com.engineersbox.continuity.instrumenter.bytecode.annotation.BytecodeGenerator;
 import com.engineersbox.continuity.instrumenter.bytecode.state.StackStateLoadOperations;
+import com.engineersbox.continuity.instrumenter.bytecode.state.VariableContainerConstants;
 import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveStack;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableSizeManager;
 import com.engineersbox.continuity.instrumenter.stage.DebugMarker;
+import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
+
+import java.util.stream.IntStream;
 
 @BytecodeGenerator
 public class OSRestoreOperations extends StackStateLoadOperations {
@@ -28,7 +33,7 @@ public class OSRestoreOperations extends StackStateLoadOperations {
                 frame,
                 0,
                 0,
-                frame.getMaxStackSize()
+                frame.getStackSize()
         );
     }
 
@@ -86,38 +91,37 @@ public class OSRestoreOperations extends StackStateLoadOperations {
                                 .build(),
                         new InsnNode(Opcodes.ACONST_NULL)
                 ).build());
+                continue;
             }
-            insnList.add(InsnBuilder.combine(
-                    InsnBuilder.debugMarker()
-                            .marker(markerType)
-                            .message(String.format(
-                                    "Loading %s at %d from container index %d",
-                                    type.getInternalName(),
-                                    i,
-                                    sizes.getSize(type)
-                            )).build(),
-                    loadVariable(
-                            type,
-                            os.get(type),
-                            sizes
-                    ),
-                    InsnBuilder.combineIf(
-                            type.getSort() == Type.ARRAY || type.getSort() == Type.OBJECT,
-                            () -> new Object[]{ new TypeInsnNode(Opcodes.CHECKCAST, type.getInternalName())}
-                    ).build()
-            ).build());
+            insnList.add(loadVariable(
+                    markerType,
+                    i,
+                    type,
+                    os.get(type),
+                    sizes
+            ));
             sizes.incrementSize(type);
         }
         return insnList;
     }
 
-    private static InsnList loadVariable(final Type type,
-                                         final VariableLUT.Variable variable,
-                                         final VariableSizeManager sizes) {
-        return InsnBuilder.combine(
-                new VarInsnNode(Opcodes.ALOAD, variable.getIndex()),
-                new LdcInsnNode(sizes.getSize(type)),
-                new InsnNode(mapTypeToLoadArrayInsn(type))
-        ).build();
+    public static InsnList unpackVariablesFromContainer(final DebugMarker markerType,
+                                                        final Frame<BasicValue> frame,
+                                                        final VariableLUT.Variable container,
+                                                        final PrimitiveStack os) {
+        final VariableSizeManager sizes = VariableSizeManager.computeSizes(
+                (final int i) -> frame.getStack(i).getType(),
+                0,
+                frame.getStackSize(),
+                false,
+                false
+        );
+        return unpackVariablesFromContainer0(
+                markerType,
+                sizes,
+                container,
+                os,
+                VariableContainerConstants.INDEXED_LVA_TYPES.stream()
+        );
     }
 }

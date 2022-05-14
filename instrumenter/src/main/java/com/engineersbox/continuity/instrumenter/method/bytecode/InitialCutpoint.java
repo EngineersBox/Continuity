@@ -21,7 +21,7 @@ public class InitialCutpoint {
 
         final VariableLUT.Variable continuationArgVar = methodContext.continuityVariables().continuationArgVar();
         final VariableLUT.Variable methodState = methodContext.continuityVariables().methodStateVar();
-        final VariableLUT.Variable containerVar = methodContext.containers().getContainerVar();
+        final VariableLUT.Variable containerVar = methodContext.containers().containerVariable();
 
         final LabelNode methodStartLabel = new LabelNode();
         return InsnBuilder.combine(
