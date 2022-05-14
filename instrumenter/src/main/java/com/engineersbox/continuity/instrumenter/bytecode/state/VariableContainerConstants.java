@@ -21,10 +21,10 @@ public abstract class VariableContainerConstants {
     );
 
     public static final List<Pair<Integer, Type>> INDEXED_LVA_TYPES = IntStream.range(0, 5)
-            .mapToObj((final int index) -> ImmutablePair.of(index + 5, VARIABLE_TYPES.get(index)))
+            .mapToObj((final int index) -> ImmutablePair.of(index, VARIABLE_TYPES.get(index)))
             .collect(Collectors.toList());
 
     public static final List<Pair<Integer, Type>> INDEXED_OS_TYPES = IntStream.range(0, 5)
-            .mapToObj((final int index) -> ImmutablePair.of(index, VARIABLE_TYPES.get(index)))
+            .mapToObj((final int index) -> ImmutablePair.of(index + 5, VARIABLE_TYPES.get(index)))
             .collect(Collectors.toList());
 }

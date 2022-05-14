@@ -121,7 +121,7 @@ public class OSRestoreOperations extends StackStateLoadOperations {
                 sizes,
                 container,
                 os,
-                VariableContainerConstants.INDEXED_LVA_TYPES.stream()
+                VariableContainerConstants.INDEXED_OS_TYPES.stream()
         );
     }
 }

@@ -30,6 +30,8 @@ public class InsnListCollector implements Collector<Object, InsnList, InsnList> 
                 list.add(insnNode);
             } else if (node instanceof InsnList insnList) {
                 list.add(insnList);
+            } else {
+                throw new IllegalArgumentException("Unknown node type");
             }
         };
     }

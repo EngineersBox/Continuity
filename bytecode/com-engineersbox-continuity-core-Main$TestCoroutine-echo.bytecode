@@ -63,7 +63,7 @@ echo
     LDC "[BYTECODE DEBUG] Unpacking I from container"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 7
-    LDC 5
+    LDC 0
     AALOAD
     CHECKCAST I
     ASTORE 5
@@ -71,7 +71,7 @@ echo
     LDC "[BYTECODE DEBUG] Unpacking java/lang/Object from container"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 7
-    LDC 9
+    LDC 4
     AALOAD
     CHECKCAST com/engineersbox/continuity/core/Main$TestCoroutine
     ASTORE 3
@@ -235,24 +235,24 @@ echo
     ANEWARRAY java/lang/Object
     ASTORE 7
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "[BYTECODE DEBUG] Storing I into array at index 2"
+    LDC "[BYTECODE DEBUG] Storing I into array at index 0"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 7
-    LDC 2
+    LDC 0
     ALOAD 5
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "[BYTECODE DEBUG] Storing java/lang/Object into array at index 4"
+    LDC "[BYTECODE DEBUG] Storing java/lang/Object into array at index 3"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 7
-    LDC 4
+    LDC 3
     ALOAD 3
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "[BYTECODE DEBUG] Storing java/lang/Object into array at index 9"
+    LDC "[BYTECODE DEBUG] Storing java/lang/Object into array at index 8"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 7
-    LDC 9
+    LDC 8
     ALOAD 6
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
@@ -262,7 +262,7 @@ echo
     NEW com/engineersbox/continuity/core/method/MethodState
     DUP
     LDC "com.engineersbox.continuity.core.Main$TestCoroutine"
-    LDC -1068724759
+    LDC 1451463419
     LDC 0
     ALOAD 7
     INVOKESPECIAL com/engineersbox/continuity/core/method/MethodState.<init> (Ljava/lang/String;II[Ljava/lang/Object;)V
