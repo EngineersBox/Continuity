@@ -193,17 +193,17 @@ echo
     LDC "[BYTECODE DEBUG] Saving LVA variables"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "[BYTECODE DEBUG] Generating I container of size 1"
-    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-    LDC 1
-    NEWARRAY T_INT
-    ASTORE 5
-    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "[BYTECODE DEBUG] Generating java/lang/Object container of size 2"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     LDC 2
     ANEWARRAY java/lang/Object
     ASTORE 3
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "[BYTECODE DEBUG] Generating I container of size 1"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    LDC 1
+    NEWARRAY T_INT
+    ASTORE 5
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
     LDC "[BYTECODE DEBUG] Storing com/engineersbox/continuity/core/Main$TestCoroutine at 0 for index 0"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
@@ -235,24 +235,24 @@ echo
     ANEWARRAY java/lang/Object
     ASTORE 7
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "[BYTECODE DEBUG] Storing I into array at index 0"
+    LDC "[BYTECODE DEBUG] Storing java/lang/Object into array at index 0"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 7
     LDC 0
-    ALOAD 5
-    AASTORE
-    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "[BYTECODE DEBUG] Storing java/lang/Object into array at index 3"
-    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-    ALOAD 7
-    LDC 3
     ALOAD 3
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC "[BYTECODE DEBUG] Storing java/lang/Object into array at index 8"
+    LDC "[BYTECODE DEBUG] Storing I into array at index 2"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
     ALOAD 7
-    LDC 8
+    LDC 2
+    ALOAD 5
+    AASTORE
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC "[BYTECODE DEBUG] Storing java/lang/Object into array at index 5"
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    ALOAD 7
+    LDC 5
     ALOAD 6
     AASTORE
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
@@ -262,7 +262,7 @@ echo
     NEW com/engineersbox/continuity/core/method/MethodState
     DUP
     LDC "com.engineersbox.continuity.core.Main$TestCoroutine"
-    LDC 1451463419
+    LDC -1892614559
     LDC 0
     ALOAD 7
     INVOKESPECIAL com/engineersbox/continuity/core/method/MethodState.<init> (Ljava/lang/String;II[Ljava/lang/Object;)V

@@ -11,6 +11,7 @@
         <module>core</module>
         <module>agent</module>
         <module>instrumenter</module>
+        <module>lang</module>
     </modules>
     <packaging>pom</packaging>
     <name>Continuity</name>
@@ -27,6 +28,7 @@
         <asm.version>9.3</asm.version>
         <jansi.version>2.4.0</jansi.version>
         <reflections.version>0.10.2</reflections.version>
+        <antlr4.version>4.7.1</antlr4.version>
 
         <!-- Maven -->
         <maven-compiler-plugin.version>3.9.0</maven-compiler-plugin.version>
@@ -113,6 +115,12 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
             </dependency>
+            <!-- ANTLR4 -->
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-runtime</artifactId>
+                <version>${antlr4.version}</version>
+            </dependency>
             <!-- Maven Shade -->
             <dependency>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -164,6 +172,12 @@
                 <version>${maven-plugin-annotations.version}</version>
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>${antlr4.version}</version>
+                <scope>provided</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <build>
@@ -176,6 +190,11 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
+                </plugin>
+                <plugin>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>antlr4-maven-plugin</artifactId>
+                    <version>${antlr4.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

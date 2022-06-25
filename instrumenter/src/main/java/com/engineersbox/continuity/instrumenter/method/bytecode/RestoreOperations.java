@@ -47,7 +47,7 @@ public final class RestoreOperations extends CoreOperations {
     @SuppressWarnings("unused")
     @ClassInstancedInvokable(SuspendMethodContinuationPoint.class)
     public static InsnList constructSuspendRestoreBytecode(final MethodContext methodContext,
-                                                    final int index) {
+                                                           final int index) {
         final DebugMarker markerType = DebugMarker.STDOUT;
         final SuspendMethodContinuationPoint point = methodContext.getContinuationPointByClass(
                 index,
@@ -145,7 +145,7 @@ public final class RestoreOperations extends CoreOperations {
     @SuppressWarnings("unused")
     @ClassInstancedInvokable(InvokeContinuationPoint.class)
     public static InsnList constructInvokeRestoreBytecode(final MethodContext methodContext,
-                                                   final int index) {
+                                                          final int index) {
         return InsnBuilder.combine(
 
         ).build();
