@@ -197,7 +197,7 @@ public class MethodIntrospector {
                                                                              final Frame<BasicValue>[] frames,
                                                                              final MethodNode methodNode) {
         return continueInvocationInsnNodes.stream().map((final AbstractInsnNode insnNode) -> {
-            LineNumberNode lineNumberNode = InsnUtils.getLineNumberForInsn(methodNode.instructions, insnNode);
+            final LineNumberNode lineNumberNode = InsnUtils.getLineNumberForInsn(methodNode.instructions, insnNode);
             return new InvokeContinuationPoint(
                     lineNumberNode != null ? lineNumberNode.line : null,
                     (MethodInsnNode) insnNode,

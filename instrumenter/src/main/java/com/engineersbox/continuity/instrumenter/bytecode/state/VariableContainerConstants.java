@@ -5,7 +5,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.Type;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public abstract class VariableContainerConstants {
@@ -21,10 +20,10 @@ public abstract class VariableContainerConstants {
     );
 
     public static final List<Pair<Integer, Type>> INDEXED_LVA_TYPES = IntStream.range(0, 5)
-            .mapToObj((final int index) -> ImmutablePair.of(index, VARIABLE_TYPES.get(index)))
-            .collect(Collectors.toList());
+            .<Pair<Integer, Type>>mapToObj((final int index) -> ImmutablePair.of(index, VARIABLE_TYPES.get(index)))
+            .toList();
 
     public static final List<Pair<Integer, Type>> INDEXED_OS_TYPES = IntStream.range(0, 5)
-            .mapToObj((final int index) -> ImmutablePair.of(index + 5, VARIABLE_TYPES.get(index)))
-            .collect(Collectors.toList());
+            .<Pair<Integer, Type>>mapToObj((final int index) -> ImmutablePair.of(index + 5, VARIABLE_TYPES.get(index)))
+            .toList();
 }

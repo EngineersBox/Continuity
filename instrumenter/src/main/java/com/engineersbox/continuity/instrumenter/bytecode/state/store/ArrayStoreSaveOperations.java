@@ -31,7 +31,7 @@ public class ArrayStoreSaveOperations {
                 0,
                 frame.getStackSize(),
                 false,
-                false
+                true
         );
         final VariableSizeManager lvaSizes = VariableSizeManager.computeSizes(
                 (final int i) -> frame.getLocal(i).getType(),

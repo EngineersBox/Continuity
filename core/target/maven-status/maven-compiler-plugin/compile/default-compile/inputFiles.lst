@@ -1,8 +1,0 @@
-/Users/jackkilrain/Desktop/Projects/Java/continuity/core/src/main/java/com/engineersbox/continuity/core/coroutine/Coroutine.java
-/Users/jackkilrain/Desktop/Projects/Java/continuity/core/src/main/java/com/engineersbox/continuity/core/continuation/Continuation.java
-/Users/jackkilrain/Desktop/Projects/Java/continuity/core/src/main/java/com/engineersbox/continuity/core/Main.java
-/Users/jackkilrain/Desktop/Projects/Java/continuity/core/src/main/java/com/engineersbox/continuity/core/coroutine/CoroutineExecutor.java
-/Users/jackkilrain/Desktop/Projects/Java/continuity/core/src/main/java/com/engineersbox/continuity/core/annotation/exception/UnknownBytecodeInvokeTargetException.java
-/Users/jackkilrain/Desktop/Projects/Java/continuity/core/src/main/java/com/engineersbox/continuity/core/annotation/BytecodeInternal.java
-/Users/jackkilrain/Desktop/Projects/Java/continuity/core/src/main/java/com/engineersbox/continuity/core/method/MethodState.java
-/Users/jackkilrain/Desktop/Projects/Java/continuity/core/src/main/java/com/engineersbox/continuity/core/state/ContinuationState.java

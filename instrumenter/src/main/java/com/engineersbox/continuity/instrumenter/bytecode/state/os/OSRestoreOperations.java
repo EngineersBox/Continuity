@@ -109,12 +109,21 @@ public class OSRestoreOperations extends StackStateLoadOperations {
                                                         final Frame<BasicValue> frame,
                                                         final VariableLUT.Variable container,
                                                         final PrimitiveStack os) {
+        if (markerType == null) {
+            throw new IllegalArgumentException("Debug marker cannot be null");
+        } else if (frame == null) {
+            throw new IllegalStateException("Frame cannot be null");
+        } else if (container == null) {
+            throw new IllegalStateException("Container cannot be null");
+        } else if (os == null) {
+            throw new IllegalStateException("OS stack cannot be null");
+        }
         final VariableSizeManager sizes = VariableSizeManager.computeSizes(
                 (final int i) -> frame.getStack(i).getType(),
                 0,
                 frame.getStackSize(),
-                false,
-                false
+                true,
+                true
         );
         return unpackVariablesFromContainer0(
                 markerType,

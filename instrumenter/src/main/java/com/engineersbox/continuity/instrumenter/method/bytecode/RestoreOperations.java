@@ -142,6 +142,20 @@ public final class RestoreOperations extends CoreOperations {
         ).build();
     }
 
+    /* BUG: Fix this AALOAD bad type issue. Originates at OSRestoreOperations.restore(...) it seems.
+     *  Exception in thread "main" java.lang.VerifyError: Bad type on operand stack in aaload
+     *  Exception Details:
+     *    Location:
+     *      com/engineersbox/continuity/core/Main$TestCoroutine.run(Lcom/engineersbox/continuity/core/continuation/Continuation;)V @229: aaload
+     *    Reason:
+     *      Type 'com/engineersbox/continuity/core/Main$TestCoroutine' (current frame, stack[0]) is not assignable to reference type
+     *    Current Frame:
+     *      bci: @229
+     *      flags: { }
+     *      locals: { 'com/engineersbox/continuity/core/Main$TestCoroutine', 'com/engineersbox/continuity/core/continuation/Continuation', top, 'com/engineersbox/continuity/core/Main$TestCoroutine', top, 'I', top, top, top, 'com/engineersbox/continuity/core/Main$TestCoroutine', top, top, top, '[Ljava/lang/Object;', 'com/engineersbox/continuity/core/method/MethodState' }
+     *      stack: { 'com/engineersbox/continuity/core/Main$TestCoroutine', integer }
+     */
+
     @SuppressWarnings("unused")
     @ClassInstancedInvokable(InvokeContinuationPoint.class)
     public static InsnList constructInvokeRestoreBytecode(final MethodContext methodContext,
