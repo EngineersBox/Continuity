@@ -27,8 +27,8 @@ public class DebugMarkerBuilder implements BytecodeBuilder {
         return this;
     }
 
-    public DebugMarkerBuilder message(final String message) {
-        this.message = DEBUG_LOG_PREFIX + message;
+    public DebugMarkerBuilder message(final String messageTemplate, final Object ...values) {
+        this.message = DEBUG_LOG_PREFIX + String.format(messageTemplate, values);
         return this;
     }
 

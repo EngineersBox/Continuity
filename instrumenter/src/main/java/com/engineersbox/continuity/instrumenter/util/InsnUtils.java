@@ -1,5 +1,7 @@
 package com.engineersbox.continuity.instrumenter.util;
 
+import com.engineersbox.continuity.instrumenter.bytecode.InsnBuilder;
+import org.apache.commons.lang3.Validate;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
@@ -9,6 +11,7 @@ import org.objectweb.asm.util.TraceMethodVisitor;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -70,5 +73,19 @@ public class InsnUtils {
 
     private static int argumentCountForDynamicInvocation(final InvokeDynamicInsnNode invokeDynamicInsnNode) {
         return Type.getType(invokeDynamicInsnNode.desc).getArgumentTypes().length;
+    }
+
+    public static InsnList cloneInvokeNode(final AbstractInsnNode insnNode) {
+        if (insnNode == null) {
+            throw new IllegalArgumentException("Node cannot be null");
+        } else if (!(insnNode instanceof MethodInsnNode || insnNode instanceof InvokeDynamicInsnNode)) {
+            throw new IllegalArgumentException(String.format(
+                    "Node must be either MethodInsnNode or InvokeDynamicInsnNode not %s",
+                    insnNode.getClass().getName()
+            ));
+        }
+        return InsnBuilder.combine(
+                insnNode.clone(new HashMap<>())
+        ).build();
     }
 }

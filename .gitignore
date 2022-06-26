@@ -173,3 +173,8 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+# Other
+/agent/target/
+/core/target/
+/instrumenter/target/
+/lang/target/
