@@ -53,9 +53,11 @@ the namespacing and available context is bound by a `HashMap` provided as contex
 you can do anything you want in the language but it would require extensive modification of the parser
 and additional context that would handle state in Java as opposed to the language.
 
-An example of this language is:
+Files are expected to use the `cibc` extension, indicating `Continuity Intermediate Bytecode`, an example
+of this is the following:
 
 ```continuity
+// File: example.cib
 // Declare some vars that will be saturated with a HashMap context value. Can be anything.
 in ctx;
 
