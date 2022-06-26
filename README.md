@@ -56,7 +56,7 @@ and additional context that would handle state in Java as opposed to the languag
 Files are expected to use the `cibc` extension, indicating `Continuity Intermediate Bytecode`, an example
 of this is the following:
 
-```continuity
+```cib
 // File: example.cib
 // Declare some vars that will be saturated with a HashMap context value. Can be anything.
 in ctx;
