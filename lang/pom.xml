@@ -16,6 +16,10 @@
     <properties>
         <maven.compiler.source>18</maven.compiler.source>
         <maven.compiler.target>18</maven.compiler.target>
+
+        <!-- ANTLR4 -->
+        <antlr4.source.dir>${project.basedir}/src/main/antlr4</antlr4.source.dir>
+        <antlr4.output.dir>${project.basedir}/src/main/java/com/engineersbox/continuity/lang/antlr</antlr4.output.dir>
     </properties>
 
     <dependencies>
@@ -32,8 +36,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>18</source>
-                    <target>18</target>
+                    <source>17</source>
+                    <target>17</target>
                     <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
@@ -47,6 +51,13 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <sourceDirectory>${antlr4.source.dir}</sourceDirectory>
+                    <outputDirectory>${antlr4.output.dir}</outputDirectory>
+<!--                    <atn>true</atn>-->
+                    <visitor>true</visitor>
+                    <listener>true</listener>
+                </configuration>
             </plugin>
         </plugins>
     </build>
