@@ -58,17 +58,34 @@ of this is the following:
 
 ```cib
 // File: example.cib
-// Declare some vars that will be saturated with a HashMap context value. Can be anything.
-in ctx;
+// Declare some vars that will be provided to the parser as translation context
+ctx contArgVar;
+ctx {
+    example
+};
 
-/* Invoke some call and load a var from LVA */
-call(in::ctx.setValue, load(in::ctx.contArgVar));
 /**
- * Invoke an external context driven function via a reference chain,
- * the OSRestoreOperations reference is expected to be in the HashMap
- * provided as context to the parser.
+ * Declare a function, essentially acting as a macro
  */
-OSRestoreOperations.loadContainerVars(containerVar, "test", 12.34f);
+fn loadState() {
+    /* Invoke some call and load a var from LVA */
+    std::call(Continuation.getState, std::loadVar(ctx::contArgVar));
+    
+    /*
+     * Invoke an external context driven function via a reference chain,
+     * the OSRestoreOperations reference is expected to be in the HashMap
+     * provided as context to the parser.
+     */
+    OSRestoreOperations.loadContainerVars(containerVar, "test", 12.34f);
+    std::debug("Loaded continuation state");
+};
+
+std::ifIntNotEqual(
+    std::loadConst(2.34f),
+    std::loadConst(1),
+    // Invoke a declared function
+    loadState()
+);
 ```
 
 Which generates the following parse tree:
