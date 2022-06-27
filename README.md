@@ -74,7 +74,7 @@ ext {
  */
 fn loadState() {
     /* Invoke some call and load a var from LVA */
-    std::call(Continuation.getState, std::loadVar(ctx::contArgVar));
+    std::call("Continuation.getState", std::loadVar(ctx::contArgVar));
     
     /*
      * Invoke an external context driven function via a reference chain,
