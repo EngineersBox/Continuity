@@ -2,7 +2,7 @@
 // Declare some vars that will be provided to the parser as translation context
 ctx contArgVar;
 ctx {
-    example
+    example;
 };
 
 // Reference an external class in the JVM via ClassLoader
@@ -15,7 +15,7 @@ ext {
  */
 fn loadState() {
     /* Invoke some call and load a var from LVA */
-    std::call(Continuation.getState, std::loadVar(ctx::contArgVar));
+    std::call("Continuation.getState", std::loadVar(ctx::contArgVar));
 
     /*
      * Invoke an external context driven function via a reference chain,

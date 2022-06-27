@@ -61,7 +61,7 @@ of this is the following:
 // Declare some vars that will be provided to the parser as translation context
 ctx contArgVar;
 ctx {
-    example
+    example;
 };
 
 // Reference an external class in the JVM via ClassLoader
