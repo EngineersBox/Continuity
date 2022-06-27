@@ -64,6 +64,11 @@ ctx {
     example
 };
 
+// Reference an external class in the JVM via ClassLoader
+ext {
+    com.engineersbox.continuity.instrumenter.bytecode.state.os.OSRestoreOperations;
+};
+
 /**
  * Declare a function, essentially acting as a macro
  */
@@ -73,10 +78,10 @@ fn loadState() {
     
     /*
      * Invoke an external context driven function via a reference chain,
-     * the OSRestoreOperations reference is expected to be in the HashMap
-     * provided as context to the parser.
+     * the OSRestoreOperations reference is expected to loaded via ext <path>;
+     * or ext { ... <path>; }.
      */
-    OSRestoreOperations.loadContainerVars(containerVar, "test", 12.34f);
+    ext::OSRestoreOperations.loadContainerVars(std::loadVar(ctx::contArgVar), "test", 12.34f);
     std::debug("Loaded continuation state");
 };
 
