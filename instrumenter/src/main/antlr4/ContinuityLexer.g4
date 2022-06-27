@@ -11,6 +11,7 @@ options {
 
 // Keywords
 CTX: 'ctx';
+EXT: 'ext';
 FN: 'fn';
 STD: 'std';
 

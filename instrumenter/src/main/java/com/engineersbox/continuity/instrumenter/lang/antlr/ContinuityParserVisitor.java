@@ -33,12 +33,45 @@ public interface ContinuityParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitInvocationStatement(ContinuityParser.InvocationStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code externalLayoutStatement}
+	 * labeled alternative in {@link ContinuityParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExternalLayoutStatement(ContinuityParser.ExternalLayoutStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code contextLayoutStatement}
 	 * labeled alternative in {@link ContinuityParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitContextLayoutStatement(ContinuityParser.ContextLayoutStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code singleExternalLayoutDeclaration}
+	 * labeled alternative in {@link ContinuityParser#externalLayout}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSingleExternalLayoutDeclaration(ContinuityParser.SingleExternalLayoutDeclarationContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code multiExternalLayoutDeclaration}
+	 * labeled alternative in {@link ContinuityParser#externalLayout}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMultiExternalLayoutDeclaration(ContinuityParser.MultiExternalLayoutDeclarationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#externalEntries}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExternalEntries(ContinuityParser.ExternalEntriesContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#externalEntryReference}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExternalEntryReference(ContinuityParser.ExternalEntryReferenceContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code singleContextLayoutDeclaration}
 	 * labeled alternative in {@link ContinuityParser#contextLayout}.
@@ -84,11 +117,33 @@ public interface ContinuityParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStatements(ContinuityParser.StatementsContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ContinuityParser#invocation}.
+	 * Visit a parse tree produced by the {@code stdInvocation}
+	 * labeled alternative in {@link ContinuityParser#invocation}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitInvocation(ContinuityParser.InvocationContext ctx);
+	T visitStdInvocation(ContinuityParser.StdInvocationContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code functionInvocation}
+	 * labeled alternative in {@link ContinuityParser#invocation}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionInvocation(ContinuityParser.FunctionInvocationContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code externalDirectInvocation}
+	 * labeled alternative in {@link ContinuityParser#invocation}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExternalDirectInvocation(ContinuityParser.ExternalDirectInvocationContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code externalReferenceInvocation}
+	 * labeled alternative in {@link ContinuityParser#invocation}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExternalReferenceInvocation(ContinuityParser.ExternalReferenceInvocationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ContinuityParser#params}.
 	 * @param ctx the parse tree
@@ -102,13 +157,6 @@ public interface ContinuityParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLiteralParam(ContinuityParser.LiteralParamContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code referenceParam}
-	 * labeled alternative in {@link ContinuityParser#param}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitReferenceParam(ContinuityParser.ReferenceParamContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code contextEntryReferenceParam}
 	 * labeled alternative in {@link ContinuityParser#param}.

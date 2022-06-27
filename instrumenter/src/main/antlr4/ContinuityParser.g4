@@ -11,21 +11,29 @@ parse: (statement SEMI)* EOF;
 
 statement: function # functionStatement
     | invocation # invocationStatement
+    | externalLayout # externalLayoutStatement
     | contextLayout # contextLayoutStatement;
+
+externalLayout: EXT reference # singleExternalLayoutDeclaration
+    | EXT LBRACE externalEntries RBRACE # multiExternalLayoutDeclaration;
+externalEntries: (reference SEMI)+;
+externalEntryReference: EXT COLONCOLON Identifier;
 
 contextLayout: CTX Identifier # singleContextLayoutDeclaration
     | CTX LBRACE contextEntries RBRACE # multiContextLayoutDeclaration;
-contextEntries: Identifier+;
+contextEntries: (Identifier SEMI)+;
 contextEntryReference: CTX COLONCOLON Identifier;
 
 function: FN Identifier LPAREN RPAREN block;
 block: LBRACE statements RBRACE;
 statements: (statement SEMI)+;
 
-invocation: (STD COLONCOLON)? reference LPAREN params RPAREN;
+invocation: STD COLONCOLON reference LPAREN params RPAREN # stdInvocation
+    | FN COLONCOLON referenceTarget LPAREN RPAREN # functionInvocation
+    | reference LPAREN params RPAREN # externalDirectInvocation
+    | externalEntryReference DOT referenceTarget LPAREN params RPAREN # externalReferenceInvocation;
 params: (param ( COMMA param )* )?;
 param: literal # literalParam
-    | reference # referenceParam
     | contextEntryReference # contextEntryReferenceParam
     | invocation # invocationParam;
 

@@ -5,9 +5,14 @@ import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityParser;
 import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityParserBaseVisitor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.tree.InsnList;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -20,10 +25,14 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
      */
     private final Map<String, Object> translationContext;
     private final Map<String, Object> declaredContextLayoutVariables;
+    private final Map<String, Object> declaredFunctions;
+    private final Map<String, Class<?>> externalReferences;
 
     public TransformVisitor(final Map<String, Object> translationContext) {
         this.translationContext = translationContext;
         this.declaredContextLayoutVariables = new HashMap<>();
+        this.declaredFunctions = new HashMap<>();
+        this.externalReferences = new HashMap<>();
     }
 
     private String getLineColumn(final ParserRuleContext ctx) {
@@ -50,6 +59,166 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
 
     @Override
     public Object visitInvocationStatement(final ContinuityParser.InvocationStatementContext ctx) {
+        return super.visit(ctx.invocation());
+    }
+
+    @Override
+    public Object visitStdInvocation(final ContinuityParser.StdInvocationContext ctx) {
+        final String reference = referenceContextToString(ctx.reference());
+        return new InsnList();
+    }
+
+    private void checkFunctionDeclared(final String functionName) {
+        if (!this.declaredFunctions.containsKey(functionName)) {
+            throw new IllegalStateException(String.format(
+                    "Function \"%s\" referenced before declaration",
+                    functionName
+            ));
+        }
+    }
+
+    @Override
+    public Object visitFunctionInvocation(final ContinuityParser.FunctionInvocationContext ctx) {
+        checkFunctionDeclared(ctx.referenceTarget().Identifier().getText());
+        return new InsnList();
+    }
+
+    @Override
+    public Object visitExternalDirectInvocation(final ContinuityParser.ExternalDirectInvocationContext ctx) {
+        return new InsnList();
+    }
+
+    @Override
+    public Object visitExternalLayoutStatement(final ContinuityParser.ExternalLayoutStatementContext ctx) {
+        return super.visit(ctx.externalLayout());
+    }
+
+    private Class<?> loadExternalReferenceClass(final ParserRuleContext ctx,
+                                                final String classPath) {
+        try {
+            return Class.forName(classPath);
+        } catch (final ClassNotFoundException e) {
+            throw new IllegalStateException(String.format(
+                    "[%s] Unable to load externally referenced class from path: %s",
+                    getLineColumn(ctx),
+                    classPath
+            ), e);
+        }
+    }
+
+    private void checkedLoadExternalReference(final ParserRuleContext ctx,
+                                              final ContinuityParser.ReferenceContext referenceCtx) {
+        final String reference = referenceContextToString(referenceCtx);
+        final String target = referenceCtx.referenceTarget().Identifier().getText();
+        final Class<?> previouslyLoadedClass = this.externalReferences.get(target);
+        if (previouslyLoadedClass != null) {
+            throw new IllegalStateException(String.format(
+                    "External reference to class \"%s\" already exists",
+                    previouslyLoadedClass.getCanonicalName()
+            ));
+        }
+        this.externalReferences.put(
+                target,
+                loadExternalReferenceClass(ctx, reference)
+        );
+    }
+
+    @Override
+    public Object visitSingleExternalLayoutDeclaration(final ContinuityParser.SingleExternalLayoutDeclarationContext ctx) {
+        checkedLoadExternalReference(ctx, ctx.reference());
+        return new InsnList();
+    }
+
+    @Override
+    public Object visitMultiExternalLayoutDeclaration(final ContinuityParser.MultiExternalLayoutDeclarationContext ctx) {
+        ctx.externalEntries()
+                .reference()
+                .forEach((final ContinuityParser.ReferenceContext referenceCtx) -> checkedLoadExternalReference(ctx, referenceCtx));
+        return new InsnList();
+    }
+
+    @Override
+    public Object visitExternalEntryReference(final ContinuityParser.ExternalEntryReferenceContext ctx) {
+        final String target = ctx.Identifier().getText();
+        final Class<?> externalClass = this.externalReferences.get(target);
+        if (externalClass == null) {
+            throw new IllegalStateException(String.format(
+                    "[%s] Referenced undeclared external class reference \"%s\". Load it with \"ext <path>.%s;\"",
+                    getLineColumn(ctx),
+                    target,
+                    target
+            ));
+        }
+        return externalClass;
+    }
+
+
+    @Override
+    public Object visitExternalReferenceInvocation(final ContinuityParser.ExternalReferenceInvocationContext ctx) {
+        final Class<?> externalClass = (Class<?>) super.visit(ctx.externalEntryReference());
+        final String target = ctx.referenceTarget().Identifier().getText();
+        final Object[] params = (Object[]) super.visit(ctx.params());
+        final Method targetMethod;
+        try {
+            targetMethod = externalClass.getMethod(
+                    target,
+                    Arrays.stream(params)
+                            .map(Object::getClass)
+                            .toArray(Class[]::new)
+            );
+
+        } catch (final NoSuchMethodException e) {
+            throw new IllegalStateException(String.format(
+                    "[%s] No such method exists for \"%s.%s(%s)\"",
+                    getLineColumn(ctx),
+                    externalClass.getCanonicalName(),
+                    target,
+                    Arrays.stream(params)
+                            .map(Object::getClass)
+                            .map(Class::getCanonicalName)
+                            .collect(Collectors.joining(","))
+            ), e);
+        }
+        if (!Modifier.isStatic(targetMethod.getModifiers())) {
+            throw new IllegalStateException(String.format(
+                    "[%s] Cannot invoke non-static method \"%s$%s\"",
+                    getLineColumn(ctx),
+                    externalClass.getCanonicalName(),
+                    target
+            ));
+        }
+        try {
+            return targetMethod.invoke(null, params);
+        } catch (final InvocationTargetException | IllegalAccessException e) {
+            throw new IllegalStateException(String.format(
+                    "[%s] Unable to invoke method \"%s$%s\"",
+                    getLineColumn(ctx),
+                    externalClass.getCanonicalName(),
+                    target
+            ), e);
+        }
+    }
+
+    @Override
+    public Object visitParams(final ContinuityParser.ParamsContext ctx) {
+        return ctx.param()
+                .stream()
+                .map(super::visit)
+                .toArray(Object[]::new);
+    }
+
+    @Override
+    public Object visitLiteralParam(final ContinuityParser.LiteralParamContext ctx) {
+        return super.visit(ctx.literal());
+    }
+
+    @Override
+    public Object visitContextEntryReferenceParam(final ContinuityParser.ContextEntryReferenceParamContext ctx) {
+        return super.visit(ctx.contextEntryReference());
+    }
+
+    @Override
+    public Object visitInvocationParam(final ContinuityParser.InvocationParamContext ctx) {
         return super.visit(ctx.invocation());
     }
 

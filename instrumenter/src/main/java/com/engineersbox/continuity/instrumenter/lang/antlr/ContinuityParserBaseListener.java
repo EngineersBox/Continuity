@@ -54,6 +54,18 @@ public class ContinuityParserBaseListener implements ContinuityParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterExternalLayoutStatement(ContinuityParser.ExternalLayoutStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExternalLayoutStatement(ContinuityParser.ExternalLayoutStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterContextLayoutStatement(ContinuityParser.ContextLayoutStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -61,6 +73,54 @@ public class ContinuityParserBaseListener implements ContinuityParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitContextLayoutStatement(ContinuityParser.ContextLayoutStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterSingleExternalLayoutDeclaration(ContinuityParser.SingleExternalLayoutDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSingleExternalLayoutDeclaration(ContinuityParser.SingleExternalLayoutDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMultiExternalLayoutDeclaration(ContinuityParser.MultiExternalLayoutDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMultiExternalLayoutDeclaration(ContinuityParser.MultiExternalLayoutDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExternalEntries(ContinuityParser.ExternalEntriesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExternalEntries(ContinuityParser.ExternalEntriesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExternalEntryReference(ContinuityParser.ExternalEntryReferenceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExternalEntryReference(ContinuityParser.ExternalEntryReferenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -150,13 +210,49 @@ public class ContinuityParserBaseListener implements ContinuityParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterInvocation(ContinuityParser.InvocationContext ctx) { }
+	@Override public void enterStdInvocation(ContinuityParser.StdInvocationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitInvocation(ContinuityParser.InvocationContext ctx) { }
+	@Override public void exitStdInvocation(ContinuityParser.StdInvocationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFunctionInvocation(ContinuityParser.FunctionInvocationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFunctionInvocation(ContinuityParser.FunctionInvocationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExternalDirectInvocation(ContinuityParser.ExternalDirectInvocationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExternalDirectInvocation(ContinuityParser.ExternalDirectInvocationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExternalReferenceInvocation(ContinuityParser.ExternalReferenceInvocationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExternalReferenceInvocation(ContinuityParser.ExternalReferenceInvocationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -181,18 +277,6 @@ public class ContinuityParserBaseListener implements ContinuityParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitLiteralParam(ContinuityParser.LiteralParamContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterReferenceParam(ContinuityParser.ReferenceParamContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitReferenceParam(ContinuityParser.ReferenceParamContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -44,6 +44,18 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 */
 	void exitInvocationStatement(ContinuityParser.InvocationStatementContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code externalLayoutStatement}
+	 * labeled alternative in {@link ContinuityParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterExternalLayoutStatement(ContinuityParser.ExternalLayoutStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code externalLayoutStatement}
+	 * labeled alternative in {@link ContinuityParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitExternalLayoutStatement(ContinuityParser.ExternalLayoutStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code contextLayoutStatement}
 	 * labeled alternative in {@link ContinuityParser#statement}.
 	 * @param ctx the parse tree
@@ -55,6 +67,50 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitContextLayoutStatement(ContinuityParser.ContextLayoutStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code singleExternalLayoutDeclaration}
+	 * labeled alternative in {@link ContinuityParser#externalLayout}.
+	 * @param ctx the parse tree
+	 */
+	void enterSingleExternalLayoutDeclaration(ContinuityParser.SingleExternalLayoutDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code singleExternalLayoutDeclaration}
+	 * labeled alternative in {@link ContinuityParser#externalLayout}.
+	 * @param ctx the parse tree
+	 */
+	void exitSingleExternalLayoutDeclaration(ContinuityParser.SingleExternalLayoutDeclarationContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code multiExternalLayoutDeclaration}
+	 * labeled alternative in {@link ContinuityParser#externalLayout}.
+	 * @param ctx the parse tree
+	 */
+	void enterMultiExternalLayoutDeclaration(ContinuityParser.MultiExternalLayoutDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code multiExternalLayoutDeclaration}
+	 * labeled alternative in {@link ContinuityParser#externalLayout}.
+	 * @param ctx the parse tree
+	 */
+	void exitMultiExternalLayoutDeclaration(ContinuityParser.MultiExternalLayoutDeclarationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#externalEntries}.
+	 * @param ctx the parse tree
+	 */
+	void enterExternalEntries(ContinuityParser.ExternalEntriesContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#externalEntries}.
+	 * @param ctx the parse tree
+	 */
+	void exitExternalEntries(ContinuityParser.ExternalEntriesContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#externalEntryReference}.
+	 * @param ctx the parse tree
+	 */
+	void enterExternalEntryReference(ContinuityParser.ExternalEntryReferenceContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#externalEntryReference}.
+	 * @param ctx the parse tree
+	 */
+	void exitExternalEntryReference(ContinuityParser.ExternalEntryReferenceContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code singleContextLayoutDeclaration}
 	 * labeled alternative in {@link ContinuityParser#contextLayout}.
@@ -130,15 +186,53 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 */
 	void exitStatements(ContinuityParser.StatementsContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ContinuityParser#invocation}.
+	 * Enter a parse tree produced by the {@code stdInvocation}
+	 * labeled alternative in {@link ContinuityParser#invocation}.
 	 * @param ctx the parse tree
 	 */
-	void enterInvocation(ContinuityParser.InvocationContext ctx);
+	void enterStdInvocation(ContinuityParser.StdInvocationContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link ContinuityParser#invocation}.
+	 * Exit a parse tree produced by the {@code stdInvocation}
+	 * labeled alternative in {@link ContinuityParser#invocation}.
 	 * @param ctx the parse tree
 	 */
-	void exitInvocation(ContinuityParser.InvocationContext ctx);
+	void exitStdInvocation(ContinuityParser.StdInvocationContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code functionInvocation}
+	 * labeled alternative in {@link ContinuityParser#invocation}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunctionInvocation(ContinuityParser.FunctionInvocationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code functionInvocation}
+	 * labeled alternative in {@link ContinuityParser#invocation}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunctionInvocation(ContinuityParser.FunctionInvocationContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code externalDirectInvocation}
+	 * labeled alternative in {@link ContinuityParser#invocation}.
+	 * @param ctx the parse tree
+	 */
+	void enterExternalDirectInvocation(ContinuityParser.ExternalDirectInvocationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code externalDirectInvocation}
+	 * labeled alternative in {@link ContinuityParser#invocation}.
+	 * @param ctx the parse tree
+	 */
+	void exitExternalDirectInvocation(ContinuityParser.ExternalDirectInvocationContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code externalReferenceInvocation}
+	 * labeled alternative in {@link ContinuityParser#invocation}.
+	 * @param ctx the parse tree
+	 */
+	void enterExternalReferenceInvocation(ContinuityParser.ExternalReferenceInvocationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code externalReferenceInvocation}
+	 * labeled alternative in {@link ContinuityParser#invocation}.
+	 * @param ctx the parse tree
+	 */
+	void exitExternalReferenceInvocation(ContinuityParser.ExternalReferenceInvocationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ContinuityParser#params}.
 	 * @param ctx the parse tree
@@ -161,18 +255,6 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitLiteralParam(ContinuityParser.LiteralParamContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code referenceParam}
-	 * labeled alternative in {@link ContinuityParser#param}.
-	 * @param ctx the parse tree
-	 */
-	void enterReferenceParam(ContinuityParser.ReferenceParamContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code referenceParam}
-	 * labeled alternative in {@link ContinuityParser#param}.
-	 * @param ctx the parse tree
-	 */
-	void exitReferenceParam(ContinuityParser.ReferenceParamContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code contextEntryReferenceParam}
 	 * labeled alternative in {@link ContinuityParser#param}.

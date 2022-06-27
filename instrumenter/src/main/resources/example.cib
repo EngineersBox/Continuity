@@ -1,6 +1,10 @@
 ctx contArgVar;
 ctx {
-    example
+    example;
+};
+
+ext {
+    com.engineersbox.continuity.instrumenter.bytecode.state.os.OSRestoreOperations;
 };
 
 /**
@@ -8,14 +12,14 @@ ctx {
  */
 fn loadState() {
     /* Invoke some call and load a var from LVA */
-    std::call(Continuation.getState, std::loadVar(ctx::contArgVar));
+    std::call("Continuation.getState", std::loadVar(ctx::contArgVar));
 
     /*
      * Invoke an external context driven function via a reference chain,
      * the OSRestoreOperations reference is expected to be in the HashMap
      * provided as context to the parser.
      */
-    OSRestoreOperations.loadContainerVars(containerVar, "test", 12.34f);
+    ext::OSRestoreOperations.loadContainerVars(std::loadVar(ctx::contArgVar), "test", 12.34f);
     std::debug("Loaded continuation state");
 };
 
@@ -23,5 +27,5 @@ std::ifIntNotEqual(
     std::loadConst(2.34f),
     std::loadConst(1),
     // Invoke a declared function
-    loadState()
+    fn::loadState()
 );
