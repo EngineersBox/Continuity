@@ -1,0 +1,186 @@
+// Generated from ContinuityParser.g4 by ANTLR 4.7.1
+
+package com.engineersbox.continuity.instrumenter.lang.antlr;
+
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
+
+/**
+ * This interface defines a complete generic visitor for a parse tree produced
+ * by {@link ContinuityParser}.
+ *
+ * @param <T> The return type of the visit operation. Use {@link Void} for
+ * operations with no return type.
+ */
+public interface ContinuityParserVisitor<T> extends ParseTreeVisitor<T> {
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#parse}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParse(ContinuityParser.ParseContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code functionStatement}
+	 * labeled alternative in {@link ContinuityParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionStatement(ContinuityParser.FunctionStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code invocationStatement}
+	 * labeled alternative in {@link ContinuityParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInvocationStatement(ContinuityParser.InvocationStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code contextLayoutStatement}
+	 * labeled alternative in {@link ContinuityParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitContextLayoutStatement(ContinuityParser.ContextLayoutStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code singleContextLayoutDeclaration}
+	 * labeled alternative in {@link ContinuityParser#contextLayout}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSingleContextLayoutDeclaration(ContinuityParser.SingleContextLayoutDeclarationContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code multiContextLayoutDeclaration}
+	 * labeled alternative in {@link ContinuityParser#contextLayout}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMultiContextLayoutDeclaration(ContinuityParser.MultiContextLayoutDeclarationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#contextEntries}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitContextEntries(ContinuityParser.ContextEntriesContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#contextEntryReference}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitContextEntryReference(ContinuityParser.ContextEntryReferenceContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#function}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunction(ContinuityParser.FunctionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#block}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBlock(ContinuityParser.BlockContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#statements}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStatements(ContinuityParser.StatementsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#invocation}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInvocation(ContinuityParser.InvocationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#params}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParams(ContinuityParser.ParamsContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code literalParam}
+	 * labeled alternative in {@link ContinuityParser#param}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLiteralParam(ContinuityParser.LiteralParamContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code referenceParam}
+	 * labeled alternative in {@link ContinuityParser#param}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReferenceParam(ContinuityParser.ReferenceParamContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code contextEntryReferenceParam}
+	 * labeled alternative in {@link ContinuityParser#param}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitContextEntryReferenceParam(ContinuityParser.ContextEntryReferenceParamContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code invocationParam}
+	 * labeled alternative in {@link ContinuityParser#param}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInvocationParam(ContinuityParser.InvocationParamContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#reference}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReference(ContinuityParser.ReferenceContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#referenceTarget}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReferenceTarget(ContinuityParser.ReferenceTargetContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#referenceChain}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReferenceChain(ContinuityParser.ReferenceChainContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code IntegerLiteral}
+	 * labeled alternative in {@link ContinuityParser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIntegerLiteral(ContinuityParser.IntegerLiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code FloatingPointLiteral}
+	 * labeled alternative in {@link ContinuityParser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFloatingPointLiteral(ContinuityParser.FloatingPointLiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code BooleanLiteral}
+	 * labeled alternative in {@link ContinuityParser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBooleanLiteral(ContinuityParser.BooleanLiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code CharacterLiteral}
+	 * labeled alternative in {@link ContinuityParser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCharacterLiteral(ContinuityParser.CharacterLiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code StringLiteral}
+	 * labeled alternative in {@link ContinuityParser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStringLiteral(ContinuityParser.StringLiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code NullLiteral}
+	 * labeled alternative in {@link ContinuityParser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNullLiteral(ContinuityParser.NullLiteralContext ctx);
+}

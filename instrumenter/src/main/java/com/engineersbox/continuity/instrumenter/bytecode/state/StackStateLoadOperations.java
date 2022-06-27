@@ -5,7 +5,7 @@ import com.engineersbox.continuity.instrumenter.bytecode.InsnListCollector;
 import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveStack;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableSizeManager;
-import com.engineersbox.continuity.instrumenter.stage.DebugMarker;
+import com.engineersbox.continuity.instrumenter.bytecode.DebugMarker;
 import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;

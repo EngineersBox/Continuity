@@ -1,16 +1,18 @@
 lexer grammar ContinuityLexer;
 @header {
-package com.engineersbox.continuity.lang.antlr;
+package com.engineersbox.continuity.instrumenter.lang.antlr;
 
-import com.engineersbox.continuity.lang.lexer.LexerBase;
+import com.engineersbox.continuity.instrumenter.lang.lexer.LexerBase;
 }
 
 options {
     superClass = LexerBase;
 }
 
-// Program Parameters
-IN_PARAM: 'in';
+// Keywords
+CTX: 'ctx';
+FN: 'fn';
+STD: 'std';
 
 // Literals
 IntegerLiteral: DecimalIntegerLiteral

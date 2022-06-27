@@ -26,12 +26,17 @@ public class InsnListCollector implements Collector<Object, InsnList, InsnList> 
     @Override
     public BiConsumer<InsnList, Object> accumulator() {
         return (final InsnList list, final Object node) -> {
-            if (node instanceof AbstractInsnNode insnNode) {
+            if (node == null) {
+                throw new NullPointerException("Node is null");
+            } else if (node instanceof AbstractInsnNode insnNode) {
                 list.add(insnNode);
             } else if (node instanceof InsnList insnList) {
                 list.add(insnList);
             } else {
-                throw new IllegalArgumentException("Unknown node type");
+                throw new IllegalArgumentException(String.format(
+                        "Unknown node type: %s",
+                        node.getClass().getCanonicalName()
+                ));
             }
         };
     }

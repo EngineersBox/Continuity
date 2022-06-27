@@ -1,0 +1,15 @@
+ctx contArgVar;
+ctx {
+    example
+};
+
+fn loadState() {
+    std::call(Continuation.getState, std::loadVar(ctx::contArgVar));
+    std::debug("Loaded continuation state");
+};
+
+std::ifIntNotEqual(
+    std::loadConst(2.34f),
+    std::loadConst(1),
+    loadState()
+);

@@ -1,7 +1,6 @@
 package com.engineersbox.continuity.instrumenter.bytecode.state.os;
 
 import com.engineersbox.continuity.instrumenter.bytecode.InsnBuilder;
-import com.engineersbox.continuity.instrumenter.bytecode.InsnListCollector;
 import com.engineersbox.continuity.instrumenter.bytecode.ObjectConstants;
 import com.engineersbox.continuity.instrumenter.bytecode.annotation.BytecodeGenerator;
 import com.engineersbox.continuity.instrumenter.bytecode.state.StackStateLoadOperations;
@@ -9,15 +8,12 @@ import com.engineersbox.continuity.instrumenter.bytecode.state.VariableContainer
 import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveStack;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableSizeManager;
-import com.engineersbox.continuity.instrumenter.stage.DebugMarker;
-import org.apache.commons.lang3.tuple.Pair;
+import com.engineersbox.continuity.instrumenter.bytecode.DebugMarker;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
-
-import java.util.stream.IntStream;
 
 @BytecodeGenerator
 public class OSRestoreOperations extends StackStateLoadOperations {

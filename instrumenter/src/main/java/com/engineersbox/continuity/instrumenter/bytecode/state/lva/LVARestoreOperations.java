@@ -8,7 +8,7 @@ import com.engineersbox.continuity.instrumenter.bytecode.state.VariableContainer
 import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveStack;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableSizeManager;
-import com.engineersbox.continuity.instrumenter.stage.DebugMarker;
+import com.engineersbox.continuity.instrumenter.bytecode.DebugMarker;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.InsnList;

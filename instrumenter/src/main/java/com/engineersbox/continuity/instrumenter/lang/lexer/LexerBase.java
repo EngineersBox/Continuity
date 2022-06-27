@@ -1,4 +1,4 @@
-package com.engineersbox.continuity.lang.lexer;
+package com.engineersbox.continuity.instrumenter.lang.lexer;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Lexer;

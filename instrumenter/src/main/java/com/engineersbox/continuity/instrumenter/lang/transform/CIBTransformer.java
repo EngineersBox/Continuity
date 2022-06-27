@@ -1,13 +1,14 @@
-package com.engineersbox.continuity.lang.transform;
+package com.engineersbox.continuity.instrumenter.lang.transform;
 
-import com.engineersbox.continuity.lang.antlr.ContinuityLexer;
-import com.engineersbox.continuity.lang.antlr.ContinuityParser;
+import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityLexer;
+import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityParser;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.objectweb.asm.tree.InsnList;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Map;
 
 public class CIBTransformer {
@@ -48,7 +49,17 @@ public class CIBTransformer {
     }
 
     public InsnList transform(final Map<String, Object> translationContext) {
-        final TransformVisitor visitor = new TransformVisitor();
-        return visitor.visit(this.parseTree);
+        final TransformVisitor visitor = new TransformVisitor(translationContext);
+        return (InsnList) visitor.visit(this.parseTree);
+    }
+
+    public static void main(String[] args) {
+        final Map<String, Object> tc = Map.of(
+                "contArgVar", "test",
+                "example", "test2"
+        );
+        final CIBTransformer transformer = new CIBTransformer("instrumenter/src/main/resources/example.cib");
+        final InsnList result = transformer.transform(tc);
+        System.out.println(Arrays.toString(result.toArray()));
     }
 }

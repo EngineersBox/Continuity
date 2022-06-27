@@ -15,7 +15,7 @@ import com.engineersbox.continuity.instrumenter.stack.point.InvokeContinuationPo
 import com.engineersbox.continuity.instrumenter.stack.point.SuspendMethodContinuationPoint;
 import com.engineersbox.continuity.instrumenter.stack.storage.PrimitiveStack;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
-import com.engineersbox.continuity.instrumenter.stage.DebugMarker;
+import com.engineersbox.continuity.instrumenter.bytecode.DebugMarker;
 import com.engineersbox.continuity.instrumenter.util.InsnUtils;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.analysis.BasicValue;

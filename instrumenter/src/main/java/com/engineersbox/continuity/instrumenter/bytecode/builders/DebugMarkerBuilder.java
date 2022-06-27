@@ -3,7 +3,7 @@ package com.engineersbox.continuity.instrumenter.bytecode.builders;
 import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnListBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.ObjectConstants;
-import com.engineersbox.continuity.instrumenter.stage.DebugMarker;
+import com.engineersbox.continuity.instrumenter.bytecode.DebugMarker;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
