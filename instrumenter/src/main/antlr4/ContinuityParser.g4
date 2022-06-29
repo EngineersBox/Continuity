@@ -18,6 +18,7 @@ externalLayout: EXT reference # singleExternalLayoutDeclaration
     | EXT LBRACE externalEntries RBRACE # multiExternalLayoutDeclaration;
 externalEntries: (reference SEMI)+;
 externalEntryReference: EXT COLONCOLON Identifier;
+externalEntryEnumConstantReference: externalEntryReference DOT Identifier;
 
 contextLayout: CTX Identifier # singleContextLayoutDeclaration
     | CTX LBRACE contextEntries RBRACE # multiContextLayoutDeclaration;
@@ -25,21 +26,21 @@ contextEntries: (Identifier SEMI)+;
 contextEntryReference: CTX COLONCOLON Identifier;
 
 function: FN Identifier LPAREN RPAREN block;
-block: LBRACE statements RBRACE;
-statements: (statement SEMI)+;
+block: LBRACE (statement SEMI)+ RBRACE;
 
 invocation: STD COLONCOLON reference LPAREN params RPAREN # stdInvocation
-    | FN COLONCOLON referenceTarget LPAREN RPAREN # functionInvocation
-    | reference LPAREN params RPAREN # externalDirectInvocation
-    | externalEntryReference DOT referenceTarget LPAREN params RPAREN # externalReferenceInvocation;
+    | FN DOT referenceTarget LPAREN RPAREN # functionInvocation
+    | externalEntryReference ARROW referenceTarget LPAREN params RPAREN # externalReferenceInvocation
+    | externalEntryEnumConstantReference DOT referenceTarget LPAREN RPAREN  # enumConstantMethodInvocationParam;
 params: (param ( COMMA param )* )?;
 param: literal # literalParam
     | contextEntryReference # contextEntryReferenceParam
-    | invocation # invocationParam;
+    | invocation # invocationParam
+    | externalEntryReference DOT Identifier # enumConstantReferenceParam;
 
 reference: referenceChain? referenceTarget;
 referenceTarget: Identifier;
-referenceChain: (Identifier DOT)+;
+referenceChain: (Identifier (DOT | DOLLAR))+;
 
 literal: IntegerLiteral # IntegerLiteral
     | FloatingPointLiteral # FloatingPointLiteral

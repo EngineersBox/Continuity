@@ -100,7 +100,9 @@ LBRACK: '[';
 RBRACK: ']';
 SEMI: ';';
 DOT: '.';
+DOLLAR: '$';
 COMMA: ',';
+ARROW: '->';
 
 // Operators
 ASSIGN: '=';

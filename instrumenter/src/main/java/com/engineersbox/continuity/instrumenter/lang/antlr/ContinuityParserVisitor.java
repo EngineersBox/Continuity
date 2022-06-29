@@ -73,6 +73,12 @@ public interface ContinuityParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExternalEntryReference(ContinuityParser.ExternalEntryReferenceContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#externalEntryEnumConstantReference}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExternalEntryEnumConstantReference(ContinuityParser.ExternalEntryEnumConstantReferenceContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code singleContextLayoutDeclaration}
 	 * labeled alternative in {@link ContinuityParser#contextLayout}.
 	 * @param ctx the parse tree
@@ -111,12 +117,6 @@ public interface ContinuityParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBlock(ContinuityParser.BlockContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ContinuityParser#statements}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStatements(ContinuityParser.StatementsContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code stdInvocation}
 	 * labeled alternative in {@link ContinuityParser#invocation}.
 	 * @param ctx the parse tree
@@ -131,19 +131,19 @@ public interface ContinuityParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFunctionInvocation(ContinuityParser.FunctionInvocationContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code externalDirectInvocation}
-	 * labeled alternative in {@link ContinuityParser#invocation}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitExternalDirectInvocation(ContinuityParser.ExternalDirectInvocationContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code externalReferenceInvocation}
 	 * labeled alternative in {@link ContinuityParser#invocation}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitExternalReferenceInvocation(ContinuityParser.ExternalReferenceInvocationContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code enumConstantMethodInvocationParam}
+	 * labeled alternative in {@link ContinuityParser#invocation}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEnumConstantMethodInvocationParam(ContinuityParser.EnumConstantMethodInvocationParamContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ContinuityParser#params}.
 	 * @param ctx the parse tree
@@ -171,6 +171,13 @@ public interface ContinuityParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitInvocationParam(ContinuityParser.InvocationParamContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code enumConstantReferenceParam}
+	 * labeled alternative in {@link ContinuityParser#param}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEnumConstantReferenceParam(ContinuityParser.EnumConstantReferenceParamContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ContinuityParser#reference}.
 	 * @param ctx the parse tree

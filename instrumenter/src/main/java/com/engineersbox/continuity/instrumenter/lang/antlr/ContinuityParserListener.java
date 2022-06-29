@@ -112,6 +112,16 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 */
 	void exitExternalEntryReference(ContinuityParser.ExternalEntryReferenceContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#externalEntryEnumConstantReference}.
+	 * @param ctx the parse tree
+	 */
+	void enterExternalEntryEnumConstantReference(ContinuityParser.ExternalEntryEnumConstantReferenceContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#externalEntryEnumConstantReference}.
+	 * @param ctx the parse tree
+	 */
+	void exitExternalEntryEnumConstantReference(ContinuityParser.ExternalEntryEnumConstantReferenceContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code singleContextLayoutDeclaration}
 	 * labeled alternative in {@link ContinuityParser#contextLayout}.
 	 * @param ctx the parse tree
@@ -176,16 +186,6 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 */
 	void exitBlock(ContinuityParser.BlockContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ContinuityParser#statements}.
-	 * @param ctx the parse tree
-	 */
-	void enterStatements(ContinuityParser.StatementsContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ContinuityParser#statements}.
-	 * @param ctx the parse tree
-	 */
-	void exitStatements(ContinuityParser.StatementsContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code stdInvocation}
 	 * labeled alternative in {@link ContinuityParser#invocation}.
 	 * @param ctx the parse tree
@@ -210,18 +210,6 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 */
 	void exitFunctionInvocation(ContinuityParser.FunctionInvocationContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code externalDirectInvocation}
-	 * labeled alternative in {@link ContinuityParser#invocation}.
-	 * @param ctx the parse tree
-	 */
-	void enterExternalDirectInvocation(ContinuityParser.ExternalDirectInvocationContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code externalDirectInvocation}
-	 * labeled alternative in {@link ContinuityParser#invocation}.
-	 * @param ctx the parse tree
-	 */
-	void exitExternalDirectInvocation(ContinuityParser.ExternalDirectInvocationContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code externalReferenceInvocation}
 	 * labeled alternative in {@link ContinuityParser#invocation}.
 	 * @param ctx the parse tree
@@ -233,6 +221,18 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExternalReferenceInvocation(ContinuityParser.ExternalReferenceInvocationContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code enumConstantMethodInvocationParam}
+	 * labeled alternative in {@link ContinuityParser#invocation}.
+	 * @param ctx the parse tree
+	 */
+	void enterEnumConstantMethodInvocationParam(ContinuityParser.EnumConstantMethodInvocationParamContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code enumConstantMethodInvocationParam}
+	 * labeled alternative in {@link ContinuityParser#invocation}.
+	 * @param ctx the parse tree
+	 */
+	void exitEnumConstantMethodInvocationParam(ContinuityParser.EnumConstantMethodInvocationParamContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ContinuityParser#params}.
 	 * @param ctx the parse tree
@@ -279,6 +279,18 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitInvocationParam(ContinuityParser.InvocationParamContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code enumConstantReferenceParam}
+	 * labeled alternative in {@link ContinuityParser#param}.
+	 * @param ctx the parse tree
+	 */
+	void enterEnumConstantReferenceParam(ContinuityParser.EnumConstantReferenceParamContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code enumConstantReferenceParam}
+	 * labeled alternative in {@link ContinuityParser#param}.
+	 * @param ctx the parse tree
+	 */
+	void exitEnumConstantReferenceParam(ContinuityParser.EnumConstantReferenceParamContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ContinuityParser#reference}.
 	 * @param ctx the parse tree

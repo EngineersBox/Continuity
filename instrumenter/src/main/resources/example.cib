@@ -8,6 +8,7 @@ ctx {
 // Reference an external class in the JVM via ClassLoader
 ext {
     com.engineersbox.continuity.instrumenter.bytecode.state.os.OSRestoreOperations;
+    com.engineersbox.continuity.core.state.ContinuationState;
 };
 
 /**
@@ -22,13 +23,13 @@ fn loadState() {
      * the OSRestoreOperations reference is expected to loaded via ext <path>;
      * or ext { ... <path>; }.
      */
-    ext::OSRestoreOperations.loadContainerVars(std::loadVar(ctx::contArgVar), "test", 12.34f);
+    ext::OSRestoreOperations->loadContainerVars(std::loadVar(ctx::contArgVar), "test", 12.34f);
     std::debug("Loaded continuation state");
 };
 
 std::ifIntNotEqual(
     std::loadConst(2.34f),
-    std::loadConst(1),
+    ext::ContinuationState.SAVING->ordinal(),
     // Invoke a declared function
-    loadState()
+    fn.loadState()
 );

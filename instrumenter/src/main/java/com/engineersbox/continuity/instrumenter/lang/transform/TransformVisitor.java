@@ -5,17 +5,14 @@ import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityParser;
 import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityParserBaseVisitor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.tree.InsnList;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
@@ -43,6 +40,15 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         );
     }
 
+    private IllegalStateException throwWithContext(final ParserRuleContext ctx,
+                                                   final String messageTemplate,
+                                                   final Object ...messageArgs){
+        return new IllegalStateException(String.format(
+                "[%s] " + messageTemplate,
+                ArrayUtils.addFirst(messageArgs, getLineColumn(ctx))
+        ));
+    }
+
     @Override
     public Object visitParse(final ContinuityParser.ParseContext ctx) {
         return ctx.statement()
@@ -65,27 +71,56 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     @Override
     public Object visitStdInvocation(final ContinuityParser.StdInvocationContext ctx) {
         final String reference = referenceContextToString(ctx.reference());
+        // TODO: Match against builder methods and invoke accordingly
         return new InsnList();
-    }
-
-    private void checkFunctionDeclared(final String functionName) {
-        if (!this.declaredFunctions.containsKey(functionName)) {
-            throw new IllegalStateException(String.format(
-                    "Function \"%s\" referenced before declaration",
-                    functionName
-            ));
-        }
     }
 
     @Override
     public Object visitFunctionInvocation(final ContinuityParser.FunctionInvocationContext ctx) {
-        checkFunctionDeclared(ctx.referenceTarget().Identifier().getText());
+        final String functionName = ctx.referenceTarget().Identifier().getText();
+        final Object resolvedFunctionResult;
+        if ((resolvedFunctionResult = this.declaredFunctions.get(functionName)) == null) {
+            throw new IllegalStateException(String.format(
+                    "[%s] Function \"%s\" referenced before declaration",
+                    getLineColumn(ctx),
+                    functionName
+            ));
+        } else if (resolvedFunctionResult instanceof InsnList insnList) {
+            return insnList;
+        }
+        throw new IllegalStateException(String.format(
+                "[%s] Expected resolved function \"%s\" to be %s, not %s",
+                getLineColumn(ctx),
+                functionName,
+                InsnList.class.getCanonicalName(),
+                resolvedFunctionResult.getClass().getCanonicalName()
+        ));
+    }
+
+    @Override
+    public Object visitFunction(final ContinuityParser.FunctionContext ctx) {
+        final String functionName = ctx.Identifier().getText();
+        if (this.declaredFunctions.containsKey(functionName)) {
+            throw new IllegalStateException(String.format(
+                    "[%s] Function \"%s\" previously declared",
+                    getLineColumn(ctx),
+                    functionName
+            ));
+        }
+        this.declaredFunctions.put(
+                functionName,
+                super.visit(ctx.block())
+        );
         return new InsnList();
     }
 
     @Override
-    public Object visitExternalDirectInvocation(final ContinuityParser.ExternalDirectInvocationContext ctx) {
-        return new InsnList();
+    public Object visitBlock(final ContinuityParser.BlockContext ctx) {
+        return ctx.statement()
+                .stream()
+                .map(super::visit)
+                .filter(Objects::nonNull) // TODO: Remove this after testing done
+                .collect(InsnListCollector.toInsnList());
     }
 
     @Override
@@ -152,6 +187,33 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         return externalClass;
     }
 
+    private void validateMethodTargetAsInvokable(final ParserRuleContext ctx,
+                                                 final Method targetMethod,
+                                                 final Class<?> declaringClass) {
+        final Class<?> returnType = targetMethod.getReturnType();
+        /* If this is a statement, then the method must return InsnList,
+         * otherwise it would have been invoked as a parameter which is
+         * fine to pass any object value to.
+         */
+        if (ctx.getParent() instanceof ContinuityParser.StatementContext
+                && !InsnList.class.isAssignableFrom(returnType)) {
+            throw new IllegalStateException(String.format(
+                    "[%s] Statement method invocations must return \"%s\". Returning \"%s\" in invocation of \"%s$%s\" is not valid.",
+                    getLineColumn(ctx),
+                    InsnList.class.getCanonicalName(),
+                    returnType.getCanonicalName(),
+                    declaringClass.getCanonicalName(),
+                    targetMethod.getName()
+            ));
+        } else if (!Modifier.isStatic(targetMethod.getModifiers())) {
+            throw new IllegalStateException(String.format(
+                    "[%s] Cannot invoke non-static method \"%s$%s\"",
+                    getLineColumn(ctx),
+                    declaringClass.getCanonicalName(),
+                    targetMethod.getName()
+            ));
+        }
+    }
 
     @Override
     public Object visitExternalReferenceInvocation(final ContinuityParser.ExternalReferenceInvocationContext ctx) {
@@ -179,14 +241,11 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
                             .collect(Collectors.joining(","))
             ), e);
         }
-        if (!Modifier.isStatic(targetMethod.getModifiers())) {
-            throw new IllegalStateException(String.format(
-                    "[%s] Cannot invoke non-static method \"%s$%s\"",
-                    getLineColumn(ctx),
-                    externalClass.getCanonicalName(),
-                    target
-            ));
-        }
+        validateMethodTargetAsInvokable(
+                ctx,
+                targetMethod,
+                externalClass
+        );
         try {
             return targetMethod.invoke(null, params);
         } catch (final InvocationTargetException | IllegalAccessException e) {
@@ -304,6 +363,51 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
                 prefix,
                 ctx.referenceTarget().Identifier().getText()
         );
+    }
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object visitExternalEntryEnumConstantReference(final ContinuityParser.ExternalEntryEnumConstantReferenceContext ctx) {
+        super.visit(ctx.externalEntryReference());
+        final String enumReference = ctx.externalEntryReference().Identifier().getText();
+        final Class<?> referenceClass = this.externalReferences.get(enumReference);
+        if (!referenceClass.isEnum()) {
+            throw throwWithContext(
+                    ctx,
+                    "Expected external enum reference to \"%s\" to be an enum",
+                    referenceClass.getCanonicalName()
+            );
+        }
+        final Class<Enum<?>> enumClass = (Class<Enum<?>>) referenceClass;
+        final Optional<Enum<?>> enumConstant = Arrays.stream(enumClass.getEnumConstants())
+                .filter((final Enum<?> constant) -> constant.name().equals(ctx.Identifier().getText()))
+                .findFirst();
+        if (enumConstant.isEmpty()) {
+            throw throwWithContext(
+                    ctx,
+                    "No such constant \"%s\" could be found on enum \"%s\"",
+                    ctx.Identifier().getText(),
+                    enumClass.getCanonicalName()
+            );
+        }
+        return enumConstant.get();
+    }
+
+    @Override
+    public Object visitEnumConstantMethodInvocationParam(final ContinuityParser.EnumConstantMethodInvocationParamContext ctx) {
+        final Enum<?> enumConstant = (Enum<?>) super.visit(ctx.externalEntryEnumConstantReference());
+        try {
+            final Method method = enumConstant.getDeclaringClass()
+                    .getMethod(ctx.referenceTarget().Identifier().getText());
+            return method.invoke(enumConstant);
+        } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw throwWithContext(
+                    ctx,
+                    "Cannot invoke \"%s\" on enum constant \"%s.%s\"",
+                    ctx.referenceTarget().Identifier().getText(),
+                    enumConstant.getDeclaringClass().getCanonicalName(),
+                    enumConstant.name()
+            );
+        }
     }
 
     @Override
