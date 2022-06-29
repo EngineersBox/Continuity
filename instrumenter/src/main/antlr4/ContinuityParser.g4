@@ -28,7 +28,7 @@ contextEntryReference: CTX COLONCOLON Identifier;
 function: FN Identifier LPAREN RPAREN block;
 block: LBRACE (statement SEMI)+ RBRACE;
 
-invocation: STD COLONCOLON reference LPAREN params RPAREN # stdInvocation
+invocation: STD COLONCOLON referenceTarget LPAREN params RPAREN # stdInvocation
     | FN DOT referenceTarget LPAREN RPAREN # functionInvocation
     | externalEntryReference ARROW referenceTarget LPAREN params RPAREN # externalReferenceInvocation
     | externalEntryEnumConstantReference ARROW referenceTarget LPAREN RPAREN  # enumConstantMethodInvocationParam;

@@ -1,6 +1,8 @@
 package com.engineersbox.continuity.instrumenter.bytecode.builders;
 
 import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilder;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilderParam;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.InsnList;
@@ -12,6 +14,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
+@StdlibBuilder(methodName = "call")
 public class CallBuilder implements BytecodeBuilder {
 
     private Method method;
@@ -19,7 +22,7 @@ public class CallBuilder implements BytecodeBuilder {
 
     public CallBuilder() {}
 
-    public CallBuilder method(final Method method) {
+    public CallBuilder method(@StdlibBuilderParam(pos = 0) final Method method) {
         if (method == null) {
             throw new IllegalArgumentException("Method cannot be null");
         }
@@ -27,7 +30,7 @@ public class CallBuilder implements BytecodeBuilder {
         return this;
     }
 
-    public CallBuilder args(final InsnList ...args) {
+    public CallBuilder args(@StdlibBuilderParam(pos = 1) final InsnList ...args) {
         if (args == null || Arrays.stream(args).anyMatch(Objects::isNull)) {
             throw new IllegalArgumentException("Arguments cannot be null");
         }

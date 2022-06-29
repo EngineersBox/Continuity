@@ -979,8 +979,8 @@ public class ContinuityParser extends Parser {
 	public static class StdInvocationContext extends InvocationContext {
 		public TerminalNode STD() { return getToken(ContinuityParser.STD, 0); }
 		public TerminalNode COLONCOLON() { return getToken(ContinuityParser.COLONCOLON, 0); }
-		public ReferenceContext reference() {
-			return getRuleContext(ReferenceContext.class,0);
+		public ReferenceTargetContext referenceTarget() {
+			return getRuleContext(ReferenceTargetContext.class,0);
 		}
 		public TerminalNode LPAREN() { return getToken(ContinuityParser.LPAREN, 0); }
 		public ParamsContext params() {
@@ -1042,7 +1042,7 @@ public class ContinuityParser extends Parser {
 				setState(112);
 				match(COLONCOLON);
 				setState(113);
-				reference();
+				referenceTarget();
 				setState(114);
 				match(LPAREN);
 				setState(115);
@@ -1734,8 +1734,8 @@ public class ContinuityParser extends Parser {
 		"_\7\37\2\2_`\7\60\2\2`\23\3\2\2\2ab\7\5\2\2bc\7\60\2\2cd\7\r\2\2de\7\16"+
 		"\2\2ef\5\26\f\2f\25\3\2\2\2gk\7\17\2\2hi\5\4\3\2ij\7\23\2\2jl\3\2\2\2"+
 		"kh\3\2\2\2lm\3\2\2\2mk\3\2\2\2mn\3\2\2\2no\3\2\2\2op\7\20\2\2p\27\3\2"+
-		"\2\2qr\7\6\2\2rs\7\37\2\2st\5\36\20\2tu\7\r\2\2uv\5\32\16\2vw\7\16\2\2"+
-		"w\u008c\3\2\2\2xy\7\5\2\2yz\7\24\2\2z{\5 \21\2{|\7\r\2\2|}\7\16\2\2}\u008c"+
+		"\2\2qr\7\6\2\2rs\7\37\2\2st\5 \21\2tu\7\r\2\2uv\5\32\16\2vw\7\16\2\2w"+
+		"\u008c\3\2\2\2xy\7\5\2\2yz\7\24\2\2z{\5 \21\2{|\7\r\2\2|}\7\16\2\2}\u008c"+
 		"\3\2\2\2~\177\5\n\6\2\177\u0080\7\27\2\2\u0080\u0081\5 \21\2\u0081\u0082"+
 		"\7\r\2\2\u0082\u0083\5\32\16\2\u0083\u0084\7\16\2\2\u0084\u008c\3\2\2"+
 		"\2\u0085\u0086\5\f\7\2\u0086\u0087\7\27\2\2\u0087\u0088\5 \21\2\u0088"+

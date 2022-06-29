@@ -3,6 +3,7 @@ package com.engineersbox.continuity.instrumenter.lang.transform;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnListCollector;
 import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityParser;
 import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityParserBaseVisitor;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.BuilderResolver;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang3.ArrayUtils;
@@ -25,11 +26,14 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     private final Map<String, Object> declaredFunctions;
     private final Map<String, Class<?>> externalReferences;
 
+    private final BuilderResolver builderResolver;
+
     public TransformVisitor(final Map<String, Object> translationContext) {
         this.translationContext = translationContext;
         this.declaredContextLayoutVariables = new HashMap<>();
         this.declaredFunctions = new HashMap<>();
         this.externalReferences = new HashMap<>();
+        this.builderResolver = new BuilderResolver();
     }
 
     private String getLineColumn(final ParserRuleContext ctx) {
@@ -70,9 +74,9 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
 
     @Override
     public Object visitStdInvocation(final ContinuityParser.StdInvocationContext ctx) {
-        final String reference = referenceContextToString(ctx.reference());
-        // TODO: Match against builder methods and invoke accordingly
-        return new InsnList();
+        final String reference = ctx.referenceTarget().Identifier().getText();
+        final Object[] params = (Object[]) super.visit(ctx.params());
+        return this.builderResolver.invokeStdlibMethod(reference, List.of(params));
     }
 
     @Override
