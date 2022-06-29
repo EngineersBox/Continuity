@@ -31,7 +31,7 @@ block: LBRACE (statement SEMI)+ RBRACE;
 invocation: STD COLONCOLON reference LPAREN params RPAREN # stdInvocation
     | FN DOT referenceTarget LPAREN RPAREN # functionInvocation
     | externalEntryReference ARROW referenceTarget LPAREN params RPAREN # externalReferenceInvocation
-    | externalEntryEnumConstantReference DOT referenceTarget LPAREN RPAREN  # enumConstantMethodInvocationParam;
+    | externalEntryEnumConstantReference ARROW referenceTarget LPAREN RPAREN  # enumConstantMethodInvocationParam;
 params: (param ( COMMA param )* )?;
 param: literal # literalParam
     | contextEntryReference # contextEntryReferenceParam

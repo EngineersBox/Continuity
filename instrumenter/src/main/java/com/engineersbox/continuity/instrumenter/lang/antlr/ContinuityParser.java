@@ -955,7 +955,7 @@ public class ContinuityParser extends Parser {
 		public ExternalEntryEnumConstantReferenceContext externalEntryEnumConstantReference() {
 			return getRuleContext(ExternalEntryEnumConstantReferenceContext.class,0);
 		}
-		public TerminalNode DOT() { return getToken(ContinuityParser.DOT, 0); }
+		public TerminalNode ARROW() { return getToken(ContinuityParser.ARROW, 0); }
 		public ReferenceTargetContext referenceTarget() {
 			return getRuleContext(ReferenceTargetContext.class,0);
 		}
@@ -1092,7 +1092,7 @@ public class ContinuityParser extends Parser {
 				setState(131);
 				externalEntryEnumConstantReference();
 				setState(132);
-				match(DOT);
+				match(ARROW);
 				setState(133);
 				referenceTarget();
 				setState(134);
@@ -1738,7 +1738,7 @@ public class ContinuityParser extends Parser {
 		"w\u008c\3\2\2\2xy\7\5\2\2yz\7\24\2\2z{\5 \21\2{|\7\r\2\2|}\7\16\2\2}\u008c"+
 		"\3\2\2\2~\177\5\n\6\2\177\u0080\7\27\2\2\u0080\u0081\5 \21\2\u0081\u0082"+
 		"\7\r\2\2\u0082\u0083\5\32\16\2\u0083\u0084\7\16\2\2\u0084\u008c\3\2\2"+
-		"\2\u0085\u0086\5\f\7\2\u0086\u0087\7\24\2\2\u0087\u0088\5 \21\2\u0088"+
+		"\2\u0085\u0086\5\f\7\2\u0086\u0087\7\27\2\2\u0087\u0088\5 \21\2\u0088"+
 		"\u0089\7\r\2\2\u0089\u008a\7\16\2\2\u008a\u008c\3\2\2\2\u008bq\3\2\2\2"+
 		"\u008bx\3\2\2\2\u008b~\3\2\2\2\u008b\u0085\3\2\2\2\u008c\31\3\2\2\2\u008d"+
 		"\u0092\5\34\17\2\u008e\u008f\7\26\2\2\u008f\u0091\5\34\17\2\u0090\u008e"+
