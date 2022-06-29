@@ -350,19 +350,16 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     }
 
     private String referenceContextToString(final ContinuityParser.ReferenceContext ctx) {
-        String prefix = null;
+        final StringBuilder referenceBuilder = new StringBuilder();
         final ContinuityParser.ReferenceChainContext referenceChainContext = ctx.referenceChain();
         if (referenceChainContext != null) {
-            prefix = referenceChainContext.Identifier()
-                    .stream()
-                    .map(TerminalNode::getText)
-                    .collect(Collectors.joining("."));
+            for (int i = 0; i < referenceChainContext.Identifier().size(); i++) {
+                referenceBuilder.append(referenceChainContext.Identifier(i));
+                referenceBuilder.append(referenceChainContext.DOT(i) != null ? '.' : '$');
+            }
         }
-        return prefix == null ? ctx.referenceTarget().Identifier().getText() : String.format(
-                "%s.%s",
-                prefix,
-                ctx.referenceTarget().Identifier().getText()
-        );
+        referenceBuilder.append(ctx.referenceTarget().Identifier().getText());
+        return referenceBuilder.toString();
     }
     @SuppressWarnings("unchecked")
     @Override

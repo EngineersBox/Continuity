@@ -9,6 +9,7 @@ ctx {
 ext {
     com.engineersbox.continuity.instrumenter.bytecode.state.os.OSRestoreOperations;
     com.engineersbox.continuity.core.state.ContinuationState;
+    // com.example.Test $ EnumExample
 };
 
 /**
