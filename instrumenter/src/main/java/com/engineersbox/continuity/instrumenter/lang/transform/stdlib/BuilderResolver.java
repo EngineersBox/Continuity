@@ -28,7 +28,7 @@ public class BuilderResolver {
             RESOLVER_SEARCH_PACKAGE,
             Scanners.TypesAnnotated,
             Scanners.MethodsParameter,
-            Scanners.TypesAnnotated
+            Scanners.SubTypes
     );
 
     private final Map<String, Pair<Class<? extends BytecodeBuilder>, List<StdlibBuilderMethod>>> builders;
@@ -42,7 +42,9 @@ public class BuilderResolver {
     private Set<Class<? extends BytecodeBuilder>> resolveBuilders() {
         final Set<Class<? extends BytecodeBuilder>> extendsClasses = STDLIB_REFLECTIONS.getSubTypesOf(BytecodeBuilder.class);
         final Set<Class<?>> annotatedClasses = STDLIB_REFLECTIONS.getTypesAnnotatedWith(StdlibBuilder.class);
-        final Set<Class<?>> intersection = SetUtils.intersection(extendsClasses, annotatedClasses).toSet();
+        final Set<Class<? extends BytecodeBuilder>> intersection = SetUtils.intersection(extendsClasses, annotatedClasses).toSet().stream()
+                .map((final Class<?> cls) -> (Class<? extends BytecodeBuilder>) cls)
+                .collect(Collectors.toSet());
         logResolvedClasses(
                 extendsClasses,
                 annotatedClasses,
@@ -53,7 +55,7 @@ public class BuilderResolver {
 
     private void logResolvedClasses(final Set<Class<? extends BytecodeBuilder>> extendsClasses,
                                     final Set<Class<?>> annotatedClasses,
-                                    final Set<Class<?>> intersection) {
+                                    final Set<Class<? extends BytecodeBuilder>> intersection) {
         final Set<Class<?>> annotationOnly = SetUtils.difference(annotatedClasses, intersection);
         final Set<Class<?>> extendsOnly = SetUtils.intersection(extendsClasses, intersection);
         if (!annotationOnly.isEmpty()) {

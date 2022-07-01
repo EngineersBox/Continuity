@@ -120,7 +120,7 @@ public class VariableLUT {
         return this.argVars.size();
     }
 
-    public final class Variable {
+    public static final class Variable {
 
         public static final Set<Type> ALL_TYPES = Set.of(
                 Type.INT_TYPE,
@@ -134,7 +134,7 @@ public class VariableLUT {
         private final int index;
         private boolean used;
 
-        private Variable(final Type type,
+        public Variable(final Type type,
                          final int index,
                          final boolean used) {
             this.type = type;
@@ -161,7 +161,8 @@ public class VariableLUT {
         }
 
         private VariableLUT getParent() {
-            return VariableLUT.this;
+            return null;
+//            return VariableLUT.this;
         }
     }
 }

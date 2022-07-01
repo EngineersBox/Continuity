@@ -2,8 +2,11 @@ package com.engineersbox.continuity.instrumenter.lang.transform;
 
 import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityLexer;
 import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityParser;
+import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.apache.commons.lang3.reflect.TypeUtils;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.InsnList;
 
 import java.io.IOException;
@@ -58,8 +61,11 @@ public class CIBTransformer {
 
     public static void main(String[] args) {
         final Map<String, Object> tc = Map.of(
-                "contArgVar", "test",
-                "example", "test2"
+                "contArgVar", new VariableLUT.Variable(
+                        Type.getType(String.class),
+                        0,
+                        true
+                ), "example", "test2"
         );
         final CIBTransformer transformer = new CIBTransformer("instrumenter/src/main/resources/example.cib");
         final InsnList result = transformer.transform(tc);

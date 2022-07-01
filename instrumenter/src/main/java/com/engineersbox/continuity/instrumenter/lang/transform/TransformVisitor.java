@@ -264,10 +264,11 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
 
     @Override
     public Object visitParams(final ContinuityParser.ParamsContext ctx) {
-        return ctx.param()
+        final Object[] params = ctx.param()
                 .stream()
                 .map(super::visit)
                 .toArray(Object[]::new);
+        return params;
     }
 
     @Override
@@ -319,7 +320,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     private void registerDeclaredContextEntry(final String ctxVar) {
         this.declaredContextLayoutVariables.put(
                 ctxVar,
-                this.translationContext.containsKey(ctxVar)
+                this.translationContext.get(ctxVar)
         );
     }
 

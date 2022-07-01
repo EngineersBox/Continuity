@@ -6,4 +6,5 @@ import java.lang.annotation.*;
 @Target({ElementType.PARAMETER})
 public @interface StdlibBuilderParam {
     int pos();
+    boolean varargs() default false;
 }

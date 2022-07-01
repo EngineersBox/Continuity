@@ -30,7 +30,7 @@ public class CallBuilder implements BytecodeBuilder {
         return this;
     }
 
-    public CallBuilder args(@StdlibBuilderParam(pos = 1) final InsnList ...args) {
+    public CallBuilder args(@StdlibBuilderParam(pos = 1, varargs = true) final InsnList ...args) {
         if (args == null || Arrays.stream(args).anyMatch(Objects::isNull)) {
             throw new IllegalArgumentException("Arguments cannot be null");
         }
