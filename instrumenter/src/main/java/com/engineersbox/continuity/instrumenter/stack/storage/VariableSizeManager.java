@@ -38,7 +38,7 @@ public class VariableSizeManager {
             case Type.LONG -> this.longsSize;
             case Type.DOUBLE -> this.doublesSize;
             case Type.ARRAY, Type.OBJECT -> this.objectsSize;
-            case Type.METHOD, Type.VOID, default -> throw new IllegalStateException("Unsupported type");
+            default -> throw new IllegalStateException("Unsupported type");
         };
     }
 
@@ -49,7 +49,7 @@ public class VariableSizeManager {
             case Type.LONG -> this.longsSize--;
             case Type.DOUBLE -> this.doublesSize--;
             case Type.ARRAY, Type.OBJECT -> this.objectsSize--;
-            case Type.METHOD, Type.VOID, default -> throw new IllegalStateException("Unsupported type");
+            default -> throw new IllegalStateException("Unsupported type");
         }
     }
 
@@ -60,7 +60,7 @@ public class VariableSizeManager {
             case Type.LONG -> this.longsSize++;
             case Type.DOUBLE -> this.doublesSize++;
             case Type.ARRAY, Type.OBJECT -> this.objectsSize++;
-            case Type.METHOD, Type.VOID, default -> throw new IllegalStateException("Unsupported type");
+            default -> throw new IllegalStateException("Unsupported type");
         }
     }
 

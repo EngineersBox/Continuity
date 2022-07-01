@@ -6,7 +6,6 @@ import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityParserBaseV
 import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.BuilderResolver;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.tree.InsnList;
 
@@ -35,24 +34,6 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         this.externalReferences = new HashMap<>();
         this.builderResolver = new BuilderResolver();
     }
-
-    private String getLineColumn(final ParserRuleContext ctx) {
-        return String.format(
-                "%d:%d",
-                ctx.getStart().getLine(),
-                ctx.getStart().getCharPositionInLine()
-        );
-    }
-
-    private IllegalStateException throwWithContext(final ParserRuleContext ctx,
-                                                   final String messageTemplate,
-                                                   final Object ...messageArgs){
-        return new IllegalStateException(String.format(
-                "[%s] " + messageTemplate,
-                ArrayUtils.addFirst(messageArgs, getLineColumn(ctx))
-        ));
-    }
-
     @Override
     public Object visitParse(final ContinuityParser.ParseContext ctx) {
         return ctx.statement()
@@ -85,16 +66,14 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         final Object resolvedFunctionResult;
         if ((resolvedFunctionResult = this.declaredFunctions.get(functionName)) == null) {
             throw new IllegalStateException(String.format(
-                    "[%s] Function \"%s\" referenced before declaration",
-                    getLineColumn(ctx),
+                    "Function \"%s\" referenced before declaration",
                     functionName
             ));
         } else if (resolvedFunctionResult instanceof InsnList insnList) {
             return insnList;
         }
         throw new IllegalStateException(String.format(
-                "[%s] Expected resolved function \"%s\" to be %s, not %s",
-                getLineColumn(ctx),
+                "Expected resolved function \"%s\" to be %s, not %s",
                 functionName,
                 InsnList.class.getCanonicalName(),
                 resolvedFunctionResult.getClass().getCanonicalName()
@@ -106,8 +85,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         final String functionName = ctx.Identifier().getText();
         if (this.declaredFunctions.containsKey(functionName)) {
             throw new IllegalStateException(String.format(
-                    "[%s] Function \"%s\" previously declared",
-                    getLineColumn(ctx),
+                    "Function \"%s\" previously declared",
                     functionName
             ));
         }
@@ -138,8 +116,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
             return Class.forName(classPath);
         } catch (final ClassNotFoundException e) {
             throw new IllegalStateException(String.format(
-                    "[%s] Unable to load externally referenced class from path: %s",
-                    getLineColumn(ctx),
+                    "Unable to load externally referenced class from path: %s",
                     classPath
             ), e);
         }
@@ -182,8 +159,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         final Class<?> externalClass = this.externalReferences.get(target);
         if (externalClass == null) {
             throw new IllegalStateException(String.format(
-                    "[%s] Referenced undeclared external class reference \"%s\". Load it with \"ext <path>.%s;\"",
-                    getLineColumn(ctx),
+                    "Referenced undeclared external class reference \"%s\". Load it with \"ext <path>.%s;\"",
                     target,
                     target
             ));
@@ -202,8 +178,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         if (ctx.getParent() instanceof ContinuityParser.StatementContext
                 && !InsnList.class.isAssignableFrom(returnType)) {
             throw new IllegalStateException(String.format(
-                    "[%s] Statement method invocations must return \"%s\". Returning \"%s\" in invocation of \"%s$%s\" is not valid.",
-                    getLineColumn(ctx),
+                    "Statement method invocations must return \"%s\". Returning \"%s\" in invocation of \"%s$%s\" is not valid.",
                     InsnList.class.getCanonicalName(),
                     returnType.getCanonicalName(),
                     declaringClass.getCanonicalName(),
@@ -211,8 +186,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
             ));
         } else if (!Modifier.isStatic(targetMethod.getModifiers())) {
             throw new IllegalStateException(String.format(
-                    "[%s] Cannot invoke non-static method \"%s$%s\"",
-                    getLineColumn(ctx),
+                    "Cannot invoke non-static method \"%s$%s\"",
                     declaringClass.getCanonicalName(),
                     targetMethod.getName()
             ));
@@ -235,8 +209,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
 
         } catch (final NoSuchMethodException e) {
             throw new IllegalStateException(String.format(
-                    "[%s] No such method exists for \"%s.%s(%s)\"",
-                    getLineColumn(ctx),
+                    "No such method exists for \"%s.%s(%s)\"",
                     externalClass.getCanonicalName(),
                     target,
                     Arrays.stream(params)
@@ -254,8 +227,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
             return targetMethod.invoke(null, params);
         } catch (final InvocationTargetException | IllegalAccessException e) {
             throw new IllegalStateException(String.format(
-                    "[%s] Unable to invoke method \"%s$%s\"",
-                    getLineColumn(ctx),
+                    "Unable to invoke method \"%s$%s\"",
                     externalClass.getCanonicalName(),
                     target
             ), e);
@@ -264,11 +236,10 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
 
     @Override
     public Object visitParams(final ContinuityParser.ParamsContext ctx) {
-        final Object[] params = ctx.param()
+        return ctx.param()
                 .stream()
                 .map(super::visit)
                 .toArray(Object[]::new);
-        return params;
     }
 
     @Override
@@ -306,8 +277,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
             return;
         }
         throw new IllegalStateException(String.format(
-                "[%s] Referenced undeclared context variable \"%s\". Variable is %spresent in translation context%s",
-                getLineColumn(ctx),
+                "Referenced undeclared context variable \"%s\". Variable is %spresent in translation context%s",
                 ctxVar,
                 this.translationContext.containsKey(ctxVar) ? "" : "not ",
                 !this.translationContext.containsKey(ctxVar) ? "" : String.format(
@@ -373,23 +343,21 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         final String enumReference = ctx.externalEntryReference().Identifier().getText();
         final Class<?> referenceClass = this.externalReferences.get(enumReference);
         if (!referenceClass.isEnum()) {
-            throw throwWithContext(
-                    ctx,
+            throw new IllegalStateException(String.format(
                     "Expected external enum reference to \"%s\" to be an enum",
                     referenceClass.getCanonicalName()
-            );
+            ));
         }
         final Class<Enum<?>> enumClass = (Class<Enum<?>>) referenceClass;
         final Optional<Enum<?>> enumConstant = Arrays.stream(enumClass.getEnumConstants())
                 .filter((final Enum<?> constant) -> constant.name().equals(ctx.Identifier().getText()))
                 .findFirst();
         if (enumConstant.isEmpty()) {
-            throw throwWithContext(
-                    ctx,
+            throw new IllegalStateException(String.format(
                     "No such constant \"%s\" could be found on enum \"%s\"",
                     ctx.Identifier().getText(),
                     enumClass.getCanonicalName()
-            );
+            ));
         }
         return enumConstant.get();
     }
@@ -402,13 +370,12 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
                     .getMethod(ctx.referenceTarget().Identifier().getText());
             return method.invoke(enumConstant);
         } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw throwWithContext(
-                    ctx,
+            throw new IllegalStateException(String.format(
                     "Cannot invoke \"%s\" on enum constant \"%s.%s\"",
                     ctx.referenceTarget().Identifier().getText(),
                     enumConstant.getDeclaringClass().getCanonicalName(),
                     enumConstant.name()
-            );
+            ));
         }
     }
 

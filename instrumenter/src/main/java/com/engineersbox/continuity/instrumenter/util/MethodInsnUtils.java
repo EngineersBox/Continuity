@@ -17,12 +17,14 @@ public class MethodInsnUtils {
     private MethodInsnUtils() {}
 
     public static Type getReturnTypeOfInvocation(AbstractInsnNode invokeNode) {
-        return switch (invokeNode) {
-            case MethodInsnNode methodInsnNode -> Type.getType(methodInsnNode.desc).getReturnType();
-            case InvokeDynamicInsnNode invokeDynamicInsnNode -> Type.getType(invokeDynamicInsnNode.desc).getReturnType();
-            case null -> throw new IllegalArgumentException("InsnNode cannot be null");
-            default -> throw new IllegalArgumentException("Unsupported node type");
-        };
+        if (invokeNode == null) {
+            throw new IllegalArgumentException("InsnNode cannot be null");
+        } else if (invokeNode instanceof MethodInsnNode methodInsnNode) {
+            return Type.getType(methodInsnNode.desc).getReturnType();
+        } else if (invokeNode instanceof InvokeDynamicInsnNode invokeDynamicInsnNode) {
+            Type.getType(invokeDynamicInsnNode.desc).getReturnType();
+        }
+        throw new IllegalArgumentException("Unsupported node type");
     }
 
     public static List<AbstractInsnNode> getInvocationWithParameterType(final InsnList insnList,

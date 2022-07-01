@@ -1,0 +1,8 @@
+<aspectj>
+    <aspects>
+        <aspect name="com.engineersbox.continuity.instrumenter.lang.transform.VisitorExceptionAspect"/>
+        <weaver options="-verbose -showWeaveInfo">
+            <include within="com.engineersbox.continuity.instrumenter.lang.transform.*"/>
+        </weaver>
+    </aspects>
+</aspectj>
