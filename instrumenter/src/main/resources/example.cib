@@ -9,7 +9,7 @@ ctx {
 ext {
     com.engineersbox.continuity.instrumenter.bytecode.state.os.OSRestoreOperations;
     com.engineersbox.continuity.core.state.ContinuationState;
-    // com.example.Test $ EnumExample
+    com.engineersbox.continuity.core.annotation.BytecodeInternal $ Accessor
 };
 
 /**
@@ -17,7 +17,7 @@ ext {
  */
 fn loadState() {
     /* Invoke some call and load a var from LVA */
-    std::call("Continuation.getState", std::loadVar(ctx::contArgVar));
+    std::call(ext::Accessor->getMethod("Continuation.getState"), std::loadVar(ctx::contArgVar));
 
     /*
      * Invoke an external context driven function via a reference chain,
