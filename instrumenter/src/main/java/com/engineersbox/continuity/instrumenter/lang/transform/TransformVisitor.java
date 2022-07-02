@@ -453,4 +453,24 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     public Object visitNullLiteral(final ContinuityParser.NullLiteralContext ignored) {
         return null;
     }
+
+    @Override
+    public Object visitMethodInvocation(ContinuityParser.MethodInvocationContext ctx) {
+        return super.visitMethodInvocation(ctx);
+    }
+
+    @Override
+    public Object visitReference(ContinuityParser.ReferenceContext ctx) {
+        return super.visitReference(ctx);
+    }
+
+    @Override
+    public Object visitReferenceTarget(ContinuityParser.ReferenceTargetContext ctx) {
+        return super.visitReferenceTarget(ctx);
+    }
+
+    @Override
+    public Object visitReferenceChain(ContinuityParser.ReferenceChainContext ctx) {
+        return super.visitReferenceChain(ctx);
+    }
 }
