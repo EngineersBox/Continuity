@@ -7,12 +7,14 @@ import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.BuilderRes
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.objectweb.asm.tree.InsnList;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
@@ -39,7 +41,6 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         return ctx.statement()
                 .stream()
                 .map(super::visit)
-                .filter(Objects::nonNull) // TODO: Remove this after testing done
                 .collect(InsnListCollector.toInsnList());
     }
 
@@ -101,7 +102,6 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         return ctx.statement()
                 .stream()
                 .map(super::visit)
-                .filter(Objects::nonNull) // TODO: Remove this after testing done
                 .collect(InsnListCollector.toInsnList());
     }
 
@@ -184,51 +184,84 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
                     declaringClass.getCanonicalName(),
                     targetMethod.getName()
             ));
-        } else if (!Modifier.isStatic(targetMethod.getModifiers())) {
-            throw new IllegalStateException(String.format(
-                    "Cannot invoke non-static method \"%s$%s\"",
-                    declaringClass.getCanonicalName(),
-                    targetMethod.getName()
-            ));
         }
+    }
+
+    private Class<?> currentInvocationTarget;
+    private Object currentInvocationObject;
+
+    @Override
+    public Object visitMethodInvocationChain(final ContinuityParser.MethodInvocationChainContext ctx) {
+        final List<ContinuityParser.MethodInvocationContext> methodInvocations = ctx.methodInvocation();
+        Object returnValue = tryInvokeMethod(
+                ctx,
+                currentInvocationObject,
+                currentInvocationTarget,
+                methodInvocations.get(0).referenceTarget().Identifier().getText(),
+                (Object[]) super.visit(methodInvocations.get(0).params())
+        );
+        if (methodInvocations.size() > 1) {
+            for (final ContinuityParser.MethodInvocationContext methodInvocation : methodInvocations.subList(1, methodInvocations.size())) {
+                returnValue = tryInvokeMethod(
+                        ctx,
+                        returnValue,
+                        returnValue.getClass(),
+                        methodInvocation.referenceTarget().Identifier().getText(),
+                        (Object[]) super.visit(methodInvocation.params())
+                );
+            }
+        }
+        return returnValue;
     }
 
     @Override
     public Object visitExternalReferenceInvocation(final ContinuityParser.ExternalReferenceInvocationContext ctx) {
-        final Class<?> externalClass = (Class<?>) super.visit(ctx.externalEntryReference());
-        final String target = ctx.referenceTarget().Identifier().getText();
-        final Object[] params = (Object[]) super.visit(ctx.params());
-        final Method targetMethod;
-        try {
-            targetMethod = externalClass.getMethod(
-                    target,
-                    Arrays.stream(params)
-                            .map(Object::getClass)
-                            .toArray(Class[]::new)
-            );
+        this.currentInvocationTarget = (Class<?>) super.visit(ctx.externalEntryReference());
+        this.currentInvocationObject = null;
+        return super.visit(ctx.methodInvocationChain());
+    }
 
-        } catch (final NoSuchMethodException e) {
+    @Override
+    public Object visitContextReferenceInvocation(ContinuityParser.ContextReferenceInvocationContext ctx) {
+        this.currentInvocationObject = super.visit(ctx.contextEntryReference());
+        this.currentInvocationTarget = this.currentInvocationObject.getClass();
+        return super.visit(ctx.methodInvocationChain());
+    }
+
+    private Object tryInvokeMethod(final ParserRuleContext ctx,
+                                   final Object contextObject,
+                                   final Class<?> contextObjectClass,
+                                   final String target,
+                                   final Object[] params) {
+        final Method targetMethod = MethodUtils.getMatchingAccessibleMethod(
+                contextObjectClass,
+                target,
+                Arrays.stream(params)
+                        .map(Object::getClass)
+                        .toArray(Class[]::new)
+        );
+        if (targetMethod == null) {
             throw new IllegalStateException(String.format(
                     "No such method exists for \"%s.%s(%s)\"",
-                    externalClass.getCanonicalName(),
+                    contextObjectClass.getCanonicalName(),
                     target,
                     Arrays.stream(params)
                             .map(Object::getClass)
                             .map(Class::getCanonicalName)
                             .collect(Collectors.joining(","))
-            ), e);
+            ));
         }
         validateMethodTargetAsInvokable(
                 ctx,
                 targetMethod,
-                externalClass
+                contextObjectClass
         );
         try {
-            return targetMethod.invoke(null, params);
+            return targetMethod.invoke(contextObject, params);
         } catch (final InvocationTargetException | IllegalAccessException e) {
             throw new IllegalStateException(String.format(
                     "Unable to invoke method \"%s$%s\"",
-                    externalClass.getCanonicalName(),
+                    contextObjectClass.getCanonicalName(),
                     target
             ), e);
         }
@@ -336,6 +369,13 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         referenceBuilder.append(ctx.referenceTarget().Identifier().getText());
         return referenceBuilder.toString();
     }
+
+    @Override
+    public Object visitExternalEntries(ContinuityParser.ExternalEntriesContext ctx) {
+        ctx.reference().forEach(super::visit);
+        return super.visitExternalEntries(ctx);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public Object visitExternalEntryEnumConstantReference(final ContinuityParser.ExternalEntryEnumConstantReferenceContext ctx) {
@@ -360,6 +400,11 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
             ));
         }
         return enumConstant.get();
+    }
+
+    @Override
+    public Object visitEnumConstantReferenceParam(ContinuityParser.EnumConstantReferenceParamContext ctx) {
+        return super.visit(ctx.externalEntryEnumConstantReference());
     }
 
     @Override

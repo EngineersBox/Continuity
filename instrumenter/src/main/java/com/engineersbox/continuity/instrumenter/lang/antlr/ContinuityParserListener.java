@@ -222,6 +222,18 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 */
 	void exitExternalReferenceInvocation(ContinuityParser.ExternalReferenceInvocationContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code contextReferenceInvocation}
+	 * labeled alternative in {@link ContinuityParser#invocation}.
+	 * @param ctx the parse tree
+	 */
+	void enterContextReferenceInvocation(ContinuityParser.ContextReferenceInvocationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code contextReferenceInvocation}
+	 * labeled alternative in {@link ContinuityParser#invocation}.
+	 * @param ctx the parse tree
+	 */
+	void exitContextReferenceInvocation(ContinuityParser.ContextReferenceInvocationContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code enumConstantMethodInvocationParam}
 	 * labeled alternative in {@link ContinuityParser#invocation}.
 	 * @param ctx the parse tree
@@ -233,6 +245,26 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitEnumConstantMethodInvocationParam(ContinuityParser.EnumConstantMethodInvocationParamContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#methodInvocationChain}.
+	 * @param ctx the parse tree
+	 */
+	void enterMethodInvocationChain(ContinuityParser.MethodInvocationChainContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#methodInvocationChain}.
+	 * @param ctx the parse tree
+	 */
+	void exitMethodInvocationChain(ContinuityParser.MethodInvocationChainContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#methodInvocation}.
+	 * @param ctx the parse tree
+	 */
+	void enterMethodInvocation(ContinuityParser.MethodInvocationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#methodInvocation}.
+	 * @param ctx the parse tree
+	 */
+	void exitMethodInvocation(ContinuityParser.MethodInvocationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ContinuityParser#params}.
 	 * @param ctx the parse tree

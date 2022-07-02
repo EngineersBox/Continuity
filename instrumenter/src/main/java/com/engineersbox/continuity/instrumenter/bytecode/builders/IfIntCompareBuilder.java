@@ -3,12 +3,13 @@ package com.engineersbox.continuity.instrumenter.bytecode.builders;
 import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.annotation.BytecodeGenerator;
-import org.objectweb.asm.Opcodes;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilder;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 
 @BytecodeGenerator
+@StdlibBuilder(isBaseClass = true)
 public class IfIntCompareBuilder implements BytecodeBuilder {
 
     private InsnList lhsArg;

@@ -1,4 +1,7 @@
-ctx contArgVar;
+ctx {
+    contArgVar;
+    example;
+};
 ext com.engineersbox.continuity.core.annotation.BytecodeInternal $ Accessor;
 
-std::call(ext::Accessor->getMethod("Continuation.getState"), std::loadVar(ctx::contArgVar));
+std::call(ext::Accessor->getMethod(ctx::example->get().replace('$', '.')), std::loadVar(ctx::contArgVar));

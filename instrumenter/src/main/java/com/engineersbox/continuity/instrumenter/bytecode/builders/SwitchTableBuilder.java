@@ -2,6 +2,8 @@ package com.engineersbox.continuity.instrumenter.bytecode.builders;
 
 import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.annotation.BytecodeGenerator;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilder;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilderParam;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.TableSwitchInsnNode;
@@ -11,6 +13,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 @BytecodeGenerator
+@StdlibBuilder(methodName = "switch")
 public class SwitchTableBuilder implements BytecodeBuilder {
 
     private InsnList indexInsnList;
@@ -20,7 +23,7 @@ public class SwitchTableBuilder implements BytecodeBuilder {
 
     public SwitchTableBuilder() {}
 
-    public SwitchTableBuilder index(final InsnList indexInsnList) {
+    public SwitchTableBuilder index(@StdlibBuilderParam(pos = 0) final InsnList indexInsnList) {
         if (indexInsnList == null) {
             throw new IllegalArgumentException("InsnList to get index must not be null");
         }
@@ -28,7 +31,7 @@ public class SwitchTableBuilder implements BytecodeBuilder {
         return this;
     }
 
-    public SwitchTableBuilder defaultBranch(final InsnList defaultInsnList) {
+    public SwitchTableBuilder defaultBranch(@StdlibBuilderParam(pos = 1) final InsnList defaultInsnList) {
         if (defaultInsnList == null) {
             throw new IllegalArgumentException("InsnList for default branch must not be null");
         }
@@ -36,7 +39,7 @@ public class SwitchTableBuilder implements BytecodeBuilder {
         return this;
     }
 
-    public SwitchTableBuilder caseStartIndex(final int caseStartIndex) {
+    public SwitchTableBuilder caseStartIndex(@StdlibBuilderParam(pos = 2) final int caseStartIndex) {
         if (caseStartIndex < 0) {
             throw new IllegalArgumentException("Start index must be at least 0");
         }
@@ -44,7 +47,7 @@ public class SwitchTableBuilder implements BytecodeBuilder {
         return this;
     }
 
-    public SwitchTableBuilder cases(final InsnList ...cases) {
+    public SwitchTableBuilder cases(@StdlibBuilderParam(pos = 3) final InsnList ...cases) {
         if (cases == null || Arrays.stream(cases).anyMatch(Objects::isNull)) {
             throw new IllegalArgumentException("Cases must not be null");
         } else if (cases.length <= 0) {

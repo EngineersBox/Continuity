@@ -3,6 +3,8 @@ package com.engineersbox.continuity.instrumenter.bytecode.builders;
 import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.ObjectConstants;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilder;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilderParam;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.InsnList;
@@ -14,6 +16,7 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Objects;
 
+@StdlibBuilder(methodName = "newInstance")
 public class InstanceBuilder implements BytecodeBuilder {
 
     private Constructor<?> constructor;
@@ -21,7 +24,7 @@ public class InstanceBuilder implements BytecodeBuilder {
 
     public InstanceBuilder() {}
 
-    public InstanceBuilder constructor(final Constructor<?> constructor) {
+    public InstanceBuilder constructor(@StdlibBuilderParam(pos = 0) final Constructor<?> constructor) {
         if (constructor == null) {
             throw new IllegalArgumentException("Constructor cannot be null");
         }
@@ -29,7 +32,7 @@ public class InstanceBuilder implements BytecodeBuilder {
         return this;
     }
 
-    public InstanceBuilder args(final InsnList ...args) {
+    public InstanceBuilder args(@StdlibBuilderParam(pos = 1, varargs = true) final InsnList ...args) {
         if (args == null || Arrays.stream(args).anyMatch(Objects::isNull)) {
             throw new IllegalArgumentException("Arguments cannot be null");
         } else if (args.length != this.constructor.getParameterCount()) {

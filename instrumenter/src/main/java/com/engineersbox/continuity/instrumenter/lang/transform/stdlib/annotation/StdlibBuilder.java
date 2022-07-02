@@ -11,5 +11,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface StdlibBuilder {
-    String methodName();
+    String methodName() default "<STDLIB METHOD>";
+    boolean isBaseClass() default false;
 }

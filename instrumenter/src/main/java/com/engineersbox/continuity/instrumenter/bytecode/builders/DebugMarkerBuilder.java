@@ -4,12 +4,15 @@ import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnListBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.ObjectConstants;
 import com.engineersbox.continuity.instrumenter.bytecode.DebugMarker;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilder;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilderParam;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 
+@StdlibBuilder(methodName = "debug")
 public class DebugMarkerBuilder implements BytecodeBuilder {
 
     private static final String DEBUG_LOG_PREFIX = "[BYTECODE DEBUG] ";
@@ -19,7 +22,7 @@ public class DebugMarkerBuilder implements BytecodeBuilder {
 
     public DebugMarkerBuilder() {}
 
-    public DebugMarkerBuilder marker(final DebugMarker marker) {
+    public DebugMarkerBuilder marker(@StdlibBuilderParam(pos = 0) final DebugMarker marker) {
         if (marker == null) {
             throw new IllegalArgumentException("Marker type cannot be null");
         }
@@ -27,7 +30,8 @@ public class DebugMarkerBuilder implements BytecodeBuilder {
         return this;
     }
 
-    public DebugMarkerBuilder message(final String messageTemplate, final Object ...values) {
+    public DebugMarkerBuilder message(@StdlibBuilderParam(pos = 1) final String messageTemplate,
+                                      @StdlibBuilderParam(pos = 2, varargs = true) final Object ...values) {
         this.message = DEBUG_LOG_PREFIX + String.format(messageTemplate, values);
         return this;
     }

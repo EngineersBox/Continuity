@@ -30,14 +30,15 @@ public class ContinuityParser extends Parser {
 		RULE_parse = 0, RULE_statement = 1, RULE_externalLayout = 2, RULE_externalEntries = 3, 
 		RULE_externalEntryReference = 4, RULE_externalEntryEnumConstantReference = 5, 
 		RULE_contextLayout = 6, RULE_contextEntries = 7, RULE_contextEntryReference = 8, 
-		RULE_function = 9, RULE_block = 10, RULE_invocation = 11, RULE_params = 12, 
-		RULE_param = 13, RULE_reference = 14, RULE_referenceTarget = 15, RULE_referenceChain = 16, 
-		RULE_literal = 17;
+		RULE_function = 9, RULE_block = 10, RULE_invocation = 11, RULE_methodInvocationChain = 12, 
+		RULE_methodInvocation = 13, RULE_params = 14, RULE_param = 15, RULE_reference = 16, 
+		RULE_referenceTarget = 17, RULE_referenceChain = 18, RULE_literal = 19;
 	public static final String[] ruleNames = {
 		"parse", "statement", "externalLayout", "externalEntries", "externalEntryReference", 
 		"externalEntryEnumConstantReference", "contextLayout", "contextEntries", 
-		"contextEntryReference", "function", "block", "invocation", "params", 
-		"param", "reference", "referenceTarget", "referenceChain", "literal"
+		"contextEntryReference", "function", "block", "invocation", "methodInvocationChain", 
+		"methodInvocation", "params", "param", "reference", "referenceTarget", 
+		"referenceChain", "literal"
 	};
 
 	private static final String[] _LITERAL_NAMES = {
@@ -143,23 +144,23 @@ public class ContinuityParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(41);
+			setState(45);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << CTX) | (1L << EXT) | (1L << FN) | (1L << STD))) != 0)) {
 				{
 				{
-				setState(36);
+				setState(40);
 				statement();
-				setState(37);
+				setState(41);
 				match(SEMI);
 				}
 				}
-				setState(43);
+				setState(47);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(44);
+			setState(48);
 			match(EOF);
 			}
 		}
@@ -266,14 +267,14 @@ public class ContinuityParser extends Parser {
 		StatementContext _localctx = new StatementContext(_ctx, getState());
 		enterRule(_localctx, 2, RULE_statement);
 		try {
-			setState(50);
+			setState(54);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
 			case 1:
 				_localctx = new FunctionStatementContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(46);
+				setState(50);
 				function();
 				}
 				break;
@@ -281,7 +282,7 @@ public class ContinuityParser extends Parser {
 				_localctx = new InvocationStatementContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(47);
+				setState(51);
 				invocation();
 				}
 				break;
@@ -289,7 +290,7 @@ public class ContinuityParser extends Parser {
 				_localctx = new ExternalLayoutStatementContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(48);
+				setState(52);
 				externalLayout();
 				}
 				break;
@@ -297,7 +298,7 @@ public class ContinuityParser extends Parser {
 				_localctx = new ContextLayoutStatementContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(49);
+				setState(53);
 				contextLayout();
 				}
 				break;
@@ -372,16 +373,16 @@ public class ContinuityParser extends Parser {
 		ExternalLayoutContext _localctx = new ExternalLayoutContext(_ctx, getState());
 		enterRule(_localctx, 4, RULE_externalLayout);
 		try {
-			setState(59);
+			setState(63);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,2,_ctx) ) {
 			case 1:
 				_localctx = new SingleExternalLayoutDeclarationContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(52);
+				setState(56);
 				match(EXT);
-				setState(53);
+				setState(57);
 				reference();
 				}
 				break;
@@ -389,13 +390,13 @@ public class ContinuityParser extends Parser {
 				_localctx = new MultiExternalLayoutDeclarationContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(54);
+				setState(58);
 				match(EXT);
-				setState(55);
+				setState(59);
 				match(LBRACE);
-				setState(56);
+				setState(60);
 				externalEntries();
-				setState(57);
+				setState(61);
 				match(RBRACE);
 				}
 				break;
@@ -449,19 +450,19 @@ public class ContinuityParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(64); 
+			setState(68); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(61);
+				setState(65);
 				reference();
-				setState(62);
+				setState(66);
 				match(SEMI);
 				}
 				}
-				setState(66); 
+				setState(70); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==Identifier );
@@ -507,11 +508,11 @@ public class ContinuityParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(68);
+			setState(72);
 			match(EXT);
-			setState(69);
+			setState(73);
 			match(COLONCOLON);
-			setState(70);
+			setState(74);
 			match(Identifier);
 			}
 		}
@@ -557,11 +558,11 @@ public class ContinuityParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(72);
+			setState(76);
 			externalEntryReference();
-			setState(73);
+			setState(77);
 			match(DOT);
-			setState(74);
+			setState(78);
 			match(Identifier);
 			}
 		}
@@ -632,16 +633,16 @@ public class ContinuityParser extends Parser {
 		ContextLayoutContext _localctx = new ContextLayoutContext(_ctx, getState());
 		enterRule(_localctx, 12, RULE_contextLayout);
 		try {
-			setState(83);
+			setState(87);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
 			case 1:
 				_localctx = new SingleContextLayoutDeclarationContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(76);
+				setState(80);
 				match(CTX);
-				setState(77);
+				setState(81);
 				match(Identifier);
 				}
 				break;
@@ -649,13 +650,13 @@ public class ContinuityParser extends Parser {
 				_localctx = new MultiContextLayoutDeclarationContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(78);
+				setState(82);
 				match(CTX);
-				setState(79);
+				setState(83);
 				match(LBRACE);
-				setState(80);
+				setState(84);
 				contextEntries();
-				setState(81);
+				setState(85);
 				match(RBRACE);
 				}
 				break;
@@ -707,19 +708,19 @@ public class ContinuityParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(87); 
+			setState(91); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(85);
+				setState(89);
 				match(Identifier);
-				setState(86);
+				setState(90);
 				match(SEMI);
 				}
 				}
-				setState(89); 
+				setState(93); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==Identifier );
@@ -765,11 +766,11 @@ public class ContinuityParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(91);
+			setState(95);
 			match(CTX);
-			setState(92);
+			setState(96);
 			match(COLONCOLON);
-			setState(93);
+			setState(97);
 			match(Identifier);
 			}
 		}
@@ -817,15 +818,15 @@ public class ContinuityParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(95);
-			match(FN);
-			setState(96);
-			match(Identifier);
-			setState(97);
-			match(LPAREN);
-			setState(98);
-			match(RPAREN);
 			setState(99);
+			match(FN);
+			setState(100);
+			match(Identifier);
+			setState(101);
+			match(LPAREN);
+			setState(102);
+			match(RPAREN);
+			setState(103);
 			block();
 			}
 		}
@@ -879,25 +880,25 @@ public class ContinuityParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(101);
+			setState(105);
 			match(LBRACE);
-			setState(105); 
+			setState(109); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(102);
+				setState(106);
 				statement();
-				setState(103);
+				setState(107);
 				match(SEMI);
 				}
 				}
-				setState(107); 
+				setState(111); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << CTX) | (1L << EXT) | (1L << FN) | (1L << STD))) != 0) );
-			setState(109);
+			setState(113);
 			match(RBRACE);
 			}
 		}
@@ -923,19 +924,37 @@ public class ContinuityParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
+	public static class ContextReferenceInvocationContext extends InvocationContext {
+		public ContextEntryReferenceContext contextEntryReference() {
+			return getRuleContext(ContextEntryReferenceContext.class,0);
+		}
+		public TerminalNode ARROW() { return getToken(ContinuityParser.ARROW, 0); }
+		public MethodInvocationChainContext methodInvocationChain() {
+			return getRuleContext(MethodInvocationChainContext.class,0);
+		}
+		public ContextReferenceInvocationContext(InvocationContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ContinuityParserListener ) ((ContinuityParserListener)listener).enterContextReferenceInvocation(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ContinuityParserListener ) ((ContinuityParserListener)listener).exitContextReferenceInvocation(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ContinuityParserVisitor ) return ((ContinuityParserVisitor<? extends T>)visitor).visitContextReferenceInvocation(this);
+			else return visitor.visitChildren(this);
+		}
+	}
 	public static class ExternalReferenceInvocationContext extends InvocationContext {
 		public ExternalEntryReferenceContext externalEntryReference() {
 			return getRuleContext(ExternalEntryReferenceContext.class,0);
 		}
 		public TerminalNode ARROW() { return getToken(ContinuityParser.ARROW, 0); }
-		public ReferenceTargetContext referenceTarget() {
-			return getRuleContext(ReferenceTargetContext.class,0);
+		public MethodInvocationChainContext methodInvocationChain() {
+			return getRuleContext(MethodInvocationChainContext.class,0);
 		}
-		public TerminalNode LPAREN() { return getToken(ContinuityParser.LPAREN, 0); }
-		public ParamsContext params() {
-			return getRuleContext(ParamsContext.class,0);
-		}
-		public TerminalNode RPAREN() { return getToken(ContinuityParser.RPAREN, 0); }
 		public ExternalReferenceInvocationContext(InvocationContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
@@ -1030,24 +1049,24 @@ public class ContinuityParser extends Parser {
 		InvocationContext _localctx = new InvocationContext(_ctx, getState());
 		enterRule(_localctx, 22, RULE_invocation);
 		try {
-			setState(137);
+			setState(142);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,7,_ctx) ) {
 			case 1:
 				_localctx = new StdInvocationContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(111);
-				match(STD);
-				setState(112);
-				match(COLONCOLON);
-				setState(113);
-				referenceTarget();
-				setState(114);
-				match(LPAREN);
 				setState(115);
-				params();
+				match(STD);
 				setState(116);
+				match(COLONCOLON);
+				setState(117);
+				referenceTarget();
+				setState(118);
+				match(LPAREN);
+				setState(119);
+				params();
+				setState(120);
 				match(RPAREN);
 				}
 				break;
@@ -1055,15 +1074,15 @@ public class ContinuityParser extends Parser {
 				_localctx = new FunctionInvocationContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(118);
-				match(FN);
-				setState(119);
-				match(DOT);
-				setState(120);
-				referenceTarget();
-				setState(121);
-				match(LPAREN);
 				setState(122);
+				match(FN);
+				setState(123);
+				match(DOT);
+				setState(124);
+				referenceTarget();
+				setState(125);
+				match(LPAREN);
+				setState(126);
 				match(RPAREN);
 				}
 				break;
@@ -1071,36 +1090,165 @@ public class ContinuityParser extends Parser {
 				_localctx = new ExternalReferenceInvocationContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(124);
-				externalEntryReference();
-				setState(125);
-				match(ARROW);
-				setState(126);
-				referenceTarget();
-				setState(127);
-				match(LPAREN);
 				setState(128);
-				params();
+				externalEntryReference();
 				setState(129);
-				match(RPAREN);
+				match(ARROW);
+				setState(130);
+				methodInvocationChain();
 				}
 				break;
 			case 4:
-				_localctx = new EnumConstantMethodInvocationParamContext(_localctx);
+				_localctx = new ContextReferenceInvocationContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(131);
-				externalEntryEnumConstantReference();
 				setState(132);
-				match(ARROW);
+				contextEntryReference();
 				setState(133);
-				referenceTarget();
+				match(ARROW);
 				setState(134);
+				methodInvocationChain();
+				}
+				break;
+			case 5:
+				_localctx = new EnumConstantMethodInvocationParamContext(_localctx);
+				enterOuterAlt(_localctx, 5);
+				{
+				setState(136);
+				externalEntryEnumConstantReference();
+				setState(137);
+				match(ARROW);
+				setState(138);
+				referenceTarget();
+				setState(139);
 				match(LPAREN);
-				setState(135);
+				setState(140);
 				match(RPAREN);
 				}
 				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class MethodInvocationChainContext extends ParserRuleContext {
+		public List<MethodInvocationContext> methodInvocation() {
+			return getRuleContexts(MethodInvocationContext.class);
+		}
+		public MethodInvocationContext methodInvocation(int i) {
+			return getRuleContext(MethodInvocationContext.class,i);
+		}
+		public List<TerminalNode> DOT() { return getTokens(ContinuityParser.DOT); }
+		public TerminalNode DOT(int i) {
+			return getToken(ContinuityParser.DOT, i);
+		}
+		public MethodInvocationChainContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_methodInvocationChain; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ContinuityParserListener ) ((ContinuityParserListener)listener).enterMethodInvocationChain(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ContinuityParserListener ) ((ContinuityParserListener)listener).exitMethodInvocationChain(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ContinuityParserVisitor ) return ((ContinuityParserVisitor<? extends T>)visitor).visitMethodInvocationChain(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final MethodInvocationChainContext methodInvocationChain() throws RecognitionException {
+		MethodInvocationChainContext _localctx = new MethodInvocationChainContext(_ctx, getState());
+		enterRule(_localctx, 24, RULE_methodInvocationChain);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(144);
+			methodInvocation();
+			setState(149);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==DOT) {
+				{
+				{
+				setState(145);
+				match(DOT);
+				setState(146);
+				methodInvocation();
+				}
+				}
+				setState(151);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class MethodInvocationContext extends ParserRuleContext {
+		public ReferenceTargetContext referenceTarget() {
+			return getRuleContext(ReferenceTargetContext.class,0);
+		}
+		public TerminalNode LPAREN() { return getToken(ContinuityParser.LPAREN, 0); }
+		public ParamsContext params() {
+			return getRuleContext(ParamsContext.class,0);
+		}
+		public TerminalNode RPAREN() { return getToken(ContinuityParser.RPAREN, 0); }
+		public MethodInvocationContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_methodInvocation; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ContinuityParserListener ) ((ContinuityParserListener)listener).enterMethodInvocation(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ContinuityParserListener ) ((ContinuityParserListener)listener).exitMethodInvocation(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ContinuityParserVisitor ) return ((ContinuityParserVisitor<? extends T>)visitor).visitMethodInvocation(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final MethodInvocationContext methodInvocation() throws RecognitionException {
+		MethodInvocationContext _localctx = new MethodInvocationContext(_ctx, getState());
+		enterRule(_localctx, 26, RULE_methodInvocation);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(152);
+			referenceTarget();
+			setState(153);
+			match(LPAREN);
+			setState(154);
+			params();
+			setState(155);
+			match(RPAREN);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1146,31 +1294,31 @@ public class ContinuityParser extends Parser {
 
 	public final ParamsContext params() throws RecognitionException {
 		ParamsContext _localctx = new ParamsContext(_ctx, getState());
-		enterRule(_localctx, 24, RULE_params);
+		enterRule(_localctx, 28, RULE_params);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(147);
+			setState(165);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << CTX) | (1L << EXT) | (1L << FN) | (1L << STD) | (1L << IntegerLiteral) | (1L << FloatingPointLiteral) | (1L << BooleanLiteral) | (1L << CharacterLiteral) | (1L << StringLiteral) | (1L << NullLiteral))) != 0)) {
 				{
-				setState(139);
+				setState(157);
 				param();
-				setState(144);
+				setState(162);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==COMMA) {
 					{
 					{
-					setState(140);
+					setState(158);
 					match(COMMA);
-					setState(141);
+					setState(159);
 					param();
 					}
 					}
-					setState(146);
+					setState(164);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
@@ -1221,11 +1369,9 @@ public class ContinuityParser extends Parser {
 		}
 	}
 	public static class EnumConstantReferenceParamContext extends ParamContext {
-		public ExternalEntryReferenceContext externalEntryReference() {
-			return getRuleContext(ExternalEntryReferenceContext.class,0);
+		public ExternalEntryEnumConstantReferenceContext externalEntryEnumConstantReference() {
+			return getRuleContext(ExternalEntryEnumConstantReferenceContext.class,0);
 		}
-		public TerminalNode DOT() { return getToken(ContinuityParser.DOT, 0); }
-		public TerminalNode Identifier() { return getToken(ContinuityParser.Identifier, 0); }
 		public EnumConstantReferenceParamContext(ParamContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
@@ -1282,16 +1428,16 @@ public class ContinuityParser extends Parser {
 
 	public final ParamContext param() throws RecognitionException {
 		ParamContext _localctx = new ParamContext(_ctx, getState());
-		enterRule(_localctx, 26, RULE_param);
+		enterRule(_localctx, 30, RULE_param);
 		try {
-			setState(156);
+			setState(171);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,11,_ctx) ) {
 			case 1:
 				_localctx = new LiteralParamContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(149);
+				setState(167);
 				literal();
 				}
 				break;
@@ -1299,7 +1445,7 @@ public class ContinuityParser extends Parser {
 				_localctx = new ContextEntryReferenceParamContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(150);
+				setState(168);
 				contextEntryReference();
 				}
 				break;
@@ -1307,7 +1453,7 @@ public class ContinuityParser extends Parser {
 				_localctx = new InvocationParamContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(151);
+				setState(169);
 				invocation();
 				}
 				break;
@@ -1315,12 +1461,8 @@ public class ContinuityParser extends Parser {
 				_localctx = new EnumConstantReferenceParamContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(152);
-				externalEntryReference();
-				setState(153);
-				match(DOT);
-				setState(154);
-				match(Identifier);
+				setState(170);
+				externalEntryEnumConstantReference();
 				}
 				break;
 			}
@@ -1364,21 +1506,21 @@ public class ContinuityParser extends Parser {
 
 	public final ReferenceContext reference() throws RecognitionException {
 		ReferenceContext _localctx = new ReferenceContext(_ctx, getState());
-		enterRule(_localctx, 28, RULE_reference);
+		enterRule(_localctx, 32, RULE_reference);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(159);
+			setState(174);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,11,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,12,_ctx) ) {
 			case 1:
 				{
-				setState(158);
+				setState(173);
 				referenceChain();
 				}
 				break;
 			}
-			setState(161);
+			setState(176);
 			referenceTarget();
 			}
 		}
@@ -1416,11 +1558,11 @@ public class ContinuityParser extends Parser {
 
 	public final ReferenceTargetContext referenceTarget() throws RecognitionException {
 		ReferenceTargetContext _localctx = new ReferenceTargetContext(_ctx, getState());
-		enterRule(_localctx, 30, RULE_referenceTarget);
+		enterRule(_localctx, 34, RULE_referenceTarget);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(163);
+			setState(178);
 			match(Identifier);
 			}
 		}
@@ -1469,13 +1611,13 @@ public class ContinuityParser extends Parser {
 
 	public final ReferenceChainContext referenceChain() throws RecognitionException {
 		ReferenceChainContext _localctx = new ReferenceChainContext(_ctx, getState());
-		enterRule(_localctx, 32, RULE_referenceChain);
+		enterRule(_localctx, 36, RULE_referenceChain);
 		int _la;
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(167); 
+			setState(182); 
 			_errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -1483,9 +1625,9 @@ public class ContinuityParser extends Parser {
 				case 1:
 					{
 					{
-					setState(165);
+					setState(180);
 					match(Identifier);
-					setState(166);
+					setState(181);
 					_la = _input.LA(1);
 					if ( !(_la==DOT || _la==DOLLAR) ) {
 					_errHandler.recoverInline(this);
@@ -1501,9 +1643,9 @@ public class ContinuityParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(169); 
+				setState(184); 
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,12,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,13,_ctx);
 			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
 			}
 		}
@@ -1634,16 +1776,16 @@ public class ContinuityParser extends Parser {
 
 	public final LiteralContext literal() throws RecognitionException {
 		LiteralContext _localctx = new LiteralContext(_ctx, getState());
-		enterRule(_localctx, 34, RULE_literal);
+		enterRule(_localctx, 38, RULE_literal);
 		try {
-			setState(177);
+			setState(192);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case IntegerLiteral:
 				_localctx = new IntegerLiteralContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(171);
+				setState(186);
 				match(IntegerLiteral);
 				}
 				break;
@@ -1651,7 +1793,7 @@ public class ContinuityParser extends Parser {
 				_localctx = new FloatingPointLiteralContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(172);
+				setState(187);
 				match(FloatingPointLiteral);
 				}
 				break;
@@ -1659,7 +1801,7 @@ public class ContinuityParser extends Parser {
 				_localctx = new BooleanLiteralContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(173);
+				setState(188);
 				match(BooleanLiteral);
 				}
 				break;
@@ -1667,7 +1809,7 @@ public class ContinuityParser extends Parser {
 				_localctx = new CharacterLiteralContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(174);
+				setState(189);
 				match(CharacterLiteral);
 				}
 				break;
@@ -1675,7 +1817,7 @@ public class ContinuityParser extends Parser {
 				_localctx = new StringLiteralContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(175);
+				setState(190);
 				match(StringLiteral);
 				}
 				break;
@@ -1683,7 +1825,7 @@ public class ContinuityParser extends Parser {
 				_localctx = new NullLiteralContext(_localctx);
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(176);
+				setState(191);
 				match(NullLiteral);
 				}
 				break;
@@ -1703,60 +1845,65 @@ public class ContinuityParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\63\u00b6\4\2\t\2"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\63\u00c5\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
 		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
-		"\4\23\t\23\3\2\3\2\3\2\7\2*\n\2\f\2\16\2-\13\2\3\2\3\2\3\3\3\3\3\3\3\3"+
-		"\5\3\65\n\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\5\4>\n\4\3\5\3\5\3\5\6\5C\n\5"+
-		"\r\5\16\5D\3\6\3\6\3\6\3\6\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\b\3\b\3\b\3\b"+
-		"\5\bV\n\b\3\t\3\t\6\tZ\n\t\r\t\16\t[\3\n\3\n\3\n\3\n\3\13\3\13\3\13\3"+
-		"\13\3\13\3\13\3\f\3\f\3\f\3\f\6\fl\n\f\r\f\16\fm\3\f\3\f\3\r\3\r\3\r\3"+
-		"\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r"+
-		"\3\r\3\r\3\r\3\r\3\r\5\r\u008c\n\r\3\16\3\16\3\16\7\16\u0091\n\16\f\16"+
-		"\16\16\u0094\13\16\5\16\u0096\n\16\3\17\3\17\3\17\3\17\3\17\3\17\3\17"+
-		"\5\17\u009f\n\17\3\20\5\20\u00a2\n\20\3\20\3\20\3\21\3\21\3\22\3\22\6"+
-		"\22\u00aa\n\22\r\22\16\22\u00ab\3\23\3\23\3\23\3\23\3\23\3\23\5\23\u00b4"+
-		"\n\23\3\23\2\2\24\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$\2\3\3\2\24"+
-		"\25\2\u00bb\2+\3\2\2\2\4\64\3\2\2\2\6=\3\2\2\2\bB\3\2\2\2\nF\3\2\2\2\f"+
-		"J\3\2\2\2\16U\3\2\2\2\20Y\3\2\2\2\22]\3\2\2\2\24a\3\2\2\2\26g\3\2\2\2"+
-		"\30\u008b\3\2\2\2\32\u0095\3\2\2\2\34\u009e\3\2\2\2\36\u00a1\3\2\2\2 "+
-		"\u00a5\3\2\2\2\"\u00a9\3\2\2\2$\u00b3\3\2\2\2&\'\5\4\3\2\'(\7\23\2\2("+
-		"*\3\2\2\2)&\3\2\2\2*-\3\2\2\2+)\3\2\2\2+,\3\2\2\2,.\3\2\2\2-+\3\2\2\2"+
-		"./\7\2\2\3/\3\3\2\2\2\60\65\5\24\13\2\61\65\5\30\r\2\62\65\5\6\4\2\63"+
-		"\65\5\16\b\2\64\60\3\2\2\2\64\61\3\2\2\2\64\62\3\2\2\2\64\63\3\2\2\2\65"+
-		"\5\3\2\2\2\66\67\7\4\2\2\67>\5\36\20\289\7\4\2\29:\7\17\2\2:;\5\b\5\2"+
-		";<\7\20\2\2<>\3\2\2\2=\66\3\2\2\2=8\3\2\2\2>\7\3\2\2\2?@\5\36\20\2@A\7"+
-		"\23\2\2AC\3\2\2\2B?\3\2\2\2CD\3\2\2\2DB\3\2\2\2DE\3\2\2\2E\t\3\2\2\2F"+
-		"G\7\4\2\2GH\7\37\2\2HI\7\60\2\2I\13\3\2\2\2JK\5\n\6\2KL\7\24\2\2LM\7\60"+
-		"\2\2M\r\3\2\2\2NO\7\3\2\2OV\7\60\2\2PQ\7\3\2\2QR\7\17\2\2RS\5\20\t\2S"+
-		"T\7\20\2\2TV\3\2\2\2UN\3\2\2\2UP\3\2\2\2V\17\3\2\2\2WX\7\60\2\2XZ\7\23"+
-		"\2\2YW\3\2\2\2Z[\3\2\2\2[Y\3\2\2\2[\\\3\2\2\2\\\21\3\2\2\2]^\7\3\2\2^"+
-		"_\7\37\2\2_`\7\60\2\2`\23\3\2\2\2ab\7\5\2\2bc\7\60\2\2cd\7\r\2\2de\7\16"+
-		"\2\2ef\5\26\f\2f\25\3\2\2\2gk\7\17\2\2hi\5\4\3\2ij\7\23\2\2jl\3\2\2\2"+
-		"kh\3\2\2\2lm\3\2\2\2mk\3\2\2\2mn\3\2\2\2no\3\2\2\2op\7\20\2\2p\27\3\2"+
-		"\2\2qr\7\6\2\2rs\7\37\2\2st\5 \21\2tu\7\r\2\2uv\5\32\16\2vw\7\16\2\2w"+
-		"\u008c\3\2\2\2xy\7\5\2\2yz\7\24\2\2z{\5 \21\2{|\7\r\2\2|}\7\16\2\2}\u008c"+
-		"\3\2\2\2~\177\5\n\6\2\177\u0080\7\27\2\2\u0080\u0081\5 \21\2\u0081\u0082"+
-		"\7\r\2\2\u0082\u0083\5\32\16\2\u0083\u0084\7\16\2\2\u0084\u008c\3\2\2"+
-		"\2\u0085\u0086\5\f\7\2\u0086\u0087\7\27\2\2\u0087\u0088\5 \21\2\u0088"+
-		"\u0089\7\r\2\2\u0089\u008a\7\16\2\2\u008a\u008c\3\2\2\2\u008bq\3\2\2\2"+
-		"\u008bx\3\2\2\2\u008b~\3\2\2\2\u008b\u0085\3\2\2\2\u008c\31\3\2\2\2\u008d"+
-		"\u0092\5\34\17\2\u008e\u008f\7\26\2\2\u008f\u0091\5\34\17\2\u0090\u008e"+
-		"\3\2\2\2\u0091\u0094\3\2\2\2\u0092\u0090\3\2\2\2\u0092\u0093\3\2\2\2\u0093"+
-		"\u0096\3\2\2\2\u0094\u0092\3\2\2\2\u0095\u008d\3\2\2\2\u0095\u0096\3\2"+
-		"\2\2\u0096\33\3\2\2\2\u0097\u009f\5$\23\2\u0098\u009f\5\22\n\2\u0099\u009f"+
-		"\5\30\r\2\u009a\u009b\5\n\6\2\u009b\u009c\7\24\2\2\u009c\u009d\7\60\2"+
-		"\2\u009d\u009f\3\2\2\2\u009e\u0097\3\2\2\2\u009e\u0098\3\2\2\2\u009e\u0099"+
-		"\3\2\2\2\u009e\u009a\3\2\2\2\u009f\35\3\2\2\2\u00a0\u00a2\5\"\22\2\u00a1"+
-		"\u00a0\3\2\2\2\u00a1\u00a2\3\2\2\2\u00a2\u00a3\3\2\2\2\u00a3\u00a4\5 "+
-		"\21\2\u00a4\37\3\2\2\2\u00a5\u00a6\7\60\2\2\u00a6!\3\2\2\2\u00a7\u00a8"+
-		"\7\60\2\2\u00a8\u00aa\t\2\2\2\u00a9\u00a7\3\2\2\2\u00aa\u00ab\3\2\2\2"+
-		"\u00ab\u00a9\3\2\2\2\u00ab\u00ac\3\2\2\2\u00ac#\3\2\2\2\u00ad\u00b4\7"+
-		"\7\2\2\u00ae\u00b4\7\b\2\2\u00af\u00b4\7\t\2\2\u00b0\u00b4\7\n\2\2\u00b1"+
-		"\u00b4\7\13\2\2\u00b2\u00b4\7\f\2\2\u00b3\u00ad\3\2\2\2\u00b3\u00ae\3"+
-		"\2\2\2\u00b3\u00af\3\2\2\2\u00b3\u00b0\3\2\2\2\u00b3\u00b1\3\2\2\2\u00b3"+
-		"\u00b2\3\2\2\2\u00b4%\3\2\2\2\20+\64=DU[m\u008b\u0092\u0095\u009e\u00a1"+
-		"\u00ab\u00b3";
+		"\4\23\t\23\4\24\t\24\4\25\t\25\3\2\3\2\3\2\7\2.\n\2\f\2\16\2\61\13\2\3"+
+		"\2\3\2\3\3\3\3\3\3\3\3\5\39\n\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\5\4B\n\4\3"+
+		"\5\3\5\3\5\6\5G\n\5\r\5\16\5H\3\6\3\6\3\6\3\6\3\7\3\7\3\7\3\7\3\b\3\b"+
+		"\3\b\3\b\3\b\3\b\3\b\5\bZ\n\b\3\t\3\t\6\t^\n\t\r\t\16\t_\3\n\3\n\3\n\3"+
+		"\n\3\13\3\13\3\13\3\13\3\13\3\13\3\f\3\f\3\f\3\f\6\fp\n\f\r\f\16\fq\3"+
+		"\f\3\f\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r"+
+		"\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\5\r\u0091\n\r\3\16\3\16\3"+
+		"\16\7\16\u0096\n\16\f\16\16\16\u0099\13\16\3\17\3\17\3\17\3\17\3\17\3"+
+		"\20\3\20\3\20\7\20\u00a3\n\20\f\20\16\20\u00a6\13\20\5\20\u00a8\n\20\3"+
+		"\21\3\21\3\21\3\21\5\21\u00ae\n\21\3\22\5\22\u00b1\n\22\3\22\3\22\3\23"+
+		"\3\23\3\24\3\24\6\24\u00b9\n\24\r\24\16\24\u00ba\3\25\3\25\3\25\3\25\3"+
+		"\25\3\25\5\25\u00c3\n\25\3\25\2\2\26\2\4\6\b\n\f\16\20\22\24\26\30\32"+
+		"\34\36 \"$&(\2\3\3\2\24\25\2\u00ca\2/\3\2\2\2\48\3\2\2\2\6A\3\2\2\2\b"+
+		"F\3\2\2\2\nJ\3\2\2\2\fN\3\2\2\2\16Y\3\2\2\2\20]\3\2\2\2\22a\3\2\2\2\24"+
+		"e\3\2\2\2\26k\3\2\2\2\30\u0090\3\2\2\2\32\u0092\3\2\2\2\34\u009a\3\2\2"+
+		"\2\36\u00a7\3\2\2\2 \u00ad\3\2\2\2\"\u00b0\3\2\2\2$\u00b4\3\2\2\2&\u00b8"+
+		"\3\2\2\2(\u00c2\3\2\2\2*+\5\4\3\2+,\7\23\2\2,.\3\2\2\2-*\3\2\2\2.\61\3"+
+		"\2\2\2/-\3\2\2\2/\60\3\2\2\2\60\62\3\2\2\2\61/\3\2\2\2\62\63\7\2\2\3\63"+
+		"\3\3\2\2\2\649\5\24\13\2\659\5\30\r\2\669\5\6\4\2\679\5\16\b\28\64\3\2"+
+		"\2\28\65\3\2\2\28\66\3\2\2\28\67\3\2\2\29\5\3\2\2\2:;\7\4\2\2;B\5\"\22"+
+		"\2<=\7\4\2\2=>\7\17\2\2>?\5\b\5\2?@\7\20\2\2@B\3\2\2\2A:\3\2\2\2A<\3\2"+
+		"\2\2B\7\3\2\2\2CD\5\"\22\2DE\7\23\2\2EG\3\2\2\2FC\3\2\2\2GH\3\2\2\2HF"+
+		"\3\2\2\2HI\3\2\2\2I\t\3\2\2\2JK\7\4\2\2KL\7\37\2\2LM\7\60\2\2M\13\3\2"+
+		"\2\2NO\5\n\6\2OP\7\24\2\2PQ\7\60\2\2Q\r\3\2\2\2RS\7\3\2\2SZ\7\60\2\2T"+
+		"U\7\3\2\2UV\7\17\2\2VW\5\20\t\2WX\7\20\2\2XZ\3\2\2\2YR\3\2\2\2YT\3\2\2"+
+		"\2Z\17\3\2\2\2[\\\7\60\2\2\\^\7\23\2\2][\3\2\2\2^_\3\2\2\2_]\3\2\2\2_"+
+		"`\3\2\2\2`\21\3\2\2\2ab\7\3\2\2bc\7\37\2\2cd\7\60\2\2d\23\3\2\2\2ef\7"+
+		"\5\2\2fg\7\60\2\2gh\7\r\2\2hi\7\16\2\2ij\5\26\f\2j\25\3\2\2\2ko\7\17\2"+
+		"\2lm\5\4\3\2mn\7\23\2\2np\3\2\2\2ol\3\2\2\2pq\3\2\2\2qo\3\2\2\2qr\3\2"+
+		"\2\2rs\3\2\2\2st\7\20\2\2t\27\3\2\2\2uv\7\6\2\2vw\7\37\2\2wx\5$\23\2x"+
+		"y\7\r\2\2yz\5\36\20\2z{\7\16\2\2{\u0091\3\2\2\2|}\7\5\2\2}~\7\24\2\2~"+
+		"\177\5$\23\2\177\u0080\7\r\2\2\u0080\u0081\7\16\2\2\u0081\u0091\3\2\2"+
+		"\2\u0082\u0083\5\n\6\2\u0083\u0084\7\27\2\2\u0084\u0085\5\32\16\2\u0085"+
+		"\u0091\3\2\2\2\u0086\u0087\5\22\n\2\u0087\u0088\7\27\2\2\u0088\u0089\5"+
+		"\32\16\2\u0089\u0091\3\2\2\2\u008a\u008b\5\f\7\2\u008b\u008c\7\27\2\2"+
+		"\u008c\u008d\5$\23\2\u008d\u008e\7\r\2\2\u008e\u008f\7\16\2\2\u008f\u0091"+
+		"\3\2\2\2\u0090u\3\2\2\2\u0090|\3\2\2\2\u0090\u0082\3\2\2\2\u0090\u0086"+
+		"\3\2\2\2\u0090\u008a\3\2\2\2\u0091\31\3\2\2\2\u0092\u0097\5\34\17\2\u0093"+
+		"\u0094\7\24\2\2\u0094\u0096\5\34\17\2\u0095\u0093\3\2\2\2\u0096\u0099"+
+		"\3\2\2\2\u0097\u0095\3\2\2\2\u0097\u0098\3\2\2\2\u0098\33\3\2\2\2\u0099"+
+		"\u0097\3\2\2\2\u009a\u009b\5$\23\2\u009b\u009c\7\r\2\2\u009c\u009d\5\36"+
+		"\20\2\u009d\u009e\7\16\2\2\u009e\35\3\2\2\2\u009f\u00a4\5 \21\2\u00a0"+
+		"\u00a1\7\26\2\2\u00a1\u00a3\5 \21\2\u00a2\u00a0\3\2\2\2\u00a3\u00a6\3"+
+		"\2\2\2\u00a4\u00a2\3\2\2\2\u00a4\u00a5\3\2\2\2\u00a5\u00a8\3\2\2\2\u00a6"+
+		"\u00a4\3\2\2\2\u00a7\u009f\3\2\2\2\u00a7\u00a8\3\2\2\2\u00a8\37\3\2\2"+
+		"\2\u00a9\u00ae\5(\25\2\u00aa\u00ae\5\22\n\2\u00ab\u00ae\5\30\r\2\u00ac"+
+		"\u00ae\5\f\7\2\u00ad\u00a9\3\2\2\2\u00ad\u00aa\3\2\2\2\u00ad\u00ab\3\2"+
+		"\2\2\u00ad\u00ac\3\2\2\2\u00ae!\3\2\2\2\u00af\u00b1\5&\24\2\u00b0\u00af"+
+		"\3\2\2\2\u00b0\u00b1\3\2\2\2\u00b1\u00b2\3\2\2\2\u00b2\u00b3\5$\23\2\u00b3"+
+		"#\3\2\2\2\u00b4\u00b5\7\60\2\2\u00b5%\3\2\2\2\u00b6\u00b7\7\60\2\2\u00b7"+
+		"\u00b9\t\2\2\2\u00b8\u00b6\3\2\2\2\u00b9\u00ba\3\2\2\2\u00ba\u00b8\3\2"+
+		"\2\2\u00ba\u00bb\3\2\2\2\u00bb\'\3\2\2\2\u00bc\u00c3\7\7\2\2\u00bd\u00c3"+
+		"\7\b\2\2\u00be\u00c3\7\t\2\2\u00bf\u00c3\7\n\2\2\u00c0\u00c3\7\13\2\2"+
+		"\u00c1\u00c3\7\f\2\2\u00c2\u00bc\3\2\2\2\u00c2\u00bd\3\2\2\2\u00c2\u00be"+
+		"\3\2\2\2\u00c2\u00bf\3\2\2\2\u00c2\u00c0\3\2\2\2\u00c2\u00c1\3\2\2\2\u00c3"+
+		")\3\2\2\2\21/8AHY_q\u0090\u0097\u00a4\u00a7\u00ad\u00b0\u00ba\u00c2";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

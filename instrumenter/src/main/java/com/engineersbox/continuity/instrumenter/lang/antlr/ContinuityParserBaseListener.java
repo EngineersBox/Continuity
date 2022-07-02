@@ -246,6 +246,18 @@ public class ContinuityParserBaseListener implements ContinuityParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterContextReferenceInvocation(ContinuityParser.ContextReferenceInvocationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitContextReferenceInvocation(ContinuityParser.ContextReferenceInvocationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterEnumConstantMethodInvocationParam(ContinuityParser.EnumConstantMethodInvocationParamContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -253,6 +265,30 @@ public class ContinuityParserBaseListener implements ContinuityParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitEnumConstantMethodInvocationParam(ContinuityParser.EnumConstantMethodInvocationParamContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMethodInvocationChain(ContinuityParser.MethodInvocationChainContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMethodInvocationChain(ContinuityParser.MethodInvocationChainContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMethodInvocation(ContinuityParser.MethodInvocationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMethodInvocation(ContinuityParser.MethodInvocationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

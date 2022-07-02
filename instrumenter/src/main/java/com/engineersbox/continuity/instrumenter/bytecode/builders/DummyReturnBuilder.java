@@ -2,18 +2,21 @@ package com.engineersbox.continuity.instrumenter.bytecode.builders;
 
 import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnBuilder;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilder;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilderParam;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 
+@StdlibBuilder(methodName = "dummyReturn")
 public class DummyReturnBuilder implements BytecodeBuilder {
 
     private Type returnType;
 
     public DummyReturnBuilder() {}
 
-    public DummyReturnBuilder dummyType(final Type returnType) {
+    public DummyReturnBuilder dummyType(@StdlibBuilderParam(pos = 0)final Type returnType) {
         if (returnType == null) {
             throw new IllegalArgumentException("Return type cannot be null");
         } else if (returnType.getSort() == Type.METHOD) {

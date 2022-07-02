@@ -30,13 +30,16 @@ block: LBRACE (statement SEMI)+ RBRACE;
 
 invocation: STD COLONCOLON referenceTarget LPAREN params RPAREN # stdInvocation
     | FN DOT referenceTarget LPAREN RPAREN # functionInvocation
-    | externalEntryReference ARROW referenceTarget LPAREN params RPAREN # externalReferenceInvocation
-    | externalEntryEnumConstantReference ARROW referenceTarget LPAREN RPAREN  # enumConstantMethodInvocationParam;
+    | externalEntryReference ARROW methodInvocationChain # externalReferenceInvocation
+    | contextEntryReference ARROW methodInvocationChain # contextReferenceInvocation
+    | externalEntryEnumConstantReference ARROW referenceTarget LPAREN RPAREN # enumConstantMethodInvocationParam;
+methodInvocationChain: methodInvocation (DOT methodInvocation)*;
+methodInvocation: referenceTarget LPAREN params RPAREN;
 params: (param ( COMMA param )* )?;
 param: literal # literalParam
     | contextEntryReference # contextEntryReferenceParam
     | invocation # invocationParam
-    | externalEntryReference DOT Identifier # enumConstantReferenceParam;
+    | externalEntryEnumConstantReference # enumConstantReferenceParam;
 
 reference: referenceChain? referenceTarget;
 referenceTarget: Identifier;

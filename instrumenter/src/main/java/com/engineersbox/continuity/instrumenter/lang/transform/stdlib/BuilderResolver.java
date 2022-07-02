@@ -53,36 +53,62 @@ public class BuilderResolver {
         return (Set<Class<? extends BytecodeBuilder>>) intersection;
     }
 
+    private <T extends Object> String stringFormatClasses(final Set<Class<? extends T>> classes) {
+        final Set<Class<? extends T>> baseClasses = classes.stream()
+                .filter((final Class<? extends T> cls) -> {
+                    final StdlibBuilder annotation = cls.getAnnotation(StdlibBuilder.class);
+                    return annotation != null && annotation.isBaseClass();
+                }).collect(Collectors.toSet());
+        String stringBaseClasses = "";
+        if (!baseClasses.isEmpty()) {
+            stringBaseClasses = String.format(
+                    "\n  [Base Builders - Skipped]\n\t - %s",
+                    baseClasses.stream()
+                            .map(Class::getCanonicalName)
+                            .collect(Collectors.joining("\n\t - "))
+            );
+        }
+        final Set<Class<? extends T>> nonBaseClasses = SetUtils.difference(classes, baseClasses);
+        String stringNonBaseClasses = "";
+        if (!nonBaseClasses.isEmpty()) {
+            stringNonBaseClasses = String.format(
+                    "\n  [Core stdlib Builders]\n\t - %s",
+                    nonBaseClasses.stream()
+                            .map(Class::getCanonicalName)
+                            .collect(Collectors.joining("\n\t - "))
+            );
+        }
+        return String.format(
+                "%s%s",
+                stringNonBaseClasses,
+                stringBaseClasses
+        );
+    }
+
     private void logResolvedClasses(final Set<Class<? extends BytecodeBuilder>> extendsClasses,
                                     final Set<Class<?>> annotatedClasses,
                                     final Set<Class<? extends BytecodeBuilder>> intersection) {
         final Set<Class<?>> annotationOnly = SetUtils.difference(annotatedClasses, intersection);
-        final Set<Class<?>> extendsOnly = SetUtils.intersection(extendsClasses, intersection);
+        final Set<Class<?>> extendsOnly = SetUtils.difference(extendsClasses, intersection);
         if (!annotationOnly.isEmpty()) {
             LOGGER.warn(
-                    "Found {} stdlib builder classes missing extends: \n\t - {}",
+                    "Found {} stdlib builder classes missing extends:{}",
                     annotationOnly.size(),
-                    annotationOnly.stream()
-                            .map(Class::getCanonicalName)
-                            .collect(Collectors.joining(",\n\t - "))
+                    stringFormatClasses(annotationOnly)
             );
         }
         if (!extendsOnly.isEmpty()) {
             LOGGER.warn(
-                    "Found {} stdlib builder classes missing annotations: \n\t - {}",
+                    "Found {} stdlib builder classes missing annotations:{}",
                     extendsOnly.size(),
-                    extendsOnly.stream()
-                            .map(Class::getCanonicalName)
-                            .collect(Collectors.joining(",\n\t - "))
+                    stringFormatClasses(extendsOnly)
             );
         }
         if (!intersection.isEmpty()) {
             LOGGER.info(
-                    "Found {} valid stdlib builder classes: \n\t - {}",
+                    "Found {} valid stdlib builder classes:{}",
                     intersection.size(),
-                    intersection.stream()
-                            .map(Class::getCanonicalName)
-                            .collect(Collectors.joining(",\n\t - "))
+                    stringFormatClasses(intersection)
             );
         }
     }

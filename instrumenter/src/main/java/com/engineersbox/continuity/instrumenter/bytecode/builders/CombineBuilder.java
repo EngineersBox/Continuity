@@ -3,6 +3,8 @@ package com.engineersbox.continuity.instrumenter.bytecode.builders;
 import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnListCollector;
 import com.engineersbox.continuity.instrumenter.bytecode.annotation.BytecodeGenerator;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilder;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilderParam;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.InsnList;
 
@@ -11,6 +13,7 @@ import java.util.Objects;
 import java.util.stream.StreamSupport;
 
 @BytecodeGenerator
+@StdlibBuilder(methodName = "combine")
 public class CombineBuilder implements BytecodeBuilder {
 
     private Object[] insns;
@@ -18,7 +21,7 @@ public class CombineBuilder implements BytecodeBuilder {
     public CombineBuilder() {
     }
 
-    public CombineBuilder insns(final Object... insns) {
+    public CombineBuilder insns(@StdlibBuilderParam(pos = 0, varargs = true) final Object... insns) {
         if (insns == null || Arrays.stream(insns).anyMatch(Objects::isNull)) {
             throw new IllegalArgumentException("Instructions cannot be null");
         }

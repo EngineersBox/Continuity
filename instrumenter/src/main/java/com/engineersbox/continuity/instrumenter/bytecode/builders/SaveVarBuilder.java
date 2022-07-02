@@ -2,19 +2,22 @@ package com.engineersbox.continuity.instrumenter.bytecode.builders;
 
 import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnListBuilder;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilder;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilderParam;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.VarInsnNode;
 
+@StdlibBuilder(methodName = "saveVar")
 public class SaveVarBuilder implements BytecodeBuilder {
 
     private VariableLUT.Variable variable;
 
     public SaveVarBuilder() {}
 
-    public SaveVarBuilder var(final VariableLUT.Variable variable) {
+    public SaveVarBuilder var(@StdlibBuilderParam(pos = 0) final VariableLUT.Variable variable) {
         if (variable == null) {
             throw new IllegalArgumentException("Variable must not be null");
         }

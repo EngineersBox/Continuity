@@ -5,17 +5,14 @@ import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityParser;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.apache.commons.lang3.reflect.TypeUtils;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.InsnList;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class CIBTransformer {
 
@@ -65,9 +62,9 @@ public class CIBTransformer {
                         Type.getType(String.class),
                         0,
                         true
-                ), "example", "test2"
+                ), "example", new AtomicReference<>("Continuation$getState")
         );
-        final CIBTransformer transformer = new CIBTransformer("instrumenter/src/main/resources/example.cib");
+        final CIBTransformer transformer = new CIBTransformer("instrumenter/src/main/resources/calltest.cib");
         final InsnList result = transformer.transform(tc);
         System.out.println(Arrays.toString(result.toArray()));
     }
