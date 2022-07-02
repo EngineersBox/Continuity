@@ -78,7 +78,10 @@ public class BuilderResolver {
                             .map((final Class<?> cls) -> {
                                 final Set<Class<?>> extendsClasses = parentMappings.get(cls);
                                 if (extendsClasses == null || extendsClasses.isEmpty()) {
-                                    return cls.getCanonicalName();
+                                    return String.format(
+                                            "%s [No Child Classes]",
+                                            cls.getCanonicalName()
+                                    );
                                 }
                                 return String.format(
                                         "%s \n\t  [Child Classes: %d]\n\t\t - %s",
