@@ -2,9 +2,13 @@ package com.engineersbox.continuity.instrumenter.lang.transform;
 
 import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityLexer;
 import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityParser;
+import com.engineersbox.continuity.instrumenter.lang.transform.listener.CIBErrorListener;
+import com.engineersbox.continuity.instrumenter.lang.transform.listener.TransformListener;
+import com.engineersbox.continuity.instrumenter.lang.transform.visitor.TransformVisitor;
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.DiagnosticErrorListener;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.InsnList;
 
@@ -36,6 +40,8 @@ public class CIBTransformer {
         final ContinuityParser parser = new ContinuityParser((new CommonTokenStream(lexer)));
         this.listener = new TransformListener();
         parser.addParseListener(this.listener);
+        parser.addErrorListener(new CIBErrorListener());
+        parser.addErrorListener(new DiagnosticErrorListener(false));
         this.parseTree = parser.parse();
         this.insnList = new InsnList();
     }

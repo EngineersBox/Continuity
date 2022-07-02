@@ -5,10 +5,10 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 public final aspect VisitorExceptionAspect {
 
-    declare soft: Throwable: execution(* TransformVisitor.*(ParserRuleContext+));
+    declare soft: Throwable: execution(* com.engineersbox.continuity.instrumenter.lang.transform.visitor.TransformVisitor.*(ParserRuleContext+));
 
     pointcut callVisit(final ParserRuleContext ctx):
-            execution(* TransformVisitor.*(ParserRuleContext+)) && args(ctx);
+            execution(* com.engineersbox.continuity.instrumenter.lang.transform.visitor.TransformVisitor.*(ParserRuleContext+)) && args(ctx);
 
     Object around(final ParserRuleContext ctx): callVisit(ctx){
         try {
