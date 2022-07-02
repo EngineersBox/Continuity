@@ -1,4 +1,4 @@
-package com.engineersbox.continuity.instrumenter.lang.transform;
+package com.engineersbox.continuity.instrumenter.lang.transform.exception;
 
 public class ContinuityIntermediateBytecodeException extends RuntimeException {
 

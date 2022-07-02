@@ -2,14 +2,13 @@ package com.engineersbox.continuity.instrumenter.lang.transform.stdlib;
 
 import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilderParam;
-import org.apache.commons.lang3.reflect.ConstructorUtils;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.exception.StdlibBuilderMethodException;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -68,8 +67,18 @@ public class StdlibBuilderMethod {
         }
         Object param = parameters.get(builderParam.pos());
         if (builderParam.varargs()) {
-            final Object varargsWrapper = Array.newInstance(param.getClass(), 1);
-            Array.set(varargsWrapper, 0, param);
+            final int arrayLength = parameters.size() - builderParam.pos();
+            final Object varargsWrapper = Array.newInstance(
+                    param.getClass(),
+                    parameters.size() - builderParam.pos()
+            );
+            for (int i = 0; i < arrayLength; i++) {
+                Array.set(
+                        varargsWrapper,
+                        i,
+                        parameters.get(i + builderParam.pos())
+                );
+            }
             param = varargsWrapper;
         }
         return param;

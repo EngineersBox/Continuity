@@ -3,6 +3,7 @@ package com.engineersbox.continuity.instrumenter.lang.transform.stdlib;
 import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilder;
 import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation.StdlibBuilderParam;
+import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.exception.BuilderResolverException;
 import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.commons.lang3.tuple.Pair;

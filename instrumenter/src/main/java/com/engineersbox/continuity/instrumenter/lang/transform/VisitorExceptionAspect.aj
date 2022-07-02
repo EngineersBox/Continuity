@@ -1,5 +1,6 @@
 package com.engineersbox.continuity.instrumenter.lang.transform;
 
+import com.engineersbox.continuity.instrumenter.lang.transform.exception.ContinuityIntermediateBytecodeException;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public final aspect VisitorExceptionAspect {

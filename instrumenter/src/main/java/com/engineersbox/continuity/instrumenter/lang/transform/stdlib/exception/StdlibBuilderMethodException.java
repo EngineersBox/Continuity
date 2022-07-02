@@ -1,4 +1,4 @@
-package com.engineersbox.continuity.instrumenter.lang.transform.stdlib;
+package com.engineersbox.continuity.instrumenter.lang.transform.stdlib.exception;
 
 public class StdlibBuilderMethodException extends RuntimeException {
 

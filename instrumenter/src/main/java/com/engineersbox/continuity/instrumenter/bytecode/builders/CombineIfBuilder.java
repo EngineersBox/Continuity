@@ -19,15 +19,22 @@ public class CombineIfBuilder implements BytecodeBuilder {
         this.generatedInstructions = new ArrayList<>();
     }
 
-    // TODO: Address inputting supplier object
-    public CombineIfBuilder combineIf(@StdlibBuilderParam(pos = 0) final boolean condition,
-                                      @StdlibBuilderParam(pos = 1) final Supplier<Object[]> insnsSupplier) {
+    public CombineIfBuilder combineIf(final boolean condition,
+                                      final Supplier<Object[]> insnsSupplier) {
         if (insnsSupplier == null) {
             throw new IllegalArgumentException("Supplier cannot be null");
         } else if (condition) {
             this.generatedInstructions.addAll(Arrays.asList(insnsSupplier.get()));
         }
         return this;
+    }
+
+    public CombineIfBuilder combineIf(@StdlibBuilderParam(pos = 0) final boolean condition,
+                                      @StdlibBuilderParam(pos = 1, varargs = true) final Object ...insns) {
+        return combineIf(
+                condition,
+                insns == null || insns.length == 0 ? null : () -> insns
+        );
     }
 
     @Override
