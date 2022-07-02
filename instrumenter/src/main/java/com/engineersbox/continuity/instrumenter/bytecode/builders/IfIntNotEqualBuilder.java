@@ -6,7 +6,10 @@ import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.InsnList;
 
-@StdlibBuilder(methodName = "ifIntNotEqual")
+@StdlibBuilder(
+        methodName = "ifIntNotEqual",
+        parent = IfIntCompareBuilder.class
+)
 public class IfIntNotEqualBuilder implements BytecodeBuilder {
 
     private IfIntCompareBuilder builder;

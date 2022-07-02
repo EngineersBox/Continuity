@@ -55,8 +55,18 @@ public class BuilderResolver {
     }
 
     private <T extends Object> String stringFormatClasses(final Set<Class<? extends T>> classes) {
+        final Map<Class<? extends BytecodeBuilder>, Set<Class<?>>> parentMappings = new HashMap<>();
         final Set<Class<? extends T>> baseClasses = classes.stream()
-                .filter((final Class<? extends T> cls) -> {
+                .peek((final Class<? extends T> cls) -> {
+                    final StdlibBuilder annotation = cls.getAnnotation(StdlibBuilder.class);
+                    if (annotation == null || annotation.parent().length <= 0) {
+                        return;
+                    }
+                    parentMappings.computeIfAbsent(
+                            annotation.parent()[0],
+                            (final Class<? extends BytecodeBuilder> key) -> new HashSet<>()
+                    ).add(cls);
+                }).filter((final Class<? extends T> cls) -> {
                     final StdlibBuilder annotation = cls.getAnnotation(StdlibBuilder.class);
                     return annotation != null && annotation.isBaseClass();
                 }).collect(Collectors.toSet());
@@ -65,8 +75,20 @@ public class BuilderResolver {
             stringBaseClasses = String.format(
                     "\n  [Base Builders - Skipped]\n\t - %s",
                     baseClasses.stream()
-                            .map(Class::getCanonicalName)
-                            .collect(Collectors.joining("\n\t - "))
+                            .map((final Class<?> cls) -> {
+                                final Set<Class<?>> extendsClasses = parentMappings.get(cls);
+                                if (extendsClasses == null || extendsClasses.isEmpty()) {
+                                    return cls.getCanonicalName();
+                                }
+                                return String.format(
+                                        "%s \n\t  [Child Classes: %d]\n\t\t - %s",
+                                        cls.getCanonicalName(),
+                                        extendsClasses.size(),
+                                        extendsClasses.stream()
+                                                .map(Class::getCanonicalName)
+                                                .collect(Collectors.joining("\n\t\t - "))
+                                );
+                            }).collect(Collectors.joining("\n\t - "))
             );
         }
         final Set<Class<? extends T>> nonBaseClasses = SetUtils.difference(classes, baseClasses);
@@ -106,7 +128,7 @@ public class BuilderResolver {
             );
         }
         if (!intersection.isEmpty()) {
-            LOGGER.info(
+            LOGGER.debug(
                     "Found {} valid stdlib builder classes:{}",
                     intersection.size(),
                     stringFormatClasses(intersection)

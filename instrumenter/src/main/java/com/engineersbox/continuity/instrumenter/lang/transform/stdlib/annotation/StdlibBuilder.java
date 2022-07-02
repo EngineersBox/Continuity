@@ -1,5 +1,6 @@
 package com.engineersbox.continuity.instrumenter.lang.transform.stdlib.annotation;
 
+import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 
@@ -13,4 +14,5 @@ import java.lang.annotation.Target;
 public @interface StdlibBuilder {
     String methodName() default "<STDLIB METHOD>";
     boolean isBaseClass() default false;
+    Class<? extends BytecodeBuilder>[] parent() default {};
 }
