@@ -1,6 +1,7 @@
 ctx {
     contArgVar;
     example;
+    other;
 };
 ext com.engineersbox.continuity.core.annotation.BytecodeInternal $ Accessor;
 
@@ -11,6 +12,10 @@ fn test() {
 
 std::call(ext::Accessor->getMethod(ctx::example->get().replace('$', '.')), std::loadVar(ctx::contArgVar));
 std::combineIf(
-    ctx::example->get().contains("$"),
+    ctx::example->get().contains("$") && (5.3 >= 434 || "string" == "string"),
     fn.test()
+);
+std::combineIf(
+    ctx::other != null,
+    std::lineNumber(ctx::other)
 );

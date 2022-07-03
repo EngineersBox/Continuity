@@ -11,11 +11,11 @@ import org.objectweb.asm.tree.LineNumberNode;
 @StdlibBuilder(methodName = "lineNumber")
 public class LineNumberBuilder implements BytecodeBuilder {
 
-    private int number;
+    private Integer number;
 
     public LineNumberBuilder() {}
 
-    public LineNumberBuilder lineNumber(@StdlibBuilderParam(pos = 0) final int number) {
+    public LineNumberBuilder lineNumber(final int number) {
         if (number < 0) {
             throw new IllegalArgumentException("Line number must be positive");
         }
@@ -23,8 +23,18 @@ public class LineNumberBuilder implements BytecodeBuilder {
         return this;
     }
 
+    public LineNumberBuilder lineNumberInternal(@StdlibBuilderParam(pos = 0) final Integer number) {
+        if (number == null) {
+            return this;
+        }
+        return lineNumber(number);
+    }
+
     @Override
     public InsnList build() {
+        if (this.number == null) {
+            return new InsnList();
+        }
          final LabelNode labelNode = new LabelNode();
         return new InsnListBuilder().addAll(
                 labelNode,

@@ -1,7 +1,7 @@
 ctx {
     markerType;
     point;
-    lineNumber;
+    currentLineNumber;
     lva;
     os;
     frame;
@@ -18,24 +18,22 @@ ext {
 };
 
 std::combineIf(
-    ctx::lineNumber != null,
-    std::lineNumber(ctx::lineNumber)
+    ctx::currentLineNumber != null,
+    std::lineNumber(ctx::currentLineNumber)
 );
 ext::SaveOperations->saveVariables(
     ctx::markerType,
     ctx::index,
     ctx::lva,
-    ctx::os.
+    ctx::os,
     ctx::container,
     ctx::frame
 );
 std::debugMarker(
     ctx::markerType,
-    "Pushing method state snapeshot"
+    "Pushing method state snapshot"
 );
-std::call(
-    ext::Accessor->getMethod("Continuation.pushNewMethodState"),
-    std::loadVar(ext::methodContext->continuityVariables().continuityArgVar()),
+fn instantiateMethodState() {
     std::newInstance(
         ext::Accessor->getConstructor("MethodState.init"),
         std::constant(ctx::className),
@@ -43,6 +41,11 @@ std::call(
         std::constant(ctx::index),
         std::loadVar(ctx::container)
     )
+};
+std::call(
+    ext::Accessor->getMethod("Continuation.pushNewMethodState"),
+    std::loadVar(ext::methodContext->continuityVariables().continuityArgVar()),
+    fn.instantiateMethodState()
 );
 std::debug(
     ctx::markerType,

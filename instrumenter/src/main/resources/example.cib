@@ -29,7 +29,7 @@ fn loadState() {
 };
 
 std::ifIntNotEqual(
-    std::loadConst(2.34f),
+    ctx::example->get().contains("$") && (5.3 >= 434 || "string" == "string"),
     ext::ContinuationState.SAVING->ordinal(),
     // Invoke a declared function
     fn.loadState()

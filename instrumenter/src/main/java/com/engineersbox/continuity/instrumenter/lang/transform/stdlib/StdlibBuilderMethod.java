@@ -33,7 +33,13 @@ public class StdlibBuilderMethod {
             final int index = pair.getLeft().pos();
             final Class<?> type = pair.getRight();
             final Object param = parameters.get(pair.getLeft().pos());
-            if (!type.isInstance(param) && (type.isArray() && !type.getComponentType().isInstance(param))) {
+            if (type.isPrimitive() && param == null) {
+                throw new StdlibBuilderMethodException(String.format(
+                        "Cannot pass null to primitive parameter \"%s\" at index %d",
+                        type.getName(),
+                        index
+                ));
+            } else if (!type.isInstance(param) && (type.isArray() && !type.getComponentType().isInstance(param))) {
                 throw new StdlibBuilderMethodException(String.format(
                         "Expected type \"%s\", but got \"%s\" at parameter index %d",
                         type.getName(),

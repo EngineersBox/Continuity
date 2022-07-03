@@ -15,6 +15,7 @@ import org.objectweb.asm.tree.InsnList;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -40,7 +41,7 @@ public class CIBTransformer {
         this.listener = new TransformListener();
         parser.addParseListener(this.listener);
         parser.addErrorListener(new CIBErrorListener());
-        parser.addErrorListener(new DiagnosticErrorListener(false));
+//        parser.addErrorListener(new DiagnosticErrorListener(false));
         this.parseTree = parser.parse();
     }
 
@@ -61,13 +62,14 @@ public class CIBTransformer {
     }
 
     public static void main(String[] args) {
-        final Map<String, Object> tc = Map.of(
+        final Map<String, Object> tc = new HashMap<>(Map.of(
                 "contArgVar", new VariableLUT.Variable(
                         Type.getType(String.class),
                         0,
                         true
                 ), "example", new AtomicReference<>("Continuation$getState")
-        );
+        ));
+        tc.put("other", null);
         final CIBTransformer transformer = new CIBTransformer("instrumenter/src/main/resources/calltest.cib");
         final InsnList result = transformer.transform(tc);
         System.out.println(Arrays.toString(result.toArray()));

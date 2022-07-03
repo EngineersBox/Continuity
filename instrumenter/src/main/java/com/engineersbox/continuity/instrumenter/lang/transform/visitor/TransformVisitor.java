@@ -3,18 +3,19 @@ package com.engineersbox.continuity.instrumenter.lang.transform.visitor;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnListCollector;
 import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityParser;
 import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityParserBaseVisitor;
+import com.engineersbox.continuity.instrumenter.lang.transform.literal.PrimitiveFriendlyComparator;
 import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.BuilderResolver;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.compare.ComparableUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.objectweb.asm.tree.InsnList;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -59,7 +60,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     public Object visitStdInvocation(final ContinuityParser.StdInvocationContext ctx) {
         final String reference = ctx.referenceTarget().Identifier().getText();
         final Object[] params = (Object[]) super.visit(ctx.params());
-        return this.builderResolver.invokeStdlibMethod(reference, List.of(params));
+        return this.builderResolver.invokeStdlibMethod(reference, Arrays.asList(params));
     }
 
     @Override
@@ -196,8 +197,8 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         final List<ContinuityParser.MethodInvocationContext> methodInvocations = ctx.methodInvocation();
         Object returnValue = tryInvokeMethod(
                 ctx,
-                currentInvocationObject,
-                currentInvocationTarget,
+                this.currentInvocationObject,
+                this.currentInvocationTarget,
                 methodInvocations.get(0).referenceTarget().Identifier().getText(),
                 (Object[]) super.visit(methodInvocations.get(0).params())
         );
@@ -223,7 +224,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitContextReferenceInvocation(ContinuityParser.ContextReferenceInvocationContext ctx) {
+    public Object visitContextReferenceInvocation(final ContinuityParser.ContextReferenceInvocationContext ctx) {
         this.currentInvocationObject = super.visit(ctx.contextEntryReference());
         this.currentInvocationTarget = this.currentInvocationObject.getClass();
         return super.visit(ctx.methodInvocationChain());
@@ -372,7 +373,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitExternalEntries(ContinuityParser.ExternalEntriesContext ctx) {
+    public Object visitExternalEntries(final ContinuityParser.ExternalEntriesContext ctx) {
         ctx.reference().forEach(super::visit);
         return super.visitExternalEntries(ctx);
     }
@@ -404,7 +405,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitEnumConstantReferenceParam(ContinuityParser.EnumConstantReferenceParamContext ctx) {
+    public Object visitEnumConstantReferenceParam(final ContinuityParser.EnumConstantReferenceParamContext ctx) {
         return super.visit(ctx.externalEntryEnumConstantReference());
     }
 
@@ -426,65 +427,109 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitBooleanExpressionParam(ContinuityParser.BooleanExpressionParamContext ctx) {
+    public Object visitBooleanExpressionParam(final ContinuityParser.BooleanExpressionParamContext ctx) {
         return super.visit(ctx.booleanExpresion());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Object visitComparatorBooleanExpression(ContinuityParser.ComparatorBooleanExpressionContext ctx) {
+    public Object visitComparatorBooleanExpression(final ContinuityParser.ComparatorBooleanExpressionContext ctx) {
         final Object left = super.visit(ctx.left);
         final Object right = super.visit(ctx.right);
-        final Comparator<Object> comparator = (Comparator<Object>) super.visit(ctx.comparator());
-        return super.visitComparatorBooleanExpression(ctx);
+        final BiFunction<Object, Object, Boolean> comparator = (BiFunction<Object, Object, Boolean>) super.visit(ctx.comparator());
+        return comparator.apply(left, right);
     }
 
     @Override
-    public Object visitParenBooleanExpression(ContinuityParser.ParenBooleanExpressionContext ctx) {
+    public Object visitParenBooleanExpression(final ContinuityParser.ParenBooleanExpressionContext ctx) {
         return super.visit(ctx.booleanExpresion());
     }
 
     @Override
-    public Object visitTargetBooleanExpression(ContinuityParser.TargetBooleanExpressionContext ctx) {
+    public Object visitTargetBooleanExpression(final ContinuityParser.TargetBooleanExpressionContext ctx) {
         return super.visit(ctx.comparisonTarget());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Object visitBinaryBooleanExpression(ContinuityParser.BinaryBooleanExpressionContext ctx) {
+    public Object visitBinaryBooleanExpression(final ContinuityParser.BinaryBooleanExpressionContext ctx) {
         final boolean left = (boolean) super.visit(ctx.left);
+        // Allow for short-circuit evaluation of expressions
+        if (left && ctx.comparisonJoin().OR() != null) {
+            return true;
+        } else if (!left && ctx.comparisonJoin().AND() != null) {
+            return false;
+        }
         final boolean right = (boolean) super.visit(ctx.right);
         final BiFunction<Boolean, Boolean, Boolean> comparator = (BiFunction<Boolean, Boolean, Boolean>) super.visit(ctx.comparisonJoin());
         return comparator.apply(left, right);
     }
 
     @Override
-    public Object visitNegationBooleanExpression(ContinuityParser.NegationBooleanExpressionContext ctx) {
+    public Object visitNegationBooleanExpression(final ContinuityParser.NegationBooleanExpressionContext ctx) {
         return !((boolean) super.visit(ctx.booleanExpresion()));
     }
 
     @Override
-    public Object visitComparisonJoin(ContinuityParser.ComparisonJoinContext ctx) {
+    public Object visitComparisonJoin(final ContinuityParser.ComparisonJoinContext ctx) {
         if (ctx.AND() != null) {
             return (BiFunction<Boolean, Boolean, Boolean>) Boolean::logicalAnd;
         }
         return (BiFunction<Boolean, Boolean, Boolean>) Boolean::logicalOr;
     }
 
-    private <T> Comparator<T> getNumberComparator()
-
-    @Override
-    public Object visitComparator(ContinuityParser.ComparatorContext ctx) {
-        if (ctx.EQUAL() != null) {
-            return (BiFunction<Object, Object, Boolean>) Objects::equals;
-        } else if (ctx.NOTEQUAL() != null) {
-            return (BiFunction<Object, Object, Boolean>) (final Object a, final Object b) -> !Objects.equals(a, b);
-        } else if (ctx.GT() != null) {
-            return Objects.compare(Number)
+    private void checkComparable(final Object object) {
+        if (object == null) {
+            return;
         }
-        return super.visitComparator(ctx);
+        if ((!ClassUtils.isPrimitiveOrWrapper(object.getClass()) && !(object instanceof Comparable)) || object.getClass().equals(Void.TYPE)) {
+            throw new IllegalArgumentException(String.format(
+                    "Object of type \"%s\" is not comparable",
+                    object.getClass().getCanonicalName()
+            ));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <C extends Comparable<C>> int checkedComparator(final Object a,
+                                                            final Object b) {
+        checkComparable(a);
+        checkComparable(b);
+        if ((a == null || ClassUtils.isPrimitiveOrWrapper(a.getClass()))
+                && (b == null || ClassUtils.isPrimitiveOrWrapper(b.getClass()))) {
+            return PrimitiveFriendlyComparator.compareObjects(a, b);
+        } else if (ComparableUtils.is((C) a).equalTo((C) b)) {
+            return 0;
+        } else if (ComparableUtils.is((C) a).greaterThan((C) b)) {
+            return 1;
+        } else if (ComparableUtils.is((C) a).lessThan((C) b)) {
+            return -1;
+        }
+        return 0;
+    }
+
+    private <C extends Comparable<C>> BiFunction<Object, Object, Boolean> getComparisonOperation(final ContinuityParser.ComparatorContext ctx) {
+        if (ctx.EQUAL() != null) {
+            return (final Object a, final Object b) -> checkedComparator(a, b) == 0;
+        } else if (ctx.NOTEQUAL() != null) {
+            return (final Object a, final Object b) -> checkedComparator(a, b) != 0;
+        } else if (ctx.GT() != null) {
+            return (final Object a, final Object b) -> checkedComparator(a, b) == 1;
+        } else if (ctx.GE() != null) {
+            return (final Object a, final Object b) -> checkedComparator(a, b) >= 0;
+        } else if (ctx.LT() != null) {
+            return (final Object a, final Object b) -> checkedComparator(a, b) == -1;
+        }
+        return (final Object a, final Object b) -> checkedComparator(a, b) <= 0;
     }
 
     @Override
-    public Object visitComparisonTarget(ContinuityParser.ComparisonTargetContext ctx) {
+    public Object visitComparator(final ContinuityParser.ComparatorContext ctx) {
+        return getComparisonOperation(ctx);
+    }
+
+    @Override
+    public Object visitComparisonTarget(final ContinuityParser.ComparisonTargetContext ctx) {
         if (ctx.contextEntryReference() != null) {
             return super.visit(ctx.contextEntryReference());
         } else if (ctx.externalEntryReference() != null) {
@@ -526,22 +571,22 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitMethodInvocation(ContinuityParser.MethodInvocationContext ctx) {
+    public Object visitMethodInvocation(final ContinuityParser.MethodInvocationContext ctx) {
         return super.visitMethodInvocation(ctx);
     }
 
     @Override
-    public Object visitReference(ContinuityParser.ReferenceContext ctx) {
+    public Object visitReference(final ContinuityParser.ReferenceContext ctx) {
         return super.visitReference(ctx);
     }
 
     @Override
-    public Object visitReferenceTarget(ContinuityParser.ReferenceTargetContext ctx) {
+    public Object visitReferenceTarget(final ContinuityParser.ReferenceTargetContext ctx) {
         return super.visitReferenceTarget(ctx);
     }
 
     @Override
-    public Object visitReferenceChain(ContinuityParser.ReferenceChainContext ctx) {
+    public Object visitReferenceChain(final ContinuityParser.ReferenceChainContext ctx) {
         return super.visitReferenceChain(ctx);
     }
 }
