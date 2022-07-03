@@ -48,7 +48,7 @@ public final class SaveOperations extends CoreOperations {
     @SuppressWarnings("unused")
     @ClassInstancedInvokable(SuspendMethodContinuationPoint.class)
     public static InsnList constructSuspendSaveBytecode(final MethodContext methodContext,
-                                                 final int index) {
+                                                        final int index) {
         final DebugMarker markerType = DebugMarker.STDOUT;
         final SuspendMethodContinuationPoint point = methodContext.getContinuationPointByClass(
                 index,

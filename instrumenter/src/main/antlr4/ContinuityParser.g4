@@ -39,11 +39,24 @@ params: (param ( COMMA param )* )?;
 param: literal # literalParam
     | contextEntryReference # contextEntryReferenceParam
     | invocation # invocationParam
-    | externalEntryEnumConstantReference # enumConstantReferenceParam;
+    | externalEntryEnumConstantReference # enumConstantReferenceParam
+    | booleanExpresion # booleanExpressionParam;
 
 reference: referenceChain? referenceTarget;
 referenceTarget: Identifier;
 referenceChain: (Identifier (DOT | DOLLAR))+;
+
+booleanExpresion: LPAREN booleanExpresion RPAREN # parenBooleanExpression
+    | BANG booleanExpresion # negationBooleanExpression
+    | left=booleanExpresion comparator right=booleanExpresion # comparatorBooleanExpression
+    | left=booleanExpresion comparisonJoin right=booleanExpresion # binaryBooleanExpression
+    | comparisonTarget # targetBooleanExpression;
+comparisonJoin: AND | OR;
+comparator: GT | LT | LE | GE | EQUAL | NOTEQUAL;
+comparisonTarget: externalEntryReference
+    | contextEntryReference
+    | invocation
+    | literal;
 
 literal: IntegerLiteral # IntegerLiteral
     | FloatingPointLiteral # FloatingPointLiteral

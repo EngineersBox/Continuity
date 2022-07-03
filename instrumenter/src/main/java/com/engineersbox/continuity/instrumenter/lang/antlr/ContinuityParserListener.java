@@ -324,6 +324,18 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 */
 	void exitEnumConstantReferenceParam(ContinuityParser.EnumConstantReferenceParamContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code booleanExpressionParam}
+	 * labeled alternative in {@link ContinuityParser#param}.
+	 * @param ctx the parse tree
+	 */
+	void enterBooleanExpressionParam(ContinuityParser.BooleanExpressionParamContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code booleanExpressionParam}
+	 * labeled alternative in {@link ContinuityParser#param}.
+	 * @param ctx the parse tree
+	 */
+	void exitBooleanExpressionParam(ContinuityParser.BooleanExpressionParamContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ContinuityParser#reference}.
 	 * @param ctx the parse tree
 	 */
@@ -353,6 +365,96 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitReferenceChain(ContinuityParser.ReferenceChainContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code comparatorBooleanExpression}
+	 * labeled alternative in {@link ContinuityParser#booleanExpresion}.
+	 * @param ctx the parse tree
+	 */
+	void enterComparatorBooleanExpression(ContinuityParser.ComparatorBooleanExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code comparatorBooleanExpression}
+	 * labeled alternative in {@link ContinuityParser#booleanExpresion}.
+	 * @param ctx the parse tree
+	 */
+	void exitComparatorBooleanExpression(ContinuityParser.ComparatorBooleanExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code parenBooleanExpression}
+	 * labeled alternative in {@link ContinuityParser#booleanExpresion}.
+	 * @param ctx the parse tree
+	 */
+	void enterParenBooleanExpression(ContinuityParser.ParenBooleanExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code parenBooleanExpression}
+	 * labeled alternative in {@link ContinuityParser#booleanExpresion}.
+	 * @param ctx the parse tree
+	 */
+	void exitParenBooleanExpression(ContinuityParser.ParenBooleanExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code binaryBooleanExpression}
+	 * labeled alternative in {@link ContinuityParser#booleanExpresion}.
+	 * @param ctx the parse tree
+	 */
+	void enterBinaryBooleanExpression(ContinuityParser.BinaryBooleanExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code binaryBooleanExpression}
+	 * labeled alternative in {@link ContinuityParser#booleanExpresion}.
+	 * @param ctx the parse tree
+	 */
+	void exitBinaryBooleanExpression(ContinuityParser.BinaryBooleanExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code negationBooleanExpression}
+	 * labeled alternative in {@link ContinuityParser#booleanExpresion}.
+	 * @param ctx the parse tree
+	 */
+	void enterNegationBooleanExpression(ContinuityParser.NegationBooleanExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code negationBooleanExpression}
+	 * labeled alternative in {@link ContinuityParser#booleanExpresion}.
+	 * @param ctx the parse tree
+	 */
+	void exitNegationBooleanExpression(ContinuityParser.NegationBooleanExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code targetBooleanExpression}
+	 * labeled alternative in {@link ContinuityParser#booleanExpresion}.
+	 * @param ctx the parse tree
+	 */
+	void enterTargetBooleanExpression(ContinuityParser.TargetBooleanExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code targetBooleanExpression}
+	 * labeled alternative in {@link ContinuityParser#booleanExpresion}.
+	 * @param ctx the parse tree
+	 */
+	void exitTargetBooleanExpression(ContinuityParser.TargetBooleanExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#comparisonJoin}.
+	 * @param ctx the parse tree
+	 */
+	void enterComparisonJoin(ContinuityParser.ComparisonJoinContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#comparisonJoin}.
+	 * @param ctx the parse tree
+	 */
+	void exitComparisonJoin(ContinuityParser.ComparisonJoinContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#comparator}.
+	 * @param ctx the parse tree
+	 */
+	void enterComparator(ContinuityParser.ComparatorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#comparator}.
+	 * @param ctx the parse tree
+	 */
+	void exitComparator(ContinuityParser.ComparatorContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#comparisonTarget}.
+	 * @param ctx the parse tree
+	 */
+	void enterComparisonTarget(ContinuityParser.ComparisonTargetContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#comparisonTarget}.
+	 * @param ctx the parse tree
+	 */
+	void exitComparisonTarget(ContinuityParser.ComparisonTargetContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code IntegerLiteral}
 	 * labeled alternative in {@link ContinuityParser#literal}.

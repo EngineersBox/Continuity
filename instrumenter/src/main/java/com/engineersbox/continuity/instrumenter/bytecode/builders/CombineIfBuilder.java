@@ -29,6 +29,7 @@ public class CombineIfBuilder implements BytecodeBuilder {
         return this;
     }
 
+    @SuppressWarnings("unused")
     public CombineIfBuilder combineIf(@StdlibBuilderParam(pos = 0) final boolean condition,
                                       @StdlibBuilderParam(pos = 1, varargs = true) final Object ...insns) {
         return combineIf(

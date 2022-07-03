@@ -198,6 +198,13 @@ public interface ContinuityParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitEnumConstantReferenceParam(ContinuityParser.EnumConstantReferenceParamContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code booleanExpressionParam}
+	 * labeled alternative in {@link ContinuityParser#param}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBooleanExpressionParam(ContinuityParser.BooleanExpressionParamContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ContinuityParser#reference}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -215,6 +222,59 @@ public interface ContinuityParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitReferenceChain(ContinuityParser.ReferenceChainContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code comparatorBooleanExpression}
+	 * labeled alternative in {@link ContinuityParser#booleanExpresion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComparatorBooleanExpression(ContinuityParser.ComparatorBooleanExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code parenBooleanExpression}
+	 * labeled alternative in {@link ContinuityParser#booleanExpresion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParenBooleanExpression(ContinuityParser.ParenBooleanExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code binaryBooleanExpression}
+	 * labeled alternative in {@link ContinuityParser#booleanExpresion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBinaryBooleanExpression(ContinuityParser.BinaryBooleanExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code negationBooleanExpression}
+	 * labeled alternative in {@link ContinuityParser#booleanExpresion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNegationBooleanExpression(ContinuityParser.NegationBooleanExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code targetBooleanExpression}
+	 * labeled alternative in {@link ContinuityParser#booleanExpresion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTargetBooleanExpression(ContinuityParser.TargetBooleanExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#comparisonJoin}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComparisonJoin(ContinuityParser.ComparisonJoinContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#comparator}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComparator(ContinuityParser.ComparatorContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#comparisonTarget}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComparisonTarget(ContinuityParser.ComparisonTargetContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code IntegerLiteral}
 	 * labeled alternative in {@link ContinuityParser#literal}.

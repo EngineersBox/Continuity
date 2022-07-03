@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
@@ -422,6 +423,76 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
                     enumConstant.name()
             ));
         }
+    }
+
+    @Override
+    public Object visitBooleanExpressionParam(ContinuityParser.BooleanExpressionParamContext ctx) {
+        return super.visit(ctx.booleanExpresion());
+    }
+
+    @Override
+    public Object visitComparatorBooleanExpression(ContinuityParser.ComparatorBooleanExpressionContext ctx) {
+        final Object left = super.visit(ctx.left);
+        final Object right = super.visit(ctx.right);
+        final Comparator<Object> comparator = (Comparator<Object>) super.visit(ctx.comparator());
+        return super.visitComparatorBooleanExpression(ctx);
+    }
+
+    @Override
+    public Object visitParenBooleanExpression(ContinuityParser.ParenBooleanExpressionContext ctx) {
+        return super.visit(ctx.booleanExpresion());
+    }
+
+    @Override
+    public Object visitTargetBooleanExpression(ContinuityParser.TargetBooleanExpressionContext ctx) {
+        return super.visit(ctx.comparisonTarget());
+    }
+
+    @Override
+    public Object visitBinaryBooleanExpression(ContinuityParser.BinaryBooleanExpressionContext ctx) {
+        final boolean left = (boolean) super.visit(ctx.left);
+        final boolean right = (boolean) super.visit(ctx.right);
+        final BiFunction<Boolean, Boolean, Boolean> comparator = (BiFunction<Boolean, Boolean, Boolean>) super.visit(ctx.comparisonJoin());
+        return comparator.apply(left, right);
+    }
+
+    @Override
+    public Object visitNegationBooleanExpression(ContinuityParser.NegationBooleanExpressionContext ctx) {
+        return !((boolean) super.visit(ctx.booleanExpresion()));
+    }
+
+    @Override
+    public Object visitComparisonJoin(ContinuityParser.ComparisonJoinContext ctx) {
+        if (ctx.AND() != null) {
+            return (BiFunction<Boolean, Boolean, Boolean>) Boolean::logicalAnd;
+        }
+        return (BiFunction<Boolean, Boolean, Boolean>) Boolean::logicalOr;
+    }
+
+    private <T> Comparator<T> getNumberComparator()
+
+    @Override
+    public Object visitComparator(ContinuityParser.ComparatorContext ctx) {
+        if (ctx.EQUAL() != null) {
+            return (BiFunction<Object, Object, Boolean>) Objects::equals;
+        } else if (ctx.NOTEQUAL() != null) {
+            return (BiFunction<Object, Object, Boolean>) (final Object a, final Object b) -> !Objects.equals(a, b);
+        } else if (ctx.GT() != null) {
+            return Objects.compare(Number)
+        }
+        return super.visitComparator(ctx);
+    }
+
+    @Override
+    public Object visitComparisonTarget(ContinuityParser.ComparisonTargetContext ctx) {
+        if (ctx.contextEntryReference() != null) {
+            return super.visit(ctx.contextEntryReference());
+        } else if (ctx.externalEntryReference() != null) {
+            return super.visit(ctx.externalEntryReference());
+        } else if (ctx.invocation() != null) {
+            return super.visit(ctx.invocation());
+        }
+        return super.visit(ctx.literal());
     }
 
     @Override

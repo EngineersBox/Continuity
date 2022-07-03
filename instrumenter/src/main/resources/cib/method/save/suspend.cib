@@ -1,0 +1,61 @@
+ctx {
+    markerType;
+    point;
+    lineNumber;
+    lva;
+    os;
+    frame;
+    container;
+    className;
+    index;
+    methodContext;
+};
+
+ext {
+    com.engineersbox.continuity.instrumenter.method.bytecode.SaveOperations;
+    com.engineersbox.continuity.core.annotation.BytecodeInternal $ Accessor;
+    com.engineersbox.continuity.core.state.ContinuationState;
+};
+
+std::combineIf(
+    ctx::lineNumber != null,
+    std::lineNumber(ctx::lineNumber)
+);
+ext::SaveOperations->saveVariables(
+    ctx::markerType,
+    ctx::index,
+    ctx::lva,
+    ctx::os.
+    ctx::container,
+    ctx::frame
+);
+std::debugMarker(
+    ctx::markerType,
+    "Pushing method state snapeshot"
+);
+std::call(
+    ext::Accessor->getMethod("Continuation.pushNewMethodState"),
+    std::loadVar(ext::methodContext->continuityVariables().continuityArgVar()),
+    std::newInstance(
+        ext::Accessor->getConstructor("MethodState.init"),
+        std::constant(ctx::className),
+        std::constant(ctx::methodContext->signature().id()),
+        std::constant(ctx::index),
+        std::loadVar(ctx::container)
+    )
+);
+std::debug(
+    ctx::markerType,
+    "Setting save state"
+);
+std::call(
+    ext::Accessor->getMethod("Continuation.setState"),
+    std::loadVar(ctx::methodContext->continuityVariables().continuationArgVar()),
+    std::constant(ctx::ContinuationState.SAVING->ordinal())
+);
+std::debug(
+    ctx::markerType,
+    "Returning dummy (none if void)"
+);
+std::dummyReturn(ctx::methodContext->signature().descriptor().getReturnType());
+std::label(ctx::point.getContinueExecutionLabel());

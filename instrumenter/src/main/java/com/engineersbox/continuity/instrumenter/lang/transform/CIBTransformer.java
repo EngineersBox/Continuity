@@ -24,7 +24,6 @@ public class CIBTransformer {
 
     private final ContinuityParser.ParseContext parseTree;
     private final TransformListener listener;
-    private final InsnList insnList;
 
     private CIBTransformer(final String sourcePath) {
         verifySourcePath(sourcePath);
@@ -43,7 +42,6 @@ public class CIBTransformer {
         parser.addErrorListener(new CIBErrorListener());
         parser.addErrorListener(new DiagnosticErrorListener(false));
         this.parseTree = parser.parse();
-        this.insnList = new InsnList();
     }
 
     private void verifySourcePath(final String path) {
