@@ -3,7 +3,9 @@ package com.engineersbox.continuity.instrumenter.lang.transform.literal;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public abstract class PrimitiveFriendlyComparator {
+public final class PrimitiveFriendlyComparator {
+
+    private PrimitiveFriendlyComparator() {}
 
     public static int compareObjects(final Object a, final Object b) {
         if (a == null) {
@@ -24,14 +26,14 @@ public abstract class PrimitiveFriendlyComparator {
         final Number numberA;
         final Number numberB;
         if (a instanceof Boolean boolA) {
-            numberA = boolA ? 1 : 0;
+            numberA = Boolean.TRUE.equals(boolA) ? 1 : 0;
         } else if (a instanceof Character charA) {
             numberA = (int) charA;
         } else {
             numberA = (Number) a;
         }
         if (b instanceof Boolean boolB) {
-            numberB = boolB ? 1 : 0;
+            numberB = Boolean.TRUE.equals(boolB) ? 1 : 0;
         } else if (b instanceof Character charB) {
             numberB = (int) charB;
         } else {
@@ -48,10 +50,10 @@ public abstract class PrimitiveFriendlyComparator {
     }
 
     private static boolean isSpecial(final Number number) {
-        final boolean specialDouble = number instanceof Double
-                && (Double.isNaN((Double) number) || Double.isInfinite((Double) number));
-        final boolean specialFloat = number instanceof Float
-                && (Float.isNaN((Float) number) || Float.isInfinite((Float) number));
+        final boolean specialDouble = number instanceof Double doubleNumber
+                && (Double.isNaN(doubleNumber) || Double.isInfinite(doubleNumber));
+        final boolean specialFloat = number instanceof Float floatNumber
+                && (Float.isNaN(floatNumber) || Float.isInfinite(floatNumber));
         return specialDouble || specialFloat;
     }
 

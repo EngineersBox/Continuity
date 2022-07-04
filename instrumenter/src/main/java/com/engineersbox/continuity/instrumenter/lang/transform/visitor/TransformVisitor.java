@@ -16,7 +16,8 @@ import org.objectweb.asm.tree.InsnList;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
 public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
@@ -112,8 +113,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         return super.visit(ctx.externalLayout());
     }
 
-    private Class<?> loadExternalReferenceClass(final ParserRuleContext ctx,
-                                                final String classPath) {
+    private Class<?> loadExternalReferenceClass(final String classPath) {
         try {
             return Class.forName(classPath);
         } catch (final ClassNotFoundException e) {
@@ -124,8 +124,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         }
     }
 
-    private void checkedLoadExternalReference(final ParserRuleContext ctx,
-                                              final ContinuityParser.ReferenceContext referenceCtx) {
+    private void checkedLoadExternalReference(final ContinuityParser.ReferenceContext referenceCtx) {
         final String reference = referenceContextToString(referenceCtx);
         final String target = referenceCtx.referenceTarget().Identifier().getText();
         final Class<?> previouslyLoadedClass = this.externalReferences.get(target);
@@ -137,13 +136,13 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         }
         this.externalReferences.put(
                 target,
-                loadExternalReferenceClass(ctx, reference)
+                loadExternalReferenceClass(reference)
         );
     }
 
     @Override
     public Object visitSingleExternalLayoutDeclaration(final ContinuityParser.SingleExternalLayoutDeclarationContext ctx) {
-        checkedLoadExternalReference(ctx, ctx.reference());
+        checkedLoadExternalReference(ctx.reference());
         return new InsnList();
     }
 
@@ -151,7 +150,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     public Object visitMultiExternalLayoutDeclaration(final ContinuityParser.MultiExternalLayoutDeclarationContext ctx) {
         ctx.externalEntries()
                 .reference()
-                .forEach((final ContinuityParser.ReferenceContext referenceCtx) -> checkedLoadExternalReference(ctx, referenceCtx));
+                .forEach(this::checkedLoadExternalReference);
         return new InsnList();
     }
 
@@ -297,17 +296,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         return super.visit(ctx.contextLayout());
     }
 
-    private void checkTranslationContextEntryPresent(final String ctxVar) {
-        if (!this.translationContext.containsKey(ctxVar)) {
-            throw new IllegalStateException(String.format(
-                    "Unknown context variable: %s",
-                    ctxVar
-            ));
-        }
-    }
-
-    private void checkLoadedContextEntryPresent(final ParserRuleContext ctx,
-                                                final String ctxVar) {
+    private void checkLoadedContextEntryPresent(final String ctxVar) {
         if (this.declaredContextLayoutVariables.containsKey(ctxVar)) {
             return;
         }
@@ -323,6 +312,12 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     }
 
     private void registerDeclaredContextEntry(final String ctxVar) {
+        if (!this.translationContext.containsKey(ctxVar)) {
+            throw new IllegalStateException(String.format(
+                    "Unknown context variable: %s",
+                    ctxVar
+            ));
+        }
         this.declaredContextLayoutVariables.put(
                 ctxVar,
                 this.translationContext.get(ctxVar)
@@ -332,7 +327,6 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     @Override
     public Object visitSingleContextLayoutDeclaration(final ContinuityParser.SingleContextLayoutDeclarationContext ctx) {
         final String ctxVar = ctx.Identifier().getText();
-        checkTranslationContextEntryPresent(ctxVar);
         registerDeclaredContextEntry(ctxVar);
         return new InsnList();
     }
@@ -347,7 +341,6 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         ctx.Identifier()
                 .stream()
                 .map(TerminalNode::getText)
-                .peek(this::checkTranslationContextEntryPresent)
                 .forEach(this::registerDeclaredContextEntry);
         return new InsnList();
     }
@@ -355,7 +348,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     @Override
     public Object visitContextEntryReference(final ContinuityParser.ContextEntryReferenceContext ctx) {
         final String ctxVar = ctx.Identifier().getText();
-        checkLoadedContextEntryPresent(ctx, ctxVar);
+        checkLoadedContextEntryPresent(ctxVar);
         return this.declaredContextLayoutVariables.get(ctxVar);
     }
 
@@ -436,8 +429,8 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     public Object visitComparatorBooleanExpression(final ContinuityParser.ComparatorBooleanExpressionContext ctx) {
         final Object left = super.visit(ctx.left);
         final Object right = super.visit(ctx.right);
-        final BiFunction<Object, Object, Boolean> comparator = (BiFunction<Object, Object, Boolean>) super.visit(ctx.comparator());
-        return comparator.apply(left, right);
+        final BiPredicate<Object, Object> comparator = (BiPredicate<Object, Object>) super.visit(ctx.comparator());
+        return comparator.test(left, right);
     }
 
     @Override
@@ -461,7 +454,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
             return false;
         }
         final boolean right = (boolean) super.visit(ctx.right);
-        final BiFunction<Boolean, Boolean, Boolean> comparator = (BiFunction<Boolean, Boolean, Boolean>) super.visit(ctx.comparisonJoin());
+        final BinaryOperator<Boolean> comparator = (BinaryOperator<Boolean>) super.visit(ctx.comparisonJoin());
         return comparator.apply(left, right);
     }
 
@@ -473,9 +466,9 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     @Override
     public Object visitComparisonJoin(final ContinuityParser.ComparisonJoinContext ctx) {
         if (ctx.AND() != null) {
-            return (BiFunction<Boolean, Boolean, Boolean>) Boolean::logicalAnd;
+            return (BinaryOperator<Boolean>) Boolean::logicalAnd;
         }
-        return (BiFunction<Boolean, Boolean, Boolean>) Boolean::logicalOr;
+        return (BinaryOperator<Boolean>) Boolean::logicalOr;
     }
 
     private void checkComparable(final Object object) {
@@ -496,7 +489,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         checkComparable(a);
         checkComparable(b);
         if ((a == null || ClassUtils.isPrimitiveOrWrapper(a.getClass()))
-                && (b == null || ClassUtils.isPrimitiveOrWrapper(b.getClass()))) {
+            && (b == null || ClassUtils.isPrimitiveOrWrapper(b.getClass()))) {
             return PrimitiveFriendlyComparator.compareObjects(a, b);
         } else if (ComparableUtils.is((C) a).equalTo((C) b)) {
             return 0;
@@ -508,7 +501,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         return 0;
     }
 
-    private <C extends Comparable<C>> BiFunction<Object, Object, Boolean> getComparisonOperation(final ContinuityParser.ComparatorContext ctx) {
+    private BiPredicate<Object, Object> getComparisonOperation(final ContinuityParser.ComparatorContext ctx) {
         if (ctx.EQUAL() != null) {
             return (final Object a, final Object b) -> checkedComparator(a, b) == 0;
         } else if (ctx.NOTEQUAL() != null) {
@@ -570,23 +563,4 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         return null;
     }
 
-    @Override
-    public Object visitMethodInvocation(final ContinuityParser.MethodInvocationContext ctx) {
-        return super.visitMethodInvocation(ctx);
-    }
-
-    @Override
-    public Object visitReference(final ContinuityParser.ReferenceContext ctx) {
-        return super.visitReference(ctx);
-    }
-
-    @Override
-    public Object visitReferenceTarget(final ContinuityParser.ReferenceTargetContext ctx) {
-        return super.visitReferenceTarget(ctx);
-    }
-
-    @Override
-    public Object visitReferenceChain(final ContinuityParser.ReferenceChainContext ctx) {
-        return super.visitReferenceChain(ctx);
-    }
 }
