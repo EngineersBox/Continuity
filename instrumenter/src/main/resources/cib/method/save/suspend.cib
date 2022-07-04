@@ -40,7 +40,7 @@ fn instantiateMethodState() {
         std::constant(ctx::methodContext->signature().id()),
         std::constant(ctx::index),
         std::loadVar(ctx::container)
-    )
+    );
 };
 std::call(
     ext::Accessor->getMethod("Continuation.pushNewMethodState"),

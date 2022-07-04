@@ -8,9 +8,10 @@ import com.engineersbox.continuity.instrumenter.lang.transform.visitor.Transform
 import com.engineersbox.continuity.instrumenter.stack.storage.VariableLUT;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.DiagnosticErrorListener;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.InsnList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -21,10 +22,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class CIBTransformer {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CIBTransformer.class);
     public static final String CIB_FILE_EXTENSION = ".cib";
 
     private final ContinuityParser.ParseContext parseTree;
-    private final TransformListener listener;
 
     private CIBTransformer(final String sourcePath) {
         verifySourcePath(sourcePath);
@@ -38,8 +39,7 @@ public class CIBTransformer {
             ), e);
         }
         final ContinuityParser parser = new ContinuityParser((new CommonTokenStream(lexer)));
-        this.listener = new TransformListener();
-        parser.addParseListener(this.listener);
+        parser.addParseListener(new TransformListener());
         parser.addErrorListener(new CIBErrorListener());
 //        parser.addErrorListener(new DiagnosticErrorListener(false));
         this.parseTree = parser.parse();
@@ -72,7 +72,7 @@ public class CIBTransformer {
         tc.put("other", null);
         final CIBTransformer transformer = new CIBTransformer("instrumenter/src/main/resources/calltest.cib");
         final InsnList result = transformer.transform(tc);
-        System.out.println(Arrays.toString(result.toArray()));
+        LOGGER.info("Parsed output: {}", Arrays.toString(result.toArray()));
     }
 
 }
