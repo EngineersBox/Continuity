@@ -51,7 +51,7 @@ booleanExpresion: LPAREN booleanExpresion RPAREN # parenBooleanExpression
     | left=booleanExpresion comparator right=booleanExpresion # comparatorBooleanExpression
     | left=booleanExpresion comparisonJoin right=booleanExpresion # binaryBooleanExpression
     | comparisonTarget # targetBooleanExpression;
-comparisonJoin: AND | OR;
+comparisonJoin: AND | OR | CARET;
 comparator: GT | LT | LE | GE | EQUAL | NOTEQUAL;
 comparisonTarget: externalEntryReference
     | contextEntryReference

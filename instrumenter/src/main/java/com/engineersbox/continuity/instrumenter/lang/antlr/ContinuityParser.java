@@ -1943,6 +1943,7 @@ public class ContinuityParser extends Parser {
 	public static class ComparisonJoinContext extends ParserRuleContext {
 		public TerminalNode AND() { return getToken(ContinuityParser.AND, 0); }
 		public TerminalNode OR() { return getToken(ContinuityParser.OR, 0); }
+		public TerminalNode CARET() { return getToken(ContinuityParser.CARET, 0); }
 		public ComparisonJoinContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1971,7 +1972,7 @@ public class ContinuityParser extends Parser {
 			{
 			setState(218);
 			_la = _input.LA(1);
-			if ( !(_la==AND || _la==OR) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << AND) | (1L << OR) | (1L << CARET))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -2348,11 +2349,11 @@ public class ContinuityParser extends Parser {
 		"\n\25\3\25\3\25\3\25\3\25\3\25\3\25\3\25\3\25\7\25\u00d8\n\25\f\25\16"+
 		"\25\u00db\13\25\3\26\3\26\3\27\3\27\3\30\3\30\3\30\3\30\5\30\u00e5\n\30"+
 		"\3\31\3\31\3\31\3\31\3\31\3\31\5\31\u00ed\n\31\3\31\2\3(\32\2\4\6\b\n"+
-		"\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\2\5\3\2\24\25\3\2$%\4\2\31\32"+
-		" #\2\u00f8\2\67\3\2\2\2\4@\3\2\2\2\6I\3\2\2\2\bN\3\2\2\2\nR\3\2\2\2\f"+
-		"V\3\2\2\2\16a\3\2\2\2\20e\3\2\2\2\22i\3\2\2\2\24m\3\2\2\2\26s\3\2\2\2"+
-		"\30\u0098\3\2\2\2\32\u009a\3\2\2\2\34\u00a2\3\2\2\2\36\u00af\3\2\2\2 "+
-		"\u00b6\3\2\2\2\"\u00b9\3\2\2\2$\u00bd\3\2\2\2&\u00c1\3\2\2\2(\u00cd\3"+
+		"\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\2\5\3\2\24\25\4\2$%..\4\2\31"+
+		"\32 #\2\u00f8\2\67\3\2\2\2\4@\3\2\2\2\6I\3\2\2\2\bN\3\2\2\2\nR\3\2\2\2"+
+		"\fV\3\2\2\2\16a\3\2\2\2\20e\3\2\2\2\22i\3\2\2\2\24m\3\2\2\2\26s\3\2\2"+
+		"\2\30\u0098\3\2\2\2\32\u009a\3\2\2\2\34\u00a2\3\2\2\2\36\u00af\3\2\2\2"+
+		" \u00b6\3\2\2\2\"\u00b9\3\2\2\2$\u00bd\3\2\2\2&\u00c1\3\2\2\2(\u00cd\3"+
 		"\2\2\2*\u00dc\3\2\2\2,\u00de\3\2\2\2.\u00e4\3\2\2\2\60\u00ec\3\2\2\2\62"+
 		"\63\5\4\3\2\63\64\7\23\2\2\64\66\3\2\2\2\65\62\3\2\2\2\669\3\2\2\2\67"+
 		"\65\3\2\2\2\678\3\2\2\28:\3\2\2\29\67\3\2\2\2:;\7\2\2\3;\3\3\2\2\2<A\5"+

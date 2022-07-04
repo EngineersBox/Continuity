@@ -467,6 +467,8 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     public Object visitComparisonJoin(final ContinuityParser.ComparisonJoinContext ctx) {
         if (ctx.AND() != null) {
             return (BinaryOperator<Boolean>) Boolean::logicalAnd;
+        } else if (ctx.CARET() != null) {
+            return (BinaryOperator<Boolean>) Boolean::logicalXor;
         }
         return (BinaryOperator<Boolean>) Boolean::logicalOr;
     }
