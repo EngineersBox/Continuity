@@ -7,6 +7,8 @@ import com.engineersbox.continuity.instrumenter.lang.transform.literal.Primitive
 import com.engineersbox.continuity.instrumenter.lang.transform.stdlib.BuilderResolver;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.collections4.functors.ComparatorPredicate;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.compare.ComparableUtils;
@@ -503,19 +505,40 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         return 0;
     }
 
+    private boolean invokeParameterizedComparator(final Object a,
+                                                  final Object b,
+                                                  final ComparatorPredicate.Criterion criterion,
+                                                  final int result) {
+        return ComparatorPredicate.comparatorPredicate(
+                checkedComparator(a, b),
+                Integer::compare,
+                criterion
+        ).evaluate(result);
+    }
+
+    private BiPredicate<Object, Object> createPredicate(final ComparatorPredicate.Criterion criterion,
+                                                        final int result) {
+        return (final Object a, final Object b) -> invokeParameterizedComparator(a, b, criterion, result);
+    }
+
+    private BiPredicate<Object, Object> createInvertedPredicate(final ComparatorPredicate.Criterion criterion,
+                                                                final int result) {
+        return (final Object a, final Object b) -> BooleanUtils.negate(invokeParameterizedComparator(a, b, criterion, result));
+    }
+
     private BiPredicate<Object, Object> getComparisonOperation(final ContinuityParser.ComparatorContext ctx) {
         if (ctx.EQUAL() != null) {
-            return (final Object a, final Object b) -> checkedComparator(a, b) == 0;
+            return createPredicate(ComparatorPredicate.Criterion.EQUAL, 0);
         } else if (ctx.NOTEQUAL() != null) {
-            return (final Object a, final Object b) -> checkedComparator(a, b) != 0;
+            return createInvertedPredicate(ComparatorPredicate.Criterion.EQUAL, 0);
         } else if (ctx.GT() != null) {
-            return (final Object a, final Object b) -> checkedComparator(a, b) == 1;
+            return createPredicate(ComparatorPredicate.Criterion.EQUAL, 1);
         } else if (ctx.GE() != null) {
-            return (final Object a, final Object b) -> checkedComparator(a, b) >= 0;
+            return createPredicate(ComparatorPredicate.Criterion.GREATER_OR_EQUAL, 0);
         } else if (ctx.LT() != null) {
-            return (final Object a, final Object b) -> checkedComparator(a, b) == -1;
+            return createPredicate(ComparatorPredicate.Criterion.EQUAL, -1);
         }
-        return (final Object a, final Object b) -> checkedComparator(a, b) <= 0;
+        return createPredicate(ComparatorPredicate.Criterion.LESS_OR_EQUAL, 0);
     }
 
     @Override
