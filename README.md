@@ -59,39 +59,38 @@ of this is the following:
 ```cib
 // File: example.cib
 // Declare some vars that will be provided to the parser as translation context
-ctx contArgVar;
 ctx {
+    contArgVar;
     example;
+    other;
 };
 
 // Reference an external class in the JVM via ClassLoader
-ext {
-    com.engineersbox.continuity.instrumenter.bytecode.state.os.OSRestoreOperations;
-    com.engineersbox.continuity.core.state.ContinuationState;
-    com.example.Test $ EnumExample;
-};
+ext com.engineersbox.continuity.core.annotation.BytecodeInternal $ Accessor;
 
 /**
  * Declare a function, essentially acting as a macro
  */
-fn loadState() {
-    /* Invoke some call and load a var from LVA */
-    std::call("Continuation.getState", std::loadVar(ctx::contArgVar));
-
-    /*
-     * Invoke an external context driven function via a reference chain,
-     * the OSRestoreOperations reference is expected to loaded via ext <path>;
-     * or ext { ... <path>; }.
-     */
-    ext::OSRestoreOperations->loadContainerVars(std::loadVar(ctx::contArgVar), "test", 12.34f);
-    std::debug("Loaded continuation state");
+fn test() {
+    std::loadVar(ctx::contArgVar);
+    std::loadVar(ctx::contArgVar);
 };
 
-std::ifIntNotEqual(
-    std::loadConst(2.34f),
-    ext::ContinuationState.SAVING->ordinal(),
+/*
+ * Invoke an external context driven function via a reference chain,
+ * the OSRestoreOperations reference is expected to loaded via ext <path>;
+ * or ext { ... <path>; }.
+ */
+std::call(ext::Accessor->getMethod(ctx::example->get().replace('$', '.')), std::loadVar(ctx::contArgVar));
+std::combineIf(
+    // Evaluate boolean expressions
+    ctx::example->get().contains("$") && (5.3 >= 434 ^ "string" == "string"),
     // Invoke a declared function
-    fn.loadState()
+    fn.test()
+);
+std::combineIf(
+    ctx::other != null,
+    std::lineNumber(ctx::other)
 );
 ```
 
