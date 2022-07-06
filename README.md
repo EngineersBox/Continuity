@@ -53,7 +53,7 @@ the namespacing and available context is bound by a `HashMap` provided as contex
 you can do anything you want in the language but it would require extensive modification of the parser
 and additional context that would handle state in Java as opposed to the language.
 
-Files are expected to use the `cibc` extension, indicating `Continuity Intermediate Bytecode`, an example
+Files are expected to use the `cib` extension, indicating `Continuity Intermediate Bytecode`, an example
 of this is the following:
 
 ```cib
