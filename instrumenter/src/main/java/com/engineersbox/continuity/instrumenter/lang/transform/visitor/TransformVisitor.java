@@ -1,5 +1,6 @@
 package com.engineersbox.continuity.instrumenter.lang.transform.visitor;
 
+import com.engineersbox.continuity.instrumenter.bytecode.BytecodeBuilder;
 import com.engineersbox.continuity.instrumenter.bytecode.InsnListCollector;
 import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityParser;
 import com.engineersbox.continuity.instrumenter.lang.antlr.ContinuityParserBaseVisitor;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.compare.ComparableUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.InsnList;
 
 import java.lang.reflect.InvocationTargetException;
@@ -21,6 +23,7 @@ import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
 
@@ -75,8 +78,11 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
                     "Function \"%s\" referenced before declaration",
                     functionName
             ));
-        } else if (resolvedFunctionResult instanceof InsnList insnList) {
-            return insnList;
+        } else if (resolvedFunctionResult instanceof InsnList
+            || resolvedFunctionResult instanceof InsnList[]
+            || resolvedFunctionResult instanceof AbstractInsnNode
+            || resolvedFunctionResult instanceof BytecodeBuilder) {
+            return resolvedFunctionResult;
         }
         throw new IllegalStateException(String.format(
                 "Expected resolved function \"%s\" to be %s, not %s",
@@ -179,13 +185,22 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
          * fine to pass any object value to.
          */
         if (ctx.getParent() instanceof ContinuityParser.StatementContext
-                && !InsnList.class.isAssignableFrom(returnType)) {
+                && (!InsnList.class.isAssignableFrom(returnType)
+                || !InsnList[].class.isAssignableFrom(returnType)
+                || !AbstractInsnNode.class.isAssignableFrom(returnType)
+                || !BytecodeBuilder.class.isAssignableFrom(returnType))) {
             throw new IllegalStateException(String.format(
-                    "Statement method invocations must return \"%s\". Returning \"%s\" in invocation of \"%s$%s\" is not valid.",
-                    InsnList.class.getCanonicalName(),
+                    " Returning \"%s\" in invocation of \"%s$%s\" is not valid. Statements must return one of:\n\t - %s",
                     returnType.getCanonicalName(),
                     declaringClass.getCanonicalName(),
-                    targetMethod.getName()
+                    targetMethod.getName(),
+                    Stream.of(
+                            InsnList.class,
+                            InsnList[].class,
+                            AbstractInsnNode.class,
+                            BytecodeBuilder.class
+                    ).map(Class::getCanonicalName)
+                    .collect(Collectors.joining("\n\t - "))
             ));
         }
     }
