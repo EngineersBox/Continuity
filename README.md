@@ -88,10 +88,18 @@ std::combineIf(
     // Invoke a declared function
     fn.test()
 );
-std::combineIf(
-    ctx::other != null,
-    std::lineNumber(ctx::other)
-);
+// If statement evaluation
+if (!ctx::example->get().contains("$") && (5.3 >= 434 ^ "string" == "string")) {
+    std::loadVar(ctx::contArgVar);
+} else if (ctx::other == null) {
+    std::lineNumber(ctx::other);
+} else if (ctx::example->get().contains("$")) {
+    fn.test();
+    std::lineNumber(ctx::other);
+} else {
+    std::call(ext::Accessor->getMethod(ctx::example->get().replace('$', '.')), std::loadVar(ctx::contArgVar));
+    std::debug("Unknown state");
+};
 ```
 
 Which generates the following parse tree:
