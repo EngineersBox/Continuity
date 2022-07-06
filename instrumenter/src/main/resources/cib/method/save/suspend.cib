@@ -17,10 +17,9 @@ ext {
     com.engineersbox.continuity.core.state.ContinuationState;
 };
 
-std::combineIf(
-    ctx::currentLineNumber != null,
+if (ctx::currentLineNumber != null) {
     std::lineNumber(ctx::currentLineNumber)
-);
+};
 ext::SaveOperations->saveVariables(
     ctx::markerType,
     ctx::index,

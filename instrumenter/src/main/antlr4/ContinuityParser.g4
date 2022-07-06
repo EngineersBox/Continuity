@@ -12,7 +12,8 @@ parse: (statement SEMI)* EOF;
 statement: function # functionStatement
     | invocation # invocationStatement
     | externalLayout # externalLayoutStatement
-    | contextLayout # contextLayoutStatement;
+    | contextLayout # contextLayoutStatement
+    | ifCondition # ifStatement;
 
 externalLayout: EXT reference # singleExternalLayoutDeclaration
     | EXT LBRACE externalEntries RBRACE # multiExternalLayoutDeclaration;
@@ -57,6 +58,11 @@ comparisonTarget: externalEntryReference
     | contextEntryReference
     | invocation
     | literal;
+
+ifCondition: ifBranch elseIfBranch* elseBranch?;
+ifBranch: IF booleanExpresion block;
+elseIfBranch: ELSE ifBranch;
+elseBranch: ELSE block;
 
 literal: IntegerLiteral # IntegerLiteral
     | FloatingPointLiteral # FloatingPointLiteral

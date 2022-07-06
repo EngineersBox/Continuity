@@ -3,6 +3,7 @@ package com.engineersbox.continuity.instrumenter.bytecode;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.InsnList;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -32,6 +33,8 @@ public class InsnListCollector implements Collector<Object, InsnList, InsnList> 
                 list.add(insnNode);
             } else if (node instanceof InsnList insnList) {
                 list.add(insnList);
+            } else if (node instanceof InsnList[] insnLists) {
+                Arrays.stream(insnLists).forEach(list::add);
             } else {
                 throw new IllegalArgumentException(String.format(
                         "Unknown node type: %s",

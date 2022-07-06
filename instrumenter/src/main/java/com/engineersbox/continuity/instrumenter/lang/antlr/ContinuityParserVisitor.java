@@ -47,6 +47,13 @@ public interface ContinuityParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitContextLayoutStatement(ContinuityParser.ContextLayoutStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code ifStatement}
+	 * labeled alternative in {@link ContinuityParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfStatement(ContinuityParser.IfStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code singleExternalLayoutDeclaration}
 	 * labeled alternative in {@link ContinuityParser#externalLayout}.
 	 * @param ctx the parse tree
@@ -275,6 +282,30 @@ public interface ContinuityParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitComparisonTarget(ContinuityParser.ComparisonTargetContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#ifCondition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfCondition(ContinuityParser.IfConditionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#ifBranch}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfBranch(ContinuityParser.IfBranchContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#elseIfBranch}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElseIfBranch(ContinuityParser.ElseIfBranchContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#elseBranch}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElseBranch(ContinuityParser.ElseBranchContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code IntegerLiteral}
 	 * labeled alternative in {@link ContinuityParser#literal}.

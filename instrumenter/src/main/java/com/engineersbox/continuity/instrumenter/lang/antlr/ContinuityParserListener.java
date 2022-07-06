@@ -68,6 +68,18 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 */
 	void exitContextLayoutStatement(ContinuityParser.ContextLayoutStatementContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code ifStatement}
+	 * labeled alternative in {@link ContinuityParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfStatement(ContinuityParser.IfStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ifStatement}
+	 * labeled alternative in {@link ContinuityParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfStatement(ContinuityParser.IfStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code singleExternalLayoutDeclaration}
 	 * labeled alternative in {@link ContinuityParser#externalLayout}.
 	 * @param ctx the parse tree
@@ -455,6 +467,46 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitComparisonTarget(ContinuityParser.ComparisonTargetContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#ifCondition}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfCondition(ContinuityParser.IfConditionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#ifCondition}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfCondition(ContinuityParser.IfConditionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#ifBranch}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfBranch(ContinuityParser.IfBranchContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#ifBranch}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfBranch(ContinuityParser.IfBranchContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#elseIfBranch}.
+	 * @param ctx the parse tree
+	 */
+	void enterElseIfBranch(ContinuityParser.ElseIfBranchContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#elseIfBranch}.
+	 * @param ctx the parse tree
+	 */
+	void exitElseIfBranch(ContinuityParser.ElseIfBranchContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#elseBranch}.
+	 * @param ctx the parse tree
+	 */
+	void enterElseBranch(ContinuityParser.ElseBranchContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#elseBranch}.
+	 * @param ctx the parse tree
+	 */
+	void exitElseBranch(ContinuityParser.ElseBranchContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code IntegerLiteral}
 	 * labeled alternative in {@link ContinuityParser#literal}.

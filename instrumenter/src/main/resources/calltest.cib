@@ -19,3 +19,13 @@ std::combineIf(
     ctx::other != null,
     std::lineNumber(ctx::other)
 );
+
+if (!ctx::example->get().contains("$") && (5.3 >= 434 ^ "string" == "string")) {
+    std::loadVar(ctx::contArgVar);
+} else if (ctx::other == null) {
+    std::lineNumber(ctx::other);
+} else if (ctx::example->get().contains("$")) {
+    fn.test();
+} else {
+    std::call(ext::Accessor->getMethod(ctx::example->get().replace('$', '.')), std::loadVar(ctx::contArgVar));
+};

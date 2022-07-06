@@ -190,7 +190,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
                 || !AbstractInsnNode.class.isAssignableFrom(returnType)
                 || !BytecodeBuilder.class.isAssignableFrom(returnType))) {
             throw new IllegalStateException(String.format(
-                    " Returning \"%s\" in invocation of \"%s$%s\" is not valid. Statements must return one of:\n\t - %s",
+                    " Returning \"%s\" in invocation of \"%s$%s\" is not valid. Statements must return one of:%n\t - %s",
                     returnType.getCanonicalName(),
                     declaringClass.getCanonicalName(),
                     targetMethod.getName(),
@@ -200,7 +200,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
                             AbstractInsnNode.class,
                             BytecodeBuilder.class
                     ).map(Class::getCanonicalName)
-                    .collect(Collectors.joining("\n\t - "))
+                    .collect(Collectors.joining("%n\t - "))
             ));
         }
     }
@@ -571,6 +571,50 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
             return super.visit(ctx.invocation());
         }
         return super.visit(ctx.literal());
+    }
+
+    @Override
+    public Object visitIfStatement(final ContinuityParser.IfStatementContext ctx) {
+        final Object result = super.visit(ctx.ifCondition());
+        return result != null ? result : new InsnList();
+    }
+
+    @Override
+    public Object visitIfCondition(final ContinuityParser.IfConditionContext ctx) {
+        final Object ifBranchResult = super.visit(ctx.ifBranch());
+        if (ifBranchResult != null) {
+            return ifBranchResult;
+        }
+        if (!ctx.elseIfBranch().isEmpty()) {
+            for (final ContinuityParser.ElseIfBranchContext elseIfCtx : ctx.elseIfBranch()) {
+                final Object elseIfBranchResult = super.visit(elseIfCtx);
+                if (elseIfBranchResult != null) {
+                    return elseIfBranchResult;
+                }
+            }
+        }
+        if (ctx.elseBranch() == null) {
+            return null;
+        }
+        return super.visit(ctx.elseBranch());
+    }
+
+    @Override
+    public Object visitIfBranch(final ContinuityParser.IfBranchContext ctx) {
+        if (!(boolean) super.visit(ctx.booleanExpresion())) {
+            return null;
+        }
+        return super.visit(ctx.block());
+    }
+
+    @Override
+    public Object visitElseIfBranch(final ContinuityParser.ElseIfBranchContext ctx) {
+        return super.visit(ctx.ifBranch());
+    }
+
+    @Override
+    public Object visitElseBranch(final ContinuityParser.ElseBranchContext ctx) {
+        return super.visit(ctx.block());
     }
 
     @Override

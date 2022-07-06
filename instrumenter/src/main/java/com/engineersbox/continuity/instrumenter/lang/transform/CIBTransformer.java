@@ -69,7 +69,7 @@ public class CIBTransformer {
                         true
                 ), "example", new AtomicReference<>("Continuation$getState")
         ));
-        tc.put("other", null);
+        tc.put("other", 12);
         final CIBTransformer transformer = new CIBTransformer("instrumenter/src/main/resources/calltest.cib");
         final InsnList result = transformer.transform(tc);
         LOGGER.info("Parsed output: {}", Arrays.toString(result.toArray()));

@@ -14,6 +14,8 @@ CTX: 'ctx';
 EXT: 'ext';
 FN: 'fn';
 STD: 'std';
+IF: 'if';
+ELSE: 'else';
 
 // Literals
 IntegerLiteral: DecimalIntegerLiteral
