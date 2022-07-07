@@ -580,6 +580,8 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
             return super.visit(ctx.externalEntryReference());
         } else if (ctx.invocation() != null) {
             return super.visit(ctx.invocation());
+        } else if (ctx.variableReference() != null) {
+            return super.visit(ctx.variableReference());
         }
         return super.visit(ctx.literal());
     }
@@ -655,7 +657,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     private Object visitArrayLiteralInitialiser(final ContinuityParser.ArrayLiteralContext ctx,
                                                 final Class<?> arrayType) {
         final Object initialiserValues = Array.newInstance(
-                arrayType,
+                arrayType.getComponentType(),
                 ctx.valueTarget().size()
         );
         final AtomicInteger index = new AtomicInteger(0);
@@ -677,40 +679,35 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
                 }).forEach((final Object arrayElement) -> Array.set(
                         initialiserValues,
                         index.getAndIncrement(),
-                        boxedToPrimitive(arrayElement)
+                        arrayElement
                 ));
         return initialiserValues;
     }
 
-    private Object boxedToPrimitive(final Object boxed) {
-        if (boxed instanceof Character boxedCharacter) {
-            return boxedCharacter.charValue();
-        } else if (boxed instanceof Double boxedDouble) {
-            return boxedDouble.doubleValue();
-        } else if (boxed instanceof Float boxedFloat) {
-            return boxedFloat.floatValue();
-        } else if (boxed instanceof Integer boxedInt) {
-            return boxedInt.intValue();
-        } else if (boxed instanceof Boolean boxedBoolean) {
-            return boxedBoolean.booleanValue();
+    private Pair<Class<?>, Object> getVariableFromScopeMap(final String variableName,
+                                           Map<String, Pair<Class<?>, Object>> scopeVariables) {
+        if (scopeVariables == null || scopeVariables.isEmpty() || !scopeVariables.containsKey(variableName)) {
+            return null;
         }
-        return boxed;
+        return scopeVariables.get(variableName);
+    }
+
+    private Pair<Class<?>, Object> getScopedVariable(final String variableName) {
+        final Pair<Class<?>, Object> variable = getVariableFromScopeMap(variableName, this.variables.get(this.currentScope));
+        if (variable != null) {
+            return variable;
+        } else if (this.currentScope.equals(GLOBAL_SCOPE_NAME)) {
+            return null;
+        }
+        return getVariableFromScopeMap(variableName, this.variables.get(GLOBAL_SCOPE_NAME));
     }
 
     @Override
     public Object visitVariableReference(final ContinuityParser.VariableReferenceContext ctx) {
-        final Map<String, Pair<Class<?>, Object>> scopeVariables = this.variables.get(this.currentScope);
-        if (scopeVariables == null || scopeVariables.isEmpty()) {
-            throw new IllegalStateException(String.format(
-                    "Variable %s was not declared in current scope %s",
-                    ctx.Identifier().getText(),
-                    this.currentScope
-            ));
-        }
-        final Pair<Class<?>, Object> variable = scopeVariables.get(ctx.Identifier().getText());
+        final Pair<Class<?>, Object> variable = getScopedVariable(ctx.Identifier().getText());
         if (variable == null) {
             throw new IllegalStateException(String.format(
-                    "Variable %s was not declared in current scope %s",
+                    "Variable %s was not declared in current scope %s or global scope",
                     ctx.Identifier().getText(),
                     this.currentScope
             ));
@@ -730,7 +727,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
 
     @Override
     public Object visitArrayIndexer(final ContinuityParser.ArrayIndexerContext ctx) {
-        return super.visit(ctx.IntegerLiteral());
+        return Integer.parseInt(ctx.IntegerLiteral().getText());
     }
 
     @Override

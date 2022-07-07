@@ -5,7 +5,6 @@ ctx {
 };
 ext com.engineersbox.continuity.core.annotation.BytecodeInternal $ Accessor;
 
-let test: Object = std::loadVar(ctx::contArgVar);
 let testString: str = "string";
 let arrayVariable: int32[] = {
     434,
@@ -13,6 +12,7 @@ let arrayVariable: int32[] = {
 };
 
 fn test() {
+    let test: Object = std::loadVar(ctx::contArgVar);
     let.test;
     std::loadVar(ctx::contArgVar);
 };

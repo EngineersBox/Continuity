@@ -68,11 +68,21 @@ ctx {
 // Reference an external class in the JVM via ClassLoader
 ext com.engineersbox.continuity.core.annotation.BytecodeInternal $ Accessor;
 
+let testString: str = "string";
+// Declare an array variable with an initialiser
+let arrayVariable: int32[] = {
+    434,
+    8234532
+};
+
 /**
  * Declare a function, essentially acting as a macro
  */
 fn test() {
-    std::loadVar(ctx::contArgVar);
+    // Declare a scoped variable
+    let test: Object = std::loadVar(ctx::contArgVar);
+    // Reference a scoped variable
+    let.test;
     std::loadVar(ctx::contArgVar);
 };
 
@@ -84,12 +94,12 @@ fn test() {
 std::call(ext::Accessor->getMethod(ctx::example->get().replace('$', '.')), std::loadVar(ctx::contArgVar));
 std::combineIf(
     // Evaluate boolean expressions
-    ctx::example->get().contains("$") && (5.3 >= 434 ^ "string" == "string"),
+    ctx::example->get().contains("$") && (5.3 >=  let.arrayVariable[0] ^ let.testString == "string"),
     // Invoke a declared function
     fn.test()
 );
 // If statement evaluation
-if (!ctx::example->get().contains("$") && (5.3 >= 434 ^ "string" == "string")) {
+if (!ctx::example->get().contains("$") && (5.3 >= let.arrayVariable[1] ^ "string" == "string")) {
     std::loadVar(ctx::contArgVar);
 } else if (ctx::other == null) {
     std::lineNumber(ctx::other);
