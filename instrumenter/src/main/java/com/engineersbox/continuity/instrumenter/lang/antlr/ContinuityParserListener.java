@@ -80,6 +80,48 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 */
 	void exitIfStatement(ContinuityParser.IfStatementContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code variableDeclarationStatement}
+	 * labeled alternative in {@link ContinuityParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterVariableDeclarationStatement(ContinuityParser.VariableDeclarationStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code variableDeclarationStatement}
+	 * labeled alternative in {@link ContinuityParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitVariableDeclarationStatement(ContinuityParser.VariableDeclarationStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#variableDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterVariableDeclaration(ContinuityParser.VariableDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#variableDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitVariableDeclaration(ContinuityParser.VariableDeclarationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#variableType}.
+	 * @param ctx the parse tree
+	 */
+	void enterVariableType(ContinuityParser.VariableTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#variableType}.
+	 * @param ctx the parse tree
+	 */
+	void exitVariableType(ContinuityParser.VariableTypeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#variableReference}.
+	 * @param ctx the parse tree
+	 */
+	void enterVariableReference(ContinuityParser.VariableReferenceContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#variableReference}.
+	 * @param ctx the parse tree
+	 */
+	void exitVariableReference(ContinuityParser.VariableReferenceContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code singleExternalLayoutDeclaration}
 	 * labeled alternative in {@link ContinuityParser#externalLayout}.
 	 * @param ctx the parse tree
@@ -348,6 +390,18 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 */
 	void exitBooleanExpressionParam(ContinuityParser.BooleanExpressionParamContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code variableReferenceParam}
+	 * labeled alternative in {@link ContinuityParser#param}.
+	 * @param ctx the parse tree
+	 */
+	void enterVariableReferenceParam(ContinuityParser.VariableReferenceParamContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code variableReferenceParam}
+	 * labeled alternative in {@link ContinuityParser#param}.
+	 * @param ctx the parse tree
+	 */
+	void exitVariableReferenceParam(ContinuityParser.VariableReferenceParamContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ContinuityParser#reference}.
 	 * @param ctx the parse tree
 	 */
@@ -458,15 +512,15 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 */
 	void exitComparator(ContinuityParser.ComparatorContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ContinuityParser#comparisonTarget}.
+	 * Enter a parse tree produced by {@link ContinuityParser#valueTarget}.
 	 * @param ctx the parse tree
 	 */
-	void enterComparisonTarget(ContinuityParser.ComparisonTargetContext ctx);
+	void enterValueTarget(ContinuityParser.ValueTargetContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link ContinuityParser#comparisonTarget}.
+	 * Exit a parse tree produced by {@link ContinuityParser#valueTarget}.
 	 * @param ctx the parse tree
 	 */
-	void exitComparisonTarget(ContinuityParser.ComparisonTargetContext ctx);
+	void exitValueTarget(ContinuityParser.ValueTargetContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ContinuityParser#ifCondition}.
 	 * @param ctx the parse tree

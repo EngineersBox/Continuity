@@ -90,6 +90,54 @@ public class ContinuityParserBaseListener implements ContinuityParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterVariableDeclarationStatement(ContinuityParser.VariableDeclarationStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVariableDeclarationStatement(ContinuityParser.VariableDeclarationStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVariableDeclaration(ContinuityParser.VariableDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVariableDeclaration(ContinuityParser.VariableDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVariableType(ContinuityParser.VariableTypeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVariableType(ContinuityParser.VariableTypeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVariableReference(ContinuityParser.VariableReferenceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVariableReference(ContinuityParser.VariableReferenceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterSingleExternalLayoutDeclaration(ContinuityParser.SingleExternalLayoutDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -378,6 +426,18 @@ public class ContinuityParserBaseListener implements ContinuityParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterVariableReferenceParam(ContinuityParser.VariableReferenceParamContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVariableReferenceParam(ContinuityParser.VariableReferenceParamContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterReference(ContinuityParser.ReferenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -498,13 +558,13 @@ public class ContinuityParserBaseListener implements ContinuityParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterComparisonTarget(ContinuityParser.ComparisonTargetContext ctx) { }
+	@Override public void enterValueTarget(ContinuityParser.ValueTargetContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitComparisonTarget(ContinuityParser.ComparisonTargetContext ctx) { }
+	@Override public void exitValueTarget(ContinuityParser.ValueTargetContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

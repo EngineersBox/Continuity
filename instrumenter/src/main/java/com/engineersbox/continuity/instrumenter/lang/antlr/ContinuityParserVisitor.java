@@ -54,6 +54,31 @@ public interface ContinuityParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIfStatement(ContinuityParser.IfStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code variableDeclarationStatement}
+	 * labeled alternative in {@link ContinuityParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVariableDeclarationStatement(ContinuityParser.VariableDeclarationStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#variableDeclaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVariableDeclaration(ContinuityParser.VariableDeclarationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#variableType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVariableType(ContinuityParser.VariableTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#variableReference}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVariableReference(ContinuityParser.VariableReferenceContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code singleExternalLayoutDeclaration}
 	 * labeled alternative in {@link ContinuityParser#externalLayout}.
 	 * @param ctx the parse tree
@@ -212,6 +237,13 @@ public interface ContinuityParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBooleanExpressionParam(ContinuityParser.BooleanExpressionParamContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code variableReferenceParam}
+	 * labeled alternative in {@link ContinuityParser#param}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVariableReferenceParam(ContinuityParser.VariableReferenceParamContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ContinuityParser#reference}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -277,11 +309,11 @@ public interface ContinuityParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitComparator(ContinuityParser.ComparatorContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ContinuityParser#comparisonTarget}.
+	 * Visit a parse tree produced by {@link ContinuityParser#valueTarget}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitComparisonTarget(ContinuityParser.ComparisonTargetContext ctx);
+	T visitValueTarget(ContinuityParser.ValueTargetContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ContinuityParser#ifCondition}.
 	 * @param ctx the parse tree

@@ -16,6 +16,19 @@ FN: 'fn';
 STD: 'std';
 IF: 'if';
 ELSE: 'else';
+LET: 'let';
+
+// Types
+CHAR: 'char';
+BOOL: 'bool';
+INT8: 'int8';
+INT16: 'int16';
+INT32: 'int32';
+INT64: 'int64';
+FLOAT32: 'float32';
+FLOAT64: 'float64';
+STRING: 'str';
+OBJECT: 'Object';
 
 // Literals
 IntegerLiteral: DecimalIntegerLiteral

@@ -13,7 +13,21 @@ statement: function # functionStatement
     | invocation # invocationStatement
     | externalLayout # externalLayoutStatement
     | contextLayout # contextLayoutStatement
-    | ifCondition # ifStatement;
+    | ifCondition # ifStatement
+    | variableDeclaration # variableDeclarationStatement;
+
+variableDeclaration: LET Identifier COLON variableType ASSIGN valueTarget;
+variableType: CHAR
+    | BOOL
+    | INT8
+    | INT16
+    | INT32
+    | INT64
+    | FLOAT32
+    | FLOAT64
+    | STRING
+    | OBJECT;
+variableReference: LET DOT Identifier;
 
 externalLayout: EXT reference # singleExternalLayoutDeclaration
     | EXT LBRACE externalEntries RBRACE # multiExternalLayoutDeclaration;
@@ -41,7 +55,8 @@ param: literal # literalParam
     | contextEntryReference # contextEntryReferenceParam
     | invocation # invocationParam
     | externalEntryEnumConstantReference # enumConstantReferenceParam
-    | booleanExpresion # booleanExpressionParam;
+    | booleanExpresion # booleanExpressionParam
+    | variableReference # variableReferenceParam;
 
 reference: referenceChain? referenceTarget;
 referenceTarget: Identifier;
@@ -51,13 +66,15 @@ booleanExpresion: LPAREN booleanExpresion RPAREN # parenBooleanExpression
     | BANG booleanExpresion # negationBooleanExpression
     | left=booleanExpresion comparator right=booleanExpresion # comparatorBooleanExpression
     | left=booleanExpresion comparisonJoin right=booleanExpresion # binaryBooleanExpression
-    | comparisonTarget # targetBooleanExpression;
+    | valueTarget # targetBooleanExpression;
 comparisonJoin: AND | OR | CARET;
 comparator: GT | LT | LE | GE | EQUAL | NOTEQUAL;
-comparisonTarget: externalEntryReference
+
+valueTarget: externalEntryReference
     | contextEntryReference
     | invocation
-    | literal;
+    | literal
+    | variableReference;
 
 ifCondition: ifBranch elseIfBranch* elseBranch?;
 ifBranch: IF booleanExpresion block;
