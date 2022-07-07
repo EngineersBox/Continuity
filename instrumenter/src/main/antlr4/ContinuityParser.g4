@@ -16,7 +16,7 @@ statement: function # functionStatement
     | ifCondition # ifStatement
     | variableDeclaration # variableDeclarationStatement;
 
-variableDeclaration: LET Identifier COLON variableType ASSIGN valueTarget;
+variableDeclaration: LET Identifier COLON (variableType | arrayType) ASSIGN (valueTarget | arrayLiteral);
 variableType: CHAR
     | BOOL
     | INT8
@@ -27,7 +27,10 @@ variableType: CHAR
     | FLOAT64
     | STRING
     | OBJECT;
-variableReference: LET DOT Identifier;
+arrayType: variableType LBRACK RBRACK;
+arrayLiteral: LBRACE (statement COMMA)+ RBRACE;
+variableReference: LET DOT Identifier arrayIndexer?;
+arrayIndexer: LBRACK IntegerLiteral RBRACK;
 
 externalLayout: EXT reference # singleExternalLayoutDeclaration
     | EXT LBRACE externalEntries RBRACE # multiExternalLayoutDeclaration;

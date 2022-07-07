@@ -112,6 +112,26 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 */
 	void exitVariableType(ContinuityParser.VariableTypeContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#arrayType}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayType(ContinuityParser.ArrayTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#arrayType}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayType(ContinuityParser.ArrayTypeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#arrayLiteral}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayLiteral(ContinuityParser.ArrayLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#arrayLiteral}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayLiteral(ContinuityParser.ArrayLiteralContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ContinuityParser#variableReference}.
 	 * @param ctx the parse tree
 	 */
@@ -121,6 +141,16 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitVariableReference(ContinuityParser.VariableReferenceContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ContinuityParser#arrayIndexer}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayIndexer(ContinuityParser.ArrayIndexerContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ContinuityParser#arrayIndexer}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayIndexer(ContinuityParser.ArrayIndexerContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code singleExternalLayoutDeclaration}
 	 * labeled alternative in {@link ContinuityParser#externalLayout}.

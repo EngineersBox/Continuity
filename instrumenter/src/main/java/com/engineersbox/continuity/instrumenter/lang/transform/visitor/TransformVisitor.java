@@ -14,6 +14,8 @@ import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.compare.ComparableUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.InsnList;
 
@@ -34,6 +36,9 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     private final Map<String, Object> declaredContextLayoutVariables;
     private final Map<String, Object> declaredFunctions;
     private final Map<String, Class<?>> externalReferences;
+    private static final String GLOBAL_SCOPE_NAME = "<__GLOBAL__>";
+    private String currentScope = GLOBAL_SCOPE_NAME;
+    private final Map<String, Map<String, Pair<Class<?>, Object>>> variables;
 
     private final BuilderResolver builderResolver;
 
@@ -42,14 +47,17 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
         this.declaredContextLayoutVariables = new HashMap<>();
         this.declaredFunctions = new HashMap<>();
         this.externalReferences = new HashMap<>();
+        this.variables = new HashMap<>();
         this.builderResolver = new BuilderResolver();
     }
     @Override
     public Object visitParse(final ContinuityParser.ParseContext ctx) {
         return ctx.statement()
                 .stream()
-                .map(super::visit)
-                .collect(InsnListCollector.toInsnList());
+                .map((final ContinuityParser.StatementContext statementCtx) -> {
+                    this.currentScope = GLOBAL_SCOPE_NAME;
+                    return super.visit(statementCtx);
+                }).collect(InsnListCollector.toInsnList());
     }
 
     @Override
@@ -95,6 +103,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     @Override
     public Object visitFunction(final ContinuityParser.FunctionContext ctx) {
         final String functionName = ctx.Identifier().getText();
+        this.currentScope = functionName;
         if (this.declaredFunctions.containsKey(functionName)) {
             throw new IllegalStateException(String.format(
                     "Function \"%s\" previously declared",
@@ -457,7 +466,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
 
     @Override
     public Object visitTargetBooleanExpression(final ContinuityParser.TargetBooleanExpressionContext ctx) {
-        return super.visit(ctx.comparisonTarget());
+        return super.visit(ctx.valueTarget());
     }
 
     @SuppressWarnings("unchecked")
@@ -562,7 +571,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitComparisonTarget(final ContinuityParser.ComparisonTargetContext ctx) {
+    public Object visitValueTarget(final ContinuityParser.ValueTargetContext ctx) {
         if (ctx.contextEntryReference() != null) {
             return super.visit(ctx.contextEntryReference());
         } else if (ctx.externalEntryReference() != null) {
@@ -600,10 +609,127 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitVariableDeclarationStatement(final ContinuityParser.VariableDeclarationStatementContext ctx) {
+        super.visit(ctx.variableDeclaration());
+        return new InsnList();
+    }
+
+    @Override
+    public Object visitVariableDeclaration(final ContinuityParser.VariableDeclarationContext ctx) {
+        final String variableName = ctx.Identifier().getText();
+        final Class<?> variableType = (Class<?>) super.visit(ctx.variableType() != null ? ctx.variableType() : ctx.arrayType());
+        final Map<String, Pair<Class<?>, Object>> scopeVariables = this.variables.computeIfAbsent(
+                this.currentScope,
+                (final String key) -> new HashMap<>()
+        );
+        if (scopeVariables.containsKey(variableName)) {
+            throw new IllegalStateException(String.format(
+                    "Variable \"%s\" previously declared in this scope [Scope: %s]",
+                    variableName,
+                    this.currentScope.equals(GLOBAL_SCOPE_NAME) ? "GLOBAL" : this.currentScope
+            ));
+        }
+        final Object variableValue = ctx.valueTarget() != null
+                ? super.visit(ctx.valueTarget())
+                : visitArrayLiteralInitialiser(ctx.arrayLiteral(), variableType);
+        if (!variableType.isAssignableFrom(variableValue.getClass())) {
+            throw new IllegalStateException(String.format(
+                    "Variable %s was declared as \"%s\", but value was assigned as \"%s\"",
+                    variableName,
+                    variableType.getName(),
+                    variableValue.getClass().getName()
+            ));
+        }
+        scopeVariables.put(
+                variableName,
+                ImmutablePair.of(
+                        variableType,
+                        variableValue
+                )
+        );
+        return new InsnList();
+    }
+
+    private Object visitArrayLiteralInitialiser(final ContinuityParser.ArrayLiteralContext ctx,
+                                                final Class<?> arrayType) {
+        final Object[] initialiserValues = ctx.statement()
+                .stream()
+                .map((final ContinuityParser.StatementContext statementCtx) -> {
+                    final Object statementValue = super.visit(statementCtx);
+                    if (!arrayType.getComponentType().isAssignableFrom(statementValue.getClass())) {
+                        throw new IllegalStateException(String.format(
+                                "Cannot use value of type \"%s\" in array initialiser expecting type \"%s\"",
+                                statementValue.getClass().getName(),
+                                arrayType.getComponentType().getName()
+                        ));
+                    }
+                    return statementValue;
+                }).toArray(Object[]::new);
+        return arrayType.cast(initialiserValues);
+    }
+
+    @Override
+    public Object visitVariableReference(final ContinuityParser.VariableReferenceContext ctx) {
+        final Map<String, Pair<Class<?>, Object>> scopeVariables = this.variables.get(this.currentScope);
+        if (scopeVariables == null || scopeVariables.isEmpty()) {
+            throw new IllegalStateException(String.format(
+                    "Variable %s was not declared in current scope %s",
+                    ctx.Identifier().getText(),
+                    this.currentScope
+            ));
+        }
+        final Pair<Class<?>, Object> variable = scopeVariables.get(ctx.Identifier().getText());
+        if (variable == null) {
+            throw new IllegalStateException(String.format(
+                    "Variable %s was not declared in current scope %s",
+                    ctx.Identifier().getText(),
+                    this.currentScope
+            ));
+        }
+        final Object variableValue = variable.getLeft().cast(variable.getRight());
+        return new InsnList();
+    }
+
+    @Override
+    public Object visitVariableReferenceParam(final ContinuityParser.VariableReferenceParamContext ctx) {
+        return super.visit(ctx.variableReference());
+    }
+
+    @Override
+    public Object visitArrayType(final ContinuityParser.ArrayTypeContext ctx) {
+        return ((Class<?>) super.visit(ctx.variableType())).arrayType();
+    }
+
+    @Override
+    public Object visitVariableType(final ContinuityParser.VariableTypeContext ctx) {
+        if (ctx.BOOL() != null) {
+            return boolean.class;
+        } else if (ctx.CHAR() != null) {
+            return char.class;
+        } else if (ctx.INT8() != null) {
+            return byte.class;
+        } else if (ctx.INT16() != null) {
+            return short.class;
+        } else if (ctx.INT32() != null) {
+            return int.class;
+        } else if (ctx.INT64() != null) {
+            return long.class;
+        } else if (ctx.FLOAT32() != null) {
+            return float.class;
+        } else if (ctx.FLOAT64() != null) {
+            return double.class;
+        } else if (ctx.STRING() != null) {
+            return String.class;
+        }
+        return Object.class;
+    }
+
+    @Override
     public Object visitIfBranch(final ContinuityParser.IfBranchContext ctx) {
         if (!(boolean) super.visit(ctx.booleanExpresion())) {
             return null;
         }
+        this.currentScope = ctx.toString();
         return super.visit(ctx.block());
     }
 
@@ -614,6 +740,7 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
 
     @Override
     public Object visitElseBranch(final ContinuityParser.ElseBranchContext ctx) {
+        this.currentScope = ctx.toString();
         return super.visit(ctx.block());
     }
 

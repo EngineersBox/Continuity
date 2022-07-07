@@ -73,11 +73,29 @@ public interface ContinuityParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVariableType(ContinuityParser.VariableTypeContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#arrayType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayType(ContinuityParser.ArrayTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#arrayLiteral}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayLiteral(ContinuityParser.ArrayLiteralContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ContinuityParser#variableReference}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitVariableReference(ContinuityParser.VariableReferenceContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ContinuityParser#arrayIndexer}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayIndexer(ContinuityParser.ArrayIndexerContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code singleExternalLayoutDeclaration}
 	 * labeled alternative in {@link ContinuityParser#externalLayout}.

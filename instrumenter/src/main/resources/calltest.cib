@@ -7,9 +7,12 @@ ext com.engineersbox.continuity.core.annotation.BytecodeInternal $ Accessor;
 
 let test: Object = std::loadVar(ctx::contArgVar);
 let testString: str = "string";
+let arrayVariable: int32[] = {
+
+};
 
 fn test() {
-    std::loadVar(ctx::contArgVar);
+    let.test;
     std::loadVar(ctx::contArgVar);
 };
 
