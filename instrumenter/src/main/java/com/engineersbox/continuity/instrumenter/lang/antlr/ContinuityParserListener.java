@@ -92,6 +92,18 @@ public interface ContinuityParserListener extends ParseTreeListener {
 	 */
 	void exitVariableDeclarationStatement(ContinuityParser.VariableDeclarationStatementContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code variableReferenceStatement}
+	 * labeled alternative in {@link ContinuityParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterVariableReferenceStatement(ContinuityParser.VariableReferenceStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code variableReferenceStatement}
+	 * labeled alternative in {@link ContinuityParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitVariableReferenceStatement(ContinuityParser.VariableReferenceStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ContinuityParser#variableDeclaration}.
 	 * @param ctx the parse tree
 	 */

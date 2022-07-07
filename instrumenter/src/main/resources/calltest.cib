@@ -8,7 +8,8 @@ ext com.engineersbox.continuity.core.annotation.BytecodeInternal $ Accessor;
 let test: Object = std::loadVar(ctx::contArgVar);
 let testString: str = "string";
 let arrayVariable: int32[] = {
-
+    434,
+    8234532
 };
 
 fn test() {
@@ -18,7 +19,7 @@ fn test() {
 
 std::call(ext::Accessor->getMethod(ctx::example->get().replace('$', '.')), std::loadVar(ctx::contArgVar));
 std::combineIf(
-    ctx::example->get().contains("$") && (5.3 >= 434 ^ let.testString == "string"),
+    ctx::example->get().contains("$") && (5.3 >= let.arrayVariable[0] ^ let.testString == "string"),
     fn.test()
 );
 std::combineIf(
@@ -26,7 +27,7 @@ std::combineIf(
     std::lineNumber(ctx::other)
 );
 
-if (!ctx::example->get().contains("$") && (5.3 >= 434 ^ "string" == "string")) {
+if (!ctx::example->get().contains("$") && (5.3 >= let.arrayVariable[1] ^ "string" == "string")) {
     std::loadVar(ctx::contArgVar);
 } else if (ctx::other == null) {
     std::lineNumber(ctx::other);

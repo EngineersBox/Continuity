@@ -61,6 +61,13 @@ public interface ContinuityParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVariableDeclarationStatement(ContinuityParser.VariableDeclarationStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code variableReferenceStatement}
+	 * labeled alternative in {@link ContinuityParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVariableReferenceStatement(ContinuityParser.VariableReferenceStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ContinuityParser#variableDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

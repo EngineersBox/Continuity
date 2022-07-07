@@ -14,7 +14,8 @@ statement: function # functionStatement
     | externalLayout # externalLayoutStatement
     | contextLayout # contextLayoutStatement
     | ifCondition # ifStatement
-    | variableDeclaration # variableDeclarationStatement;
+    | variableDeclaration # variableDeclarationStatement
+    | variableReference # variableReferenceStatement;
 
 variableDeclaration: LET Identifier COLON (variableType | arrayType) ASSIGN (valueTarget | arrayLiteral);
 variableType: CHAR
@@ -28,7 +29,7 @@ variableType: CHAR
     | STRING
     | OBJECT;
 arrayType: variableType LBRACK RBRACK;
-arrayLiteral: LBRACE (statement COMMA)+ RBRACE;
+arrayLiteral: LBRACE (valueTarget COMMA)* valueTarget? RBRACE;
 variableReference: LET DOT Identifier arrayIndexer?;
 arrayIndexer: LBRACK IntegerLiteral RBRACK;
 

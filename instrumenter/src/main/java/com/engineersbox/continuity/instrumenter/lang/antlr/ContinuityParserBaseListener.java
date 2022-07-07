@@ -102,6 +102,18 @@ public class ContinuityParserBaseListener implements ContinuityParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterVariableReferenceStatement(ContinuityParser.VariableReferenceStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVariableReferenceStatement(ContinuityParser.VariableReferenceStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterVariableDeclaration(ContinuityParser.VariableDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}

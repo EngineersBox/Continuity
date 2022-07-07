@@ -19,9 +19,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.InsnList;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
@@ -652,11 +654,19 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
 
     private Object visitArrayLiteralInitialiser(final ContinuityParser.ArrayLiteralContext ctx,
                                                 final Class<?> arrayType) {
-        final Object[] initialiserValues = ctx.statement()
+        final Object initialiserValues = Array.newInstance(
+                arrayType,
+                ctx.valueTarget().size()
+        );
+        final AtomicInteger index = new AtomicInteger(0);
+        ctx.valueTarget()
                 .stream()
-                .map((final ContinuityParser.StatementContext statementCtx) -> {
-                    final Object statementValue = super.visit(statementCtx);
-                    if (!arrayType.getComponentType().isAssignableFrom(statementValue.getClass())) {
+                .map((final ContinuityParser.ValueTargetContext valueTargetCtx) -> {
+                    final Object statementValue = super.visit(valueTargetCtx);
+                    final Class<?> primitiveType = ClassUtils.isPrimitiveWrapper(statementValue.getClass())
+                            ? ClassUtils.wrapperToPrimitive(statementValue.getClass())
+                            : statementValue.getClass();
+                    if (!arrayType.getComponentType().isAssignableFrom(primitiveType)) {
                         throw new IllegalStateException(String.format(
                                 "Cannot use value of type \"%s\" in array initialiser expecting type \"%s\"",
                                 statementValue.getClass().getName(),
@@ -664,8 +674,27 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
                         ));
                     }
                     return statementValue;
-                }).toArray(Object[]::new);
-        return arrayType.cast(initialiserValues);
+                }).forEach((final Object arrayElement) -> Array.set(
+                        initialiserValues,
+                        index.getAndIncrement(),
+                        boxedToPrimitive(arrayElement)
+                ));
+        return initialiserValues;
+    }
+
+    private Object boxedToPrimitive(final Object boxed) {
+        if (boxed instanceof Character boxedCharacter) {
+            return boxedCharacter.charValue();
+        } else if (boxed instanceof Double boxedDouble) {
+            return boxedDouble.doubleValue();
+        } else if (boxed instanceof Float boxedFloat) {
+            return boxedFloat.floatValue();
+        } else if (boxed instanceof Integer boxedInt) {
+            return boxedInt.intValue();
+        } else if (boxed instanceof Boolean boxedBoolean) {
+            return boxedBoolean.booleanValue();
+        }
+        return boxed;
     }
 
     @Override
@@ -685,13 +714,32 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
                     ctx.Identifier().getText(),
                     this.currentScope
             ));
+        } else if (ctx.arrayIndexer() == null) {
+            return variable.getLeft().cast(variable.getRight());
+        } else if (!variable.getLeft().isArray()) {
+            throw new IllegalStateException(String.format(
+                    "Cannot index into non-array variable %s",
+                    ctx.Identifier().getText()
+            ));
         }
-        final Object variableValue = variable.getLeft().cast(variable.getRight());
-        return new InsnList();
+        return Array.get(
+                variable.getLeft().cast(variable.getRight()),
+                (int) super.visit(ctx.arrayIndexer())
+        );
+    }
+
+    @Override
+    public Object visitArrayIndexer(final ContinuityParser.ArrayIndexerContext ctx) {
+        return super.visit(ctx.IntegerLiteral());
     }
 
     @Override
     public Object visitVariableReferenceParam(final ContinuityParser.VariableReferenceParamContext ctx) {
+        return super.visit(ctx.variableReference());
+    }
+
+    @Override
+    public Object visitVariableReferenceStatement(final ContinuityParser.VariableReferenceStatementContext ctx) {
         return super.visit(ctx.variableReference());
     }
 
