@@ -10,6 +10,8 @@ let arrayVariable: int32[] = {
     434,
     8234532
 };
+// TODO: Fix this type issue with float64 being treated as float32
+let float: float64 = 3.58923598235982359823598235742423423442332444444244234342342444233442342344423424244429235789235;
 
 fn test() {
     let test: Object = std::loadVar(ctx::contArgVar);
@@ -19,7 +21,7 @@ fn test() {
 
 std::call(ext::Accessor->getMethod(ctx::example->get().replace('$', '.')), std::loadVar(ctx::contArgVar));
 std::combineIf(
-    ctx::example->get().contains("$") && (5.3 >= let.arrayVariable[0] ^ let.testString == "string"),
+    ctx::example->get().contains("$") && (let.float >= let.arrayVariable[0] ^ let.testString == "string"),
     fn.test()
 );
 std::combineIf(
