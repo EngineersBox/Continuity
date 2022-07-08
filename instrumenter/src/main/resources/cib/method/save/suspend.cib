@@ -41,7 +41,7 @@ fn instantiateMethodState() {
         std::loadVar(ctx::container)
     );
 };
-let contArgVar = std::loadVar(ctx::methodContext->continuityVariables().continuationArgVar());
+let contArgVar: Object = std::loadVar(ctx::methodContext->continuityVariables().continuationArgVar());
 std::call(
     ext::Accessor->getMethod("Continuation.pushNewMethodState"),
     let.contArgVar,
