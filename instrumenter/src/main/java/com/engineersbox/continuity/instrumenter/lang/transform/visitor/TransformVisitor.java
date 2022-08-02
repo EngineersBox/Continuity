@@ -796,11 +796,11 @@ public class TransformVisitor extends ContinuityParserBaseVisitor<Object> {
 
     @Override
     public Object visitFloatingPointLiteral(final ContinuityParser.FloatingPointLiteralContext ctx) {
-        final Double doubleValue = Double.parseDouble(ctx.FloatingPointLiteral().getText());
+        final double doubleValue = Double.parseDouble(ctx.FloatingPointLiteral().getText());
         if (doubleValue >= Float.MAX_VALUE) {
-            return doubleValue.doubleValue();
+            return doubleValue;
         }
-        return doubleValue.floatValue();
+        return (float) doubleValue;
     }
 
     @Override
