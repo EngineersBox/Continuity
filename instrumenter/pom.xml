@@ -14,8 +14,8 @@
     <packaging>jar</packaging>
 
     <properties>
-        <maven.compiler.source>18</maven.compiler.source>
-        <maven.compiler.target>18</maven.compiler.target>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <!-- ANTLR4 -->
         <antlr4.source.dir>${project.basedir}/src/main/antlr4</antlr4.source.dir>
